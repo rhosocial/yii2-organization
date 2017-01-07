@@ -1,0 +1,30 @@
+{
+    "name": "rhosocial/yii2-organization",
+    "description": "Common organization model(s), which were based on common base model.",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","rho","social","user","organization"],
+    "license": "AGPLv3",
+    "authors": [
+        {
+            "name": "rhosocial",
+            "email": "opensource@dev.rho.social"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0",
+        "yiisoft/yii2": ">=2.0.10",
+        "yiisoft/yii2-authclient": "*",
+        "rhosocial/yii2-user": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "rhosocial\\organization\\": ""
+        }
+    },
+    "repositories":[
+        {
+            "type": "git",
+            "url": "https://github.com/rhosocial/yii2-organization"
+        }
+    ]
+}
