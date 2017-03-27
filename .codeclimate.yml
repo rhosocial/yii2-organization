@@ -1,0 +1,18 @@
+exclude_paths:
+    - docs/**/*
+    - tests/**/*
+    - migrations/**/*
+    - rbac/migrations/**/*
+    
+ratings:
+    paths:
+        - rbac/**
+        - forms/**
+        - security/**
+        - widgets/**
+        
+engines:
+    phpmd:
+        enabled: true
+    phpcodesniffer:
+        enabled: true
