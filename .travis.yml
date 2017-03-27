@@ -42,7 +42,7 @@ install:
     
 before_script:
     - mysql --version
-    - mysql -uroot < tests/data/rhosocial_yii2_user.
+    - mysql -uroot < tests/data/rhosocial_yii2_user.sql
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\migrations --interactive=0
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\rbac\\migrations --interactive=0
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\models\\log\\migrations --interactive=0
