@@ -42,7 +42,6 @@ class m170327_031029_createOrganizationTable extends Migration
 {
     public function up()
     {
-        $tableOptions = null;
         if ($this->db->driverName == 'mysql') {
             // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
             $tableOptions = "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Organization'";

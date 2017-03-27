@@ -14,10 +14,17 @@ namespace rhosocial\organization;
 
 use rhosocial\base\models\models\BaseBlameableModel;
 use rhosocial\user\User;
+use rhosocial\organization\queries\OrganizationQuery;
+use rhosocial\organization\queries\MemberQuery;
 
 /**
  * Organization member.
  *
+ * @property string $organization_guid
+ * @proprtyy string $user_guid
+ * @property string $nickname
+ * @property string $description
+ * 
  * @property string $department_guid
  * @property string $member_guid
  * @property User $memberUser
@@ -33,6 +40,32 @@ class Member extends BaseBlameableModel
 
     public $memberAttribute = 'user_guid';
     public $memberUserClass = User::class;
+    private $noInitMemberUser;
+    /**
+     * @return User
+     */
+    protected function getNoInitMemberUser()
+    {
+        if (!$this->noInitMemberUser) {
+            $class = $this->memberUserClass;
+            $this->noInitMemberUser = $class::buildNoInitModel();
+        }
+        return $this->noInitMemberUser;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        if (!is_string($this->queryClass)) {
+            $this->queryClass = MemberQuery::class;
+        }
+        if ($this->skipInit) {
+            return;
+        }
+        parent::init();
+    }
 
     public $descriptionAttribute = 'description';
 
@@ -55,10 +88,17 @@ class Member extends BaseBlameableModel
 
     public function getMemberUser()
     {
-        $class = $this->memberUserClass;
-        $noInit = $class::buildInitNoModel();
-        /* @var $noInit User */
-        return $this->hasOne($this->memberUserClass, [$this->memberAttribute => $noInit->guidAttribute]);
+        return $this->hasOne($this->memberUserClass, [$this->memberAttribute => $this->getNoInitMemberUser()->guidAttribute]);
+    }
+
+    /**
+     * Get Organization Query.
+     * Alias of `getHost` method.
+     * @return OrganizationQuery
+     */
+    public function getOrganization()
+    {
+        return $this->getHost();
     }
 
     public function rules()

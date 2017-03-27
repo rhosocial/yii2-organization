@@ -13,7 +13,10 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\traits\SelfBlameableTrait;
+use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\user\User;
+use rhosocial\organization\queries\MemberQuery;
+use rhosocial\organization\queries\OrganizationQuery;
 
 /**
  * Organization.
@@ -72,6 +75,29 @@ abstract class BaseOrganization extends User
     public $profileClass = Profile::class;
 
     public $memberClass = Member::class;
+    private $noInitMember;
+    /**
+     * @return Member
+     */
+    protected function getNoInitMember()
+    {
+        if (!$this->noInitMember) {
+            $class = $this->memberClass;
+            $this->noInitMember = $class::buildNoInitMember();
+        }
+        return $this->noInitMember;
+    }
+
+    public function init()
+    {
+        if (!is_string($this->queryClass)) {
+            $this->queryClass = OrganizationQuery::class;
+        }
+        if ($this->skipInit) {
+            return;
+        }
+        parent::init();
+    }
 
     /**
      * @inheritdoc
@@ -114,5 +140,26 @@ abstract class BaseOrganization extends User
     public function rules()
     {
         return array_merge(parent::rules(), $this->getTypeRules(), $this->getSelfBlameableRules());
+    }
+
+    /**
+     * Get Member Query.
+     * @return MemberQuery
+     */
+    public function getMembers()
+    {
+        return $this->hasMany($this->memberClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->inverseOf('organization');
+    }
+
+    /**
+     * 
+     * @return BaseUserQuery
+     */
+    public function getMemberUsers()
+    {
+        $noInit = $this->getNoInitMember();
+        $class = $noInit->memberUserClass;
+        $noInitUser = $class::buildNoInitModel();
+        return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members');
     }
 }
