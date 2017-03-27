@@ -16,6 +16,8 @@ use rhosocial\base\models\models\BaseBlameableModel;
 use rhosocial\user\User;
 
 /**
+ * Organization member.
+ *
  * @property string $department_guid
  * @property string $member_guid
  * @property User $memberUser
@@ -23,13 +25,13 @@ use rhosocial\user\User;
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class DepartmentMember extends BaseBlameableModel
+class Member extends BaseBlameableModel
 {
     public $createdByAttribute = 'organization_guid';
     public $updatedByAttribute = false;
     public $hostClass = Organization::class;
 
-    public $memberAttribute = 'member_guid';
+    public $memberAttribute = 'user_guid';
     public $memberUserClass = User::class;
 
     public $descriptionAttribute = 'description';

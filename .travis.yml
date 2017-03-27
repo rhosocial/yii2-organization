@@ -42,7 +42,7 @@ install:
     
 before_script:
     - mysql --version
-    - mysql -uroot < tests/data/rhosocial_yii2_org.sql
+    - mysql -uroot < tests/data/rhosocial_yii2_user.sql
     - ./yii migrate --migrationPath=@rhosocial/organization --migrationNamespaces=rhosocial\\organization\\migrations --interactive=0
     - |
         if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then

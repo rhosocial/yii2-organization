@@ -6,4 +6,3 @@ tools:
         timeout: 900
     php_sim: false
     php_cpd: false
-    
