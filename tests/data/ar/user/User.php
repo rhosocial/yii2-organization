@@ -20,7 +20,7 @@ use rhosocial\organization\tests\data\ar\org\Organization;
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class User extends \rhosocial\user\tests\data\User
+class User extends \rhosocial\user\User
 {
     use UserOrganizationTrait;
 
