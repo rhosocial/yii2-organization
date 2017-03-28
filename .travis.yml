@@ -37,12 +37,13 @@ install:
             php -m
         fi
     - export PATH="$HOME/.composer/vendor/bin/:$PATH"
-    - travis_retry composer install --prefer-dist --no-interaction
+    - travis_retry composer update --prefer-dist --no-interaction
     - sudo chmod +x yii
     
 before_script:
     - mysql --version
     - mysql -uroot < tests/data/rhosocial_yii2_user.sql
+    - phpenv config-add tests/data/php.ini
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\migrations --interactive=0
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\rbac\\migrations --interactive=0
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\models\\log\\migrations --interactive=0
