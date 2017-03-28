@@ -17,6 +17,7 @@ use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\user\User;
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
+use Yii;
 
 /**
  * Organization.
@@ -156,7 +157,7 @@ abstract class BaseOrganization extends User
     }
 
     /**
-     * 
+     * Get member users' query.
      * @return BaseUserQuery
      */
     public function getMemberUsers()
@@ -168,27 +169,50 @@ abstract class BaseOrganization extends User
     }
 
     /**
-     * Add member to organization.
-     * @param Member|User $member
-     * @return Member
+     * Get member with specified user.
+     * @param User|string|integer $user
+     * @return Member Null if `user` is not in this organization.
      */
-    public function addMember($member)
+    public function getMember($user)
     {
+        if ($user instanceof $this->memberClass) {
+            return $user;
+        }
+        return $this->getMembers()->user($user)->one();
+    }
+
+    /**
+     * Add member to organization.
+     * @param Member|User|string|integer $member
+     * @see createMemberModel
+     * @see createMemberModelWithUser
+     * @return boolean
+     */
+    public function addMember(&$member)
+    {
+        if ($this->getIsNewRecord()) {
+            return false;
+        }
+        $model = null;
         if ($member instanceof Member) {
-            return $this->createMemberModel($member);
+            $model = $this->createMemberModel($member);
         }
-        if ($member instanceof User) {
-            return $this->createMemberModelWithUser($member);
+        if (($member instanceof User) || is_string($member) || is_int($member)) {
+            $model = $this->createMemberModelWithUser($member);
         }
-        return false;
+        $member = $model;
+        return ($member instanceof Member) ? $member->save() : false;
     }
 
     /**
      * Create member model, and set organization with this.
-     * @param Member $member
+     * @param Member $member If this parameter is not new record, it's organization
+     * will be set with this, and return it. Otherwise, it will extract `User`
+     * model and create new `Member` model.
+     * @see createMemberModelWithUser
      * @return Member
      */
-    protected function createMemberModel($member)
+    public function createMemberModel($member)
     {
         if (!$member->getIsNewRecord()) {
             $member->setOrganization($this);
@@ -202,7 +226,7 @@ abstract class BaseOrganization extends User
      * @param User|string|integer $user
      * @return Member
      */
-    protected function createMemberModelWithUser($user)
+    public function createMemberModelWithUser($user)
     {
         $config = [
             'memberUser' => $user,
@@ -213,5 +237,19 @@ abstract class BaseOrganization extends User
             $config['nickname'] = $user->profile->nickname;
         }
         return $this->createMember($config);
+    }
+
+    /**
+     * Remove member.
+     * @param Member|User $member
+     * @return boolean
+     */
+    public function removeMember(&$member)
+    {
+        if ($this->getIsNewRecord()) {
+            return false;
+        }
+        $member = $this->getMember($member);
+        return $member && $member->delete() > 0;
     }
 }

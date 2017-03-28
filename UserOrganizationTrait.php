@@ -14,6 +14,8 @@ namespace rhosocial\organization;
 
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
+use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * @property string $guidAttribute GUID Attribute.
@@ -26,6 +28,7 @@ use rhosocial\organization\queries\OrganizationQuery;
 trait UserOrganizationTrait
 {
     public $organizationClass = Organization::class;
+    public $departmentClass = Department::class;
     public $memberClass = Member::class;
     private $noInitOrganization;
     private $noInitMember;
@@ -68,5 +71,76 @@ trait UserOrganizationTrait
     public function getAtOrganizations()
     {
         return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitOrganization()->guidAttribute])->via('ofMembers');
+    }
+
+    /**
+     * Set up organization.
+     * @param string $name
+     * @param string $nickname
+     * @param integer $gravatar_type
+     * @param string $gravatar
+     * @param string $timezone
+     * @param string $description
+     * @return boolean
+     */
+    public function setUpOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $models = $this->createOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            if (!array_key_exists('organization', $models) || !($models['organization'] instanceof Organization)) {
+                throw new InvalidConfigException('Invalid Organization Model.');
+            }
+            $result = $models['organization']->register($models['associatedModels']);
+            if ($result instanceof \Exception) {
+                throw $result;
+            }
+            if ($result !== true) {
+                throw new \Exception('Failed to set up.');
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::error($ex->getMessage(), __METHOD__);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Set Up Department.
+     * @param BaseOrganization $organization
+     * @param type $department
+     */
+    public function setUpDepartment($organization, $department)
+    {
+        
+    }
+
+    /**
+     * 
+     * @param string $name
+     * @param string $nickname
+     * @param string $gravatar_type
+     * @param string $gravatar
+     * @param string $timezone
+     * @param string $description
+     */
+    public function createOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    {
+        $class = $this->organizationClass;
+        $organization = new $class();
+        /* @var $organization BaseOrganization */
+        $profileConfig = [
+            'name' => $name,
+            'nickname' => $nickname,
+            'gravatar_type' => $gravatar_type,
+            'gravatar' => $gravatar,
+            'timezone' => $timezone,
+            'description' => $description,
+        ];
+        $profile = $organization->createProfile($profileConfig);
+        $member = $organization->createMemberModelWithUser($this);
+        return ['organization' => $organization, 'associatedModels' => ['profile' => $profile, 'creator'=> $member]];
     }
 }

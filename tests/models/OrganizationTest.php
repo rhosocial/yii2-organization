@@ -12,7 +12,9 @@
 
 namespace rhosocial\organization\tests\models;
 
+use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
+use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 
 /**
@@ -21,12 +23,21 @@ use rhosocial\organization\tests\TestCase;
  */
 class OrganizationTest extends TestCase
 {
+    /**
+     * @var User 
+     */
+    protected $user;
+    /**
+     * @var Organization; 
+     */
     protected $organization;
 
     protected function setUp()
     {
         parent::setUp();
         $this->organization = new Organization();
+        $this->user = new User(['password' => '123456']);
+        $this->assertTrue($this->user->register());
     }
 
     protected function tearDown()
@@ -34,13 +45,27 @@ class OrganizationTest extends TestCase
         if ($this->organization instanceof Organization)
         {
             try {
-                $this->organization->deregister();
+                if (!$this->organization->getIsNewRecord()) {
+                    $this->organization->deregister();
+                }
             } catch (\Exception $ex) {
 
             }
             $this->organization = null;
         }
         Organization::deleteAll();
+        if ($this->user instanceof User)
+        {
+            try {
+                if (!$this->user->getIsNewRecord()) {
+                    $this->user->deregister();
+                }
+            } catch (\Exception $ex) {
+
+            }
+            $this->user = null;
+        }
+        User::deleteAll();
         parent::tearDown();
     }
 
@@ -58,6 +83,18 @@ class OrganizationTest extends TestCase
             $this->assertTrue($result);
         } catch (\Exception $ex) {
             $this->fail(get_class($ex) . ' : ' . $ex->getMessage());
+        }
+    }
+
+    /**
+     * @group organization
+     */
+    public function testUser()
+    {
+        try {
+            $result = $this->user->setUpOrganization('Organization');
+        } catch (\Exception $ex) {
+            $this->fail(get_class($ex), ' : ' . $ex->getMessage());
         }
     }
 }

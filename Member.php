@@ -16,13 +16,15 @@ use rhosocial\base\models\models\BaseBlameableModel;
 use rhosocial\user\User;
 use rhosocial\organization\queries\OrganizationQuery;
 use rhosocial\organization\queries\MemberQuery;
+use Yii;
 
 /**
  * Organization member.
  *
  * @property string $organization_guid
- * @proprtyy string $user_guid
+ * @property string $user_guid store guid of user who represents this member.
  * @property string $nickname
+ * @property string $role
  * @property string $description
  * 
  * @property string $department_guid
@@ -77,6 +79,13 @@ class Member extends BaseBlameableModel
         ];
     }
 
+    public function getMemberRoleRules()
+    {
+        return [
+            ['role', 'string', 'max' => 255],
+        ];
+    }
+
     /**
      * Set member user.
      * @param User|string|integer $user
@@ -110,7 +119,7 @@ class Member extends BaseBlameableModel
 
     /**
      * Set Organization.
-     * @param Organization $organization
+     * @param BaseOrganization $organization
      * @return boolean
      */
     public function setOrganization($organization)
@@ -120,7 +129,7 @@ class Member extends BaseBlameableModel
 
     public function rules()
     {
-        return array_merge($this->getMemberUserRules(), parent::rules());
+        return array_merge($this->getMemberUserRules(), $this->getMemberRoleRules(), parent::rules());
     }
 
     /**

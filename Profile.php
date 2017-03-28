@@ -12,6 +12,8 @@
 
 namespace rhosocial\organization;
 
+use Yii;
+
 /**
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -19,12 +21,13 @@ namespace rhosocial\organization;
 class Profile extends \rhosocial\user\Profile
 {
     public $hostClass = Organization::class;
+    public $contentAttribute = 'name';
+    public $descriptionAttribute = 'description';
 
     public function attributeLabels()
     {
         return [
             'guid' => Yii::t('app', 'GUID'),
-            'nickname' => Yii::t('app', 'Nickname'),
             'name' => Yii::t('app', 'Name'),
             'gravatar_type' => Yii::t('app', 'Gravatar Type'),
             'gravatar' => Yii::t('app', 'Gravatar'),
@@ -35,11 +38,35 @@ class Profile extends \rhosocial\user\Profile
         ];
     }
 
+    public function getIndividualSignRules()
+    {
+        return [];
+    }
+
+    public function getGenderRules()
+    {
+        return [];
+    }
+
+    public function getNameRules()
+    {
+        return [];
+    }
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return '{{%organization_profile}}';
+    }
+
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_UPDATE] = [
+            $this->contentAttribute, 'gravatar_type', 'gravatar', 'timezone', $this->descriptionAttribute,
+        ];
+        return $scenarios;
     }
 }

@@ -47,6 +47,7 @@ before_script:
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\rbac\\migrations --interactive=0
     - ./yii migrate --migrationPath=@rhosocial/user --migrationNamespaces=rhosocial\\user\\models\\log\\migrations --interactive=0
     - ./yii migrate --migrationPath=@rhosocial/organization --migrationNamespaces=rhosocial\\organization\\migrations --interactive=0
+    - ./yii migrate --migrationPath=@rhosocial/organization --migrationNamespaces=rhosocial\\organization\\rbac\\migrations --interactive=0
     - |
         if [ $TRAVIS_PHP_VERSION = 'nightly' ]; then
             travis_retry wget https://phar.phpunit.de/phpunit-5.7.phar

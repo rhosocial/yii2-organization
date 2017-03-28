@@ -22,10 +22,12 @@
     </logging>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
+            <file>UserOrganizationTrait.php</file>
             <file>BaseOrganization.php</file>
             <file>Organization.php</file>
             <file>Department.php</file>
             <file>Profile.php</file>
+            <file>Member.php</file>
             <directory>console</directory>
             <directory>queries</directory>
             <directory>rbac</directory>

@@ -29,7 +29,7 @@ class MemberQuery extends BaseBlameableQuery
 
     /**
      * Specify user.
-     * @param User $user
+     * @param User|string|integer $user
      * @return static
      */
     public function user($user)
@@ -39,7 +39,11 @@ class MemberQuery extends BaseBlameableQuery
         if (!is_string($model->memberAttribute) || empty($model->memberAttribute)) {
             return $this;
         }
-        if ($user instanceof BaseUserModel) {
+        $class = $model->memberUserClass;
+        if (is_int($user)) {
+            $user = $class::find()->id($user)->one();
+        }
+        if ($user instanceof $class) {
             $user = $user->getGUID();
         }
         return $this->andWhere([$model->memberAttribute => $user]);

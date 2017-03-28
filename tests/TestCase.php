@@ -71,6 +71,18 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
                     'vendorPath' => dirname(__DIR__) . '/vendor',
                     'timeZone' => 'Asia/Shanghai',
                     'components' => [
+                        'i18n' => [
+                            'translations' => [
+                                'user*' => [
+                                    'class' => 'yii\i18n\PhpMessageSource',
+                                    'basePath' => dirname(__DIR__) . '/vendor/rhosocial/yii2-user/messages',
+                                    'sourceLanguage' => 'en-US',
+                                    'fileMap' => [
+                                        'user' => 'user.php',
+                                    ],
+                                ],
+                            ],
+                        ],
                         'request' => [
                             'cookieValidationKey' => 'wefJDF8sfdsfSDefwqdxj9oq',
                             'scriptFile' => __DIR__ . '/index.php',
