@@ -29,6 +29,21 @@ class OrganizationTest extends TestCase
         $this->organization = new Organization();
     }
 
+    protected function tearDown()
+    {
+        if ($this->organization instanceof Organization)
+        {
+            try {
+                $this->organization->deregister();
+            } catch (\Exception $ex) {
+
+            }
+            $this->organization = null;
+        }
+        Organization::deleteAll();
+        parent::tearDown();
+    }
+
     /**
      * @group organization
      * @group register

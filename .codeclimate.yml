@@ -6,10 +6,10 @@ exclude_paths:
     
 ratings:
     paths:
+        - /**
+        - console/**
+        - queries/**
         - rbac/**
-        - forms/**
-        - security/**
-        - widgets/**
         
 engines:
     phpmd:

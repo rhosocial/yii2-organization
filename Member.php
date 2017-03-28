@@ -78,12 +78,19 @@ class Member extends BaseBlameableModel
     }
 
     /**
-     * 
-     * @param User $user
+     * Set member user.
+     * @param User|string|integer $user
      */
     public function setMemberUser($user)
     {
-        $this->user_guid = $user->getGUID();
+        $class = $this->memberUserClass;
+        if (is_int($user)) {
+            $user = $class::find()->id($user)->one();
+        }
+        if ($user instanceof $class) {
+            $user = $user->getGUID();
+        }
+        $this->user_guid = $user;
     }
 
     public function getMemberUser()
@@ -99,6 +106,16 @@ class Member extends BaseBlameableModel
     public function getOrganization()
     {
         return $this->getHost();
+    }
+
+    /**
+     * Set Organization.
+     * @param Organization $organization
+     * @return boolean
+     */
+    public function setOrganization($organization)
+    {
+        return $this->setHost($organization);
     }
 
     public function rules()

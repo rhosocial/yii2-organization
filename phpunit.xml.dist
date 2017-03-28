@@ -14,11 +14,12 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <file>User.php</file>
+            <file>BaseOrganization.php</file>
+            <file>Organization.php</file>
+            <file>Department.php</file>
             <file>Profile.php</file>
             <directory>console</directory>
-            <directory>models</directory>
-            <directory>security</directory>
+            <directory>queries</directory>
             <directory>rbac</directory>
         </whitelist>
     </filter>

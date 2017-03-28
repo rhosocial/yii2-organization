@@ -24,6 +24,7 @@ use rhosocial\organization\queries\OrganizationQuery;
  * An organization can exist either alone or as a sub-organization of an
  * organization but not department.
  *
+ * @method Member createMember(array $config) Create member who belongs to this.
  * @property integer $type Whether indicate this instance is an organization or a department.
  
  * @version 1.0
@@ -93,6 +94,9 @@ abstract class BaseOrganization extends User
         if (!is_string($this->queryClass)) {
             $this->queryClass = OrganizationQuery::class;
         }
+        if (class_exists($this->memberClass)) {
+            $this->addSubsidiaryClass('Member', ['class' => Member::class]);
+        }
         if ($this->skipInit) {
             return;
         }
@@ -160,6 +164,54 @@ abstract class BaseOrganization extends User
         $noInit = $this->getNoInitMember();
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
-        return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members');
+        return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members')->inverseOf('atOrganizations');
+    }
+
+    /**
+     * Add member to organization.
+     * @param Member|User $member
+     * @return Member
+     */
+    public function addMember($member)
+    {
+        if ($member instanceof Member) {
+            return $this->createMemberModel($member);
+        }
+        if ($member instanceof User) {
+            return $this->createMemberModelWithUser($member);
+        }
+        return false;
+    }
+
+    /**
+     * Create member model, and set organization with this.
+     * @param Member $member
+     * @return Member
+     */
+    protected function createMemberModel($member)
+    {
+        if (!$member->getIsNewRecord()) {
+            $member->setOrganization($this);
+            return $member;
+        }
+        return $this->createMemberModelWithUser($member->memberUser);
+    }
+
+    /**
+     * Create member model with user, and set organization with this.
+     * @param User|string|integer $user
+     * @return Member
+     */
+    protected function createMemberModelWithUser($user)
+    {
+        $config = [
+            'memberUser' => $user,
+            'organization' => $this,
+            'nickname' => '',
+        ];
+        if ($user->profile) {
+            $config['nickname'] = $user->profile->nickname;
+        }
+        return $this->createMember($config);
     }
 }
