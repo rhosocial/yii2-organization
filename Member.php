@@ -42,6 +42,7 @@ class Member extends BaseBlameableModel
 
     public $memberAttribute = 'user_guid';
     public $memberUserClass = User::class;
+    public $contentAttribute = 'nickname';
     private $noInitMemberUser;
     /**
      * @return User
@@ -104,7 +105,7 @@ class Member extends BaseBlameableModel
 
     public function getMemberUser()
     {
-        return $this->hasOne($this->memberUserClass, [$this->memberAttribute => $this->getNoInitMemberUser()->guidAttribute]);
+        return $this->hasOne($this->memberUserClass, [$this->getNoInitMemberUser()->guidAttribute => $this->memberAttribute]);
     }
 
     /**
@@ -127,6 +128,16 @@ class Member extends BaseBlameableModel
         return $this->setHost($organization);
     }
 
+    public function assignRole($role)
+    {
+        
+    }
+
+    public function removeRole($role)
+    {
+        
+    }
+
     public function rules()
     {
         return array_merge($this->getMemberUserRules(), $this->getMemberRoleRules(), parent::rules());
@@ -138,5 +149,24 @@ class Member extends BaseBlameableModel
     public static function tableName()
     {
         return '{{%organization_member}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'guid' => Yii::t('app', 'GUID'),
+            'id' => Yii::t('app', 'ID'),
+            'organization_guid' => Yii::t('app', 'Organization GUID'),
+            'user_guid' => Yii::t('app', 'User GUID'),
+            'nickname' => Yii::t('app', 'Nickname'),
+            'description' => Yii::t('app', 'Description'),
+            'ip' => Yii::t('app', 'IP'),
+            'ip_type' => Yii::t('app', 'IP Address Type'),
+            'created_at' => Yii::t('app', 'Create Time'),
+            'updated_at' => Yii::t('app', 'Update Time'),
+        ];
     }
 }

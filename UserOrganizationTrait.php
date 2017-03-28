@@ -32,6 +32,8 @@ trait UserOrganizationTrait
     public $memberClass = Member::class;
     private $noInitOrganization;
     private $noInitMember;
+    public $lastSetUpOrganization;
+    public $lastSetUpDepartment;
     /**
      * @return Organization
      */
@@ -61,7 +63,7 @@ trait UserOrganizationTrait
      */
     public function getOfMembers()
     {
-        return $this->hasMany($this->memberClass, [$this->guidAttribute => $this->getNoInitMember()->memberAttribute])->inverseOf('memberUser');
+        return $this->hasMany($this->memberClass, [$this->getNoInitMember()->memberAttribute => $this->guidAttribute])->inverseOf('memberUser');
     }
 
     /**
@@ -70,7 +72,7 @@ trait UserOrganizationTrait
      */
     public function getAtOrganizations()
     {
-        return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitOrganization()->guidAttribute])->via('ofMembers');
+        return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofMembers');
     }
 
     /**
@@ -104,6 +106,7 @@ trait UserOrganizationTrait
             Yii::error($ex->getMessage(), __METHOD__);
             return false;
         }
+        $this->lastSetUpOrganization = $models['organization'];
         return true;
     }
 

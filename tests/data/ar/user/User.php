@@ -23,6 +23,7 @@ use rhosocial\organization\tests\data\ar\org\Organization;
 class User extends \rhosocial\user\User
 {
     use UserOrganizationTrait;
+    public $profileClass = Profile::class;
 
     public function init()
     {

@@ -12,6 +12,8 @@
 
 namespace rhosocial\organization\tests;
 
+use Faker\Factory;
+use Faker\Generator;
 use yii\di\Container;
 use yii\helpers\ArrayHelper;
 use Yii;
@@ -25,6 +27,12 @@ use yii\db\Connection;
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
 
     public static $params;
+    
+    /**
+     *
+     * @var Generator 
+     */
+    protected $faker = null;
 
     /**
      * Returns a test configuration param from /data/config.php
@@ -47,6 +55,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
     protected function tearDown() {
         parent::tearDown();
         $this->destroyApplication();
+        $this->faker = null;
     }
 
     /**
@@ -106,6 +115,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
     protected function destroyApplication() {
         Yii::$app = null;
         Yii::$container = new Container();
+    }
+
+    public function __construct($name = null, array $data = array(), $dataName = '') {
+        parent::__construct($name, $data, $dataName);
+        $this->faker = Factory::create();
+        $this->faker->seed(time() % 1000000);
     }
 
     protected function setUp() {

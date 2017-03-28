@@ -17,6 +17,9 @@
         "rhosocial/yii2-base-models": "dev-master",
         "rhosocial/yii2-user": "dev-master"
     },
+    "require-dev": {
+        "yiisoft/yii2-faker": "*"
+    },
     "autoload": {
         "psr-4": {
             "rhosocial\\organization\\": ""

@@ -54,9 +54,6 @@ class m170328_063048_insertPermissionsRolesAndRules extends Migration
 
     public function down()
     {
-        $authManager = Yii::$app->authManager;
-        $db = $authManager->db;
-
         $this->removeRoles();
         $this->removeRules();
     }
@@ -74,7 +71,6 @@ class m170328_063048_insertPermissionsRolesAndRules extends Migration
     protected function addRoles()
     {
         $authManager = Yii::$app->authManager;
-        $db = $authManager->db;
 
         $manageMember = new ManageMember();
         $manageProfile = new ManageProfile();
@@ -117,7 +113,6 @@ class m170328_063048_insertPermissionsRolesAndRules extends Migration
     protected function removeRoles()
     {
         $authManager = Yii::$app->authManager;
-        $db = $authManager->db;
 
         $departmentAdmin = new DepartmentAdmin();
         $departmentCreator = new DepartmentCreator();

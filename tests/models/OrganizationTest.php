@@ -14,6 +14,7 @@ namespace rhosocial\organization\tests\models;
 
 use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
+use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 
@@ -37,7 +38,8 @@ class OrganizationTest extends TestCase
         parent::setUp();
         $this->organization = new Organization();
         $this->user = new User(['password' => '123456']);
-        $this->assertTrue($this->user->register());
+        $profile = $this->user->createProfile(['nickname' => 'vistart']);
+        $this->assertTrue($this->user->register([$profile]));
     }
 
     protected function tearDown()
@@ -88,13 +90,83 @@ class OrganizationTest extends TestCase
 
     /**
      * @group organization
+     * @group user
+     * @group member
      */
     public function testUser()
     {
         try {
             $result = $this->user->setUpOrganization('Organization');
+            if ($result !== true) {
+                throw new \Exception('Failed to set up.');
+            }
         } catch (\Exception $ex) {
             $this->fail(get_class($ex), ' : ' . $ex->getMessage());
         }
+        $this->assertTrue($result);
+        
+        $member = $this->user->getOfMembers()->one();
+        $this->assertInstanceOf(Member::class, $member);
+        $organization = $this->user->getAtOrganizations()->one();
+        $this->assertInstanceOf(Organization::class, $organization);
+    }
+
+    /**
+     * @group organization
+     * @group profile
+     * @group user
+     * @group member
+     * @depends testUser
+     */
+    public function testOrganizationProfile()
+    {
+        $orgName = $this->faker->lastName;
+        $this->assertTrue($this->user->setUpOrganization($orgName));
+        $organization = $this->user->getAtOrganizations()->one();
+        /* @var $organization Organization */
+        $this->assertInstanceOf(Organization::class, $organization);
+        $profile = $organization->profile;
+        /* @var $profile Profile */
+        $this->assertEquals($orgName, $profile->name);
+    }
+
+    /**
+     * @group organization
+     * @group profile
+     * @group user
+     * @group member
+     * @depends testUser
+     */
+    public function testOrganizationMember()
+    {
+        $orgName = $this->faker->lastName;
+        $this->assertTrue($this->user->setUpOrganization($orgName));
+        $member = $this->user->getOfMembers()->one();
+        /* @var $member Member */
+        $this->assertInstanceOf(Member::class, $member);
+        
+        $organization = $this->user->getAtOrganizations()->one();
+        /* @var $organization Organization */
+        $this->assertInstanceOf(Organization::class, $organization);
+        
+        $this->assertEquals($organization->getGUID(), $member->{$member->createdByAttribute});
+        $this->assertEquals($this->user->getGUID(), $member->{$member->memberAttribute});
+    }
+
+    /**
+     * @group organization
+     * @group profile
+     * @group user
+     * @group member
+     * @depends testUser
+     */
+    public function testFindOrganization()
+    {
+        $orgName = $this->faker->lastName;
+        $this->assertTrue($this->user->setUpOrganization($orgName));
+        $organization = $this->user->getAtOrganizations()->one();
+        /* @var $organization Organization */
+        $foundModel = $this->user->getAtOrganizations()->andWhere([$organization->guidAttribute => $organization->getGUID()])->one();
+        $this->assertEquals($organization->getGUID(), $foundModel->getGUID());
     }
 }
