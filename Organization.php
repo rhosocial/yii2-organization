@@ -12,57 +12,239 @@
 
 namespace rhosocial\organization;
 
+use rhosocial\base\models\traits\SelfBlameableTrait;
+use rhosocial\base\models\queries\BaseUserQuery;
+use rhosocial\user\User;
+use rhosocial\organization\queries\MemberQuery;
+use rhosocial\organization\queries\DepartmentQuery;
 use rhosocial\organization\queries\OrganizationQuery;
-use yii\behaviors\AttributeBehavior;
+use Yii;
 
 /**
+ * Base Organization.
+ * This class is an abstract class that can not be instantiated directly.
+ * You can use [[Organization]] or [[Department]] instead.
+ *
+ * @method Member createMember(array $config) Create member who is subordinate to this.
+ * @property integer $type Whether indicate this instance is an organization or a department.
+ 
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class Organization extends BaseOrganization
+class Organization extends User
 {
-    public $parentAttribute = 'parent';
+    use SelfBlameableTrait;
+
+    const TYPE_ORGANIZATION = 1;
+    const TYPE_DEPARTMENT = 2;
+
+    /**
+     * @var boolean Organization does not need password and corresponding features.
+     */
+    public $passwordHashAttribute = false;
+
+    /**
+     * @var boolean Organization does not need password and corresponding features.
+     */
+    public $passwordResetTokenAttribute = false;
+
+    /**
+     * @var boolean Organization does not need password and corresponding features.
+     */
+    public $passwordHistoryClass = false;
+
+    /**
+     * @var boolean Organization does not need source.
+     */
+    public $sourceAttribute = false;
+
+    /**
+     * @var boolean Organization does not need auth key.
+     */
+    public $authKeyAttribute = false;
+
+    /**
+     * @var boolean Organization does not need access token.
+     */
+    public $accessTokenAttribute = false;
+
+    /**
+     *
+     * @var boolean Organization does not need login log.
+     */
+    public $loginLogClass = false;
+
+    public $profileClass = Profile::class;
+
+    public $memberClass = Member::class;
+    private $noInitMember;
+    /**
+     * @return Member
+     */
+    protected function getNoInitMember()
+    {
+        if (!$this->noInitMember) {
+            $class = $this->memberClass;
+            $this->noInitMember = $class::buildNoInitMember();
+        }
+        return $this->noInitMember;
+    }
 
     public function init()
     {
-        if (!is_string($this->queryClass)) {
-            $this->queryClass = OrganizationQuery::class;
+        $this->parentAttribute = 'parent_guid';
+        if (class_exists($this->memberClass)) {
+            $this->addSubsidiaryClass('Member', ['class' => Member::class]);
+        }
+        if ($this->skipInit) {
+            return;
         }
         parent::init();
     }
 
-    protected function typeAttributeBehavior()
-    {
-        return [
-            [
-                'class' => AttributeBehavior::class,
-                'attributes' => [
-                    self::EVENT_BEFORE_INSERT => 'type',
-                    self::EVENT_BEFORE_UPDATE => 'type',
-                ],
-                'value' => self::TYPE_ORGANIZATION,
-            ]
-        ];
-    }
-
     /**
-     * The default value of `type` attribute is `ORGANIZATION`(1).
-     * @return array Rules associated with `type` attribute.
+     * @inheritdoc
      */
-    protected function getTypeRules()
+    public function attributeLabels()
     {
         return [
-            ['type', 'default', 'value' => self::TYPE_ORGANIZATION],
-            ['type', 'required'],
-            ['type', 'in', 'range' => [self::TYPE_ORGANIZATION]],
+            'guid' => Yii::t('app', 'GUID'),
+            'id' => Yii::t('app', 'ID'),
+            'ip' => Yii::t('app', 'IP'),
+            'ip_type' => Yii::t('app', 'IP Address Type'),
+            'parent' => Yii::t('app', 'Parent'),
+            'created_at' => Yii::t('app', 'Create Time'),
+            'updated_at' => Yii::t('app', 'Update Time'),
+            'status' => Yii::t('app', 'Status'),
+            'type' => Yii::t('app', 'Type'),
         ];
     }
 
     /**
      * @inheritdoc
      */
-    public static function find()
+    public static function tableName()
     {
-        return parent::find()->andWhere(['type' => self::TYPE_ORGANIZATION]);
+        return '{{%organization}}';
+    }
+
+    protected function getTypeRules()
+    {
+        return [
+            ['type', 'default', 'value' => static::TYPE_ORGANIZATION],
+            ['type', 'required'],
+            ['type', 'in', 'range' => [static::TYPE_ORGANIZATION, static::TYPE_DEPARTMENT]],
+        ];
+    }
+
+    public function rules()
+    {
+        return array_merge(parent::rules(), $this->getTypeRules(), $this->getSelfBlameableRules());
+    }
+
+    /**
+     * Get Member Query.
+     * @return MemberQuery
+     */
+    public function getMembers()
+    {
+        return $this->hasMany($this->memberClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->inverseOf('organization');
+    }
+
+    /**
+     * Get organization member users' query.
+     * @return BaseUserQuery
+     */
+    public function getMemberUsers()
+    {
+        $noInit = $this->getNoInitMember();
+        $class = $noInit->memberUserClass;
+        $noInitUser = $class::buildNoInitModel();
+        return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members')->inverseOf('atOrganizations');
+    }
+
+    /**
+     * Get member with specified user.
+     * @param User|string|integer $user
+     * @return Member Null if `user` is not in this organization.
+     */
+    public function getMember($user)
+    {
+        if ($user instanceof $this->memberClass) {
+            return $user;
+        }
+        return $this->getMembers()->user($user)->one();
+    }
+
+    /**
+     * Add member to organization.
+     * @param Member|User|string|integer $member
+     * @see createMemberModel
+     * @see createMemberModelWithUser
+     * @return boolean
+     */
+    public function addMember(&$member)
+    {
+        if ($this->getIsNewRecord()) {
+            return false;
+        }
+        $model = null;
+        if ($member instanceof Member) {
+            $model = $this->createMemberModel($member);
+        }
+        if (($member instanceof User) || is_string($member) || is_int($member)) {
+            $model = $this->createMemberModelWithUser($member);
+        }
+        $member = $model;
+        return ($member instanceof Member) ? $member->save() : false;
+    }
+
+    /**
+     * Create member model, and set organization with this.
+     * @param Member $member If this parameter is not new record, it's organization
+     * will be set with this, and return it. Otherwise, it will extract `User`
+     * model and create new `Member` model.
+     * @see createMemberModelWithUser
+     * @return Member
+     */
+    public function createMemberModel($member)
+    {
+        if (!$member->getIsNewRecord()) {
+            $member->setOrganization($this);
+            return $member;
+        }
+        return $this->createMemberModelWithUser($member->memberUser);
+    }
+
+    /**
+     * Create member model with user, and set organization with this.
+     * @param User|string|integer $user
+     * @return Member
+     */
+    public function createMemberModelWithUser($user)
+    {
+        $config = [
+            'memberUser' => $user,
+            'organization' => $this,
+            'nickname' => '',
+        ];
+        if ($user->profile) {
+            $config['nickname'] = $user->profile->nickname;
+        }
+        return $this->createMember($config);
+    }
+
+    /**
+     * Remove member.
+     * @param Member|User $member
+     * @return boolean
+     */
+    public function removeMember(&$member)
+    {
+        if ($this->getIsNewRecord()) {
+            return false;
+        }
+        $member = $this->getMember($member);
+        return $member && $member->delete() > 0;
     }
 }

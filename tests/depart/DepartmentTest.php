@@ -12,7 +12,6 @@
 
 namespace rhosocial\organization\tests\depart;
 
-use rhosocial\organization\tests\data\ar\depart\Department;
 use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\profile\Profile;
@@ -34,10 +33,6 @@ class DepartmentTest extends TestCase
      * @var Organization 
      */
     protected $organization;
-    /**
-     * @var Department 
-     */
-    protected $department;
 
     protected function setUp()
     {
@@ -85,6 +80,6 @@ class DepartmentTest extends TestCase
     {
         $this->orgName = $this->faker->lastName;
         $this->assertTrue($this->user->setUpOrganization($this->orgName));
-        $this->assertTrue($this->user->setUpDepartment($this->user->lastSetUpOrganization, $this->orgName . '-department'));
+        $this->assertTrue($this->user->setUpDepartment($this->orgName . '-department', $this->user->lastSetUpOrganization));
     }
 }

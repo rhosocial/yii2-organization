@@ -10,15 +10,16 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organization\tests\data\ar\queries;
-
-use rhosocial\organization\tests\data\ar\depart\Department;
+namespace rhosocial\organization\tests\data\ar\user;
 
 /**
  * @version 1.0
- * @author vistart <i@vistart.me>
+ * @author vistart <i@vistart.name>
  */
-class DepartmentQuery extends \rhosocial\organization\queries\DepartmentQuery
+class CreateInvalidOrganizationUser extends User
 {
-    public $modelClass = Department::class;
+    public function createOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    {
+        return [];
+    }
 }

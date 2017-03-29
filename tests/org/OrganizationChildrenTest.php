@@ -10,7 +10,7 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organization\tests\data\org\models;
+namespace rhosocial\organization\tests\org;
 
 use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\profile\Profile;
@@ -18,14 +18,10 @@ use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 
 /**
- * The test case simulates the registration of two organizations.
- * Most test cases are premised on the fact that the two organizations have
- * successfully registered, and both organizations have their own profiles.
- *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class TwoOrganizationTest extends TestCase
+class OrganizationChildrenTest extends TestCase
 {
     /**
      * @var User 
@@ -63,10 +59,6 @@ class TwoOrganizationTest extends TestCase
         if ($this->orgName1 == $this->orgName2) {
             $this->orgName2 .= '1';
         }
-        $this->assertTrue($this->user->setUpOrganization($this->orgName1));
-        $this->organization1 = $this->user->lastSetUpOrganization;
-        $this->assertTrue($this->user->setUpOrganization($this->orgName2));
-        $this->organization2 = $this->user->lastSetUpOrganization;
     }
 
     protected function tearDown()
@@ -91,7 +83,7 @@ class TwoOrganizationTest extends TestCase
             } catch (\Exception $ex) {
 
             }
-            $this->organization2 = null;
+            $this->organization1 = null;
         }
         Organization::deleteAll();
         if ($this->user instanceof User)
@@ -110,54 +102,55 @@ class TwoOrganizationTest extends TestCase
     }
 
     /**
-     * Registration must be successful.
-     * At the point, there should be two registered organizations.
-     * Each organization has its own profile.
-     *
      * @group organization
-     * @group profile
-     * @group user
-     * @group member
+     * @group parent
+     * @group child
      */
     public function testSetUp()
     {
-        $organizations = $this->user->atOrganizations;
-        $this->assertCount(2, $organizations);
-        foreach ($organizations as $org)
+        $this->assertTrue($this->user->setUpOrganization($this->orgName1));
+        $this->organization1 = $this->user->lastSetUpOrganization;
+        $this->assertInstanceOf(Organization::class, $this->organization1);
+        $this->assertEquals($this->orgName1, $this->organization1->profile->name);
+        $this->assertTrue($this->user->setUpOrganization($this->orgName2, $this->user->lastSetUpOrganization));
+        $this->organization2 = $this->user->lastSetUpOrganization;
+        $this->assertInstanceOf(Organization::class, $this->organization2);
+        $this->assertEquals($this->orgName2, $this->organization2->profile->name);
+    }
+
+    /**
+     * @group organization
+     * @group parent
+     * @group child
+     */
+    public function testChildren()
+    {
+        $this->assertTrue($this->user->setUpOrganization($this->orgName1));
+        $this->organization1 = $this->user->lastSetUpOrganization;
+        $this->assertTrue($this->user->setUpOrganization($this->orgName2, $this->user->lastSetUpOrganization));
+        $this->organization2 = $this->user->lastSetUpOrganization;
+        $children = $this->organization1->children;
+        $this->assertCount(1, $children);
+        foreach ($children as $child)
         {
-            $this->assertInstanceOf(Organization::class, $org);
-            $this->assertInstanceOf(Profile::class, $org->profile);
+            $this->assertInstanceOf(Organization::class, $child);
+            $this->assertEquals($this->orgName2, $child->profile->name);
         }
     }
 
     /**
      * @group organization
-     * @group profile
-     * @group user
-     * @group member
-     * @depends testSetUp
+     * @group parent
+     * @group child
      */
-    public function testFind()
+    public function testParent()
     {
-        $results = $this->user->getAtOrganizations()->andWhere([$this->organization1->guidAttribute => $this->organization1->getGUID()])->all();
-        $this->assertCount(1, $results);
-        foreach ($results as $org)
-        {
-            $this->assertInstanceOf(Organization::class, $org);
-            $this->assertInstanceOf(Profile::class, $org->profile);
-            $this->assertEquals($this->orgName1, $org->profile->name);
-        }
-
-        $results = $this->user->getAtOrganizations()->andWhere([$this->organization2->guidAttribute => $this->organization2->getGUID()])->all();
-        $this->assertCount(1, $results);
-        foreach ($results as $org)
-        {
-            $this->assertInstanceOf(Organization::class, $org);
-            $this->assertInstanceOf(Profile::class, $org->profile);
-            $this->assertEquals($this->orgName2, $org->profile->name);
-        }
-
-        $results = $this->user->getAtOrganizations()->andWhere([$this->organization2->guidAttribute => $this->faker->lastName])->all();
-        $this->assertCount(0, $results);
+        $this->assertTrue($this->user->setUpOrganization($this->orgName1));
+        $this->organization1 = $this->user->lastSetUpOrganization;
+        $this->assertTrue($this->user->setUpOrganization($this->orgName2, $this->user->lastSetUpOrganization));
+        $this->organization2 = $this->user->lastSetUpOrganization;
+        $parent = $this->organization2->parent;
+        $this->assertInstanceOf(Organization::class, $parent);
+        $this->assertEquals($this->orgName1, $parent->profile->name);
     }
 }

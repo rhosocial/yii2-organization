@@ -169,4 +169,22 @@ class OrganizationTest extends TestCase
         $foundModel = $this->user->getAtOrganizations()->andWhere([$organization->guidAttribute => $organization->getGUID()])->one();
         $this->assertEquals($organization->getGUID(), $foundModel->getGUID());
     }
+
+    /**
+     * @group organization
+     * @group user
+     */
+    public function testCreateInvalidOrganization()
+    {
+        $orgName = $this->faker->lastName;
+        $user = new \rhosocial\organization\tests\data\ar\user\CreateInvalidOrganizationUser(['password' => '123456']);
+        $this->assertTrue($user->register());
+        $this->assertEmpty($user->createOrganization($orgName));
+        try {
+            $user->setUpOrganization($orgName);
+            $this->fail();
+        } catch (\yii\base\InvalidConfigException $ex) {
+            $this->assertEquals('Invalid Organization Model.', $ex->getMessage());
+        }
+    }
 }

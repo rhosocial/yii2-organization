@@ -13,7 +13,6 @@
 namespace rhosocial\organization;
 
 use rhosocial\organization\queries\MemberQuery;
-use rhosocial\organization\queries\DepartmentQuery;
 use rhosocial\organization\queries\OrganizationQuery;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -30,12 +29,10 @@ use yii\base\InvalidParamException;
 trait UserOrganizationTrait
 {
     public $organizationClass = Organization::class;
-    public $departmentClass = Department::class;
     public $memberClass = Member::class;
     private $noInitOrganization;
     private $noInitMember;
     public $lastSetUpOrganization;
-    public $lastSetUpDepartment;
     /**
      * @return Organization
      */
@@ -78,26 +75,17 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
-     * @return DepartmentQuery
-     */
-    public function getAtDepartments()
-    {
-        return $this->hasMany($this->departmentClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofMembers');
-    }
-
-    /**
      * Set up organization.
      * @param string $name
+     * @param Organization $parent
      * @param string $nickname
      * @param integer $gravatar_type
      * @param string $gravatar
      * @param string $timezone
      * @param string $description
-     * @param BaseOrganization $parent
      * @return boolean Whether indicate the setting-up succeeded or not.
      */
-    public function setUpOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '', $parent = null)
+    public function setUpOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -112,8 +100,8 @@ trait UserOrganizationTrait
             if ($result !== true) {
                 throw new \Exception('Failed to set up.');
             }
-            if ($parent instanceof BaseOrganization && !$parent->getIsNewRecord()) {
-                $setParentResult = $models[0]->setParent($parent);
+            if ($parent instanceof Organization && !$parent->getIsNewRecord()) {
+                $setParentResult = ($models[0]->setParent($parent) && $models[0]->save());
             }
             if (isset($setParentResult) && $setParentResult === false) {
                 throw new \Exception('Failed to set parent.');
@@ -122,16 +110,16 @@ trait UserOrganizationTrait
         } catch (\Exception $ex) {
             $transaction->rollBack();
             Yii::error($ex->getMessage(), __METHOD__);
-            return false;
+            throw $ex;
         }
         $this->lastSetUpOrganization = $models[0];
         return true;
     }
 
     /**
-     * 
-     * @param BaseOrganization $parent
+     * Set up organization.
      * @param string $name
+     * @param Organization $parent
      * @param string $nickname
      * @param integer $gravatar_type
      * @param string $gravatar
@@ -139,13 +127,16 @@ trait UserOrganizationTrait
      * @param string $description
      * @return boolean Whether indicate the setting-up succeeded or not.
      */
-    public function setUpDepartment($parent, $name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    public function setUpDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
+        if ($parent == null) {
+            throw new InvalidConfigException('Invalid Parent Parameter.');
+        }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $models = $this->createDepartment($name, $nickname, $gravatar_type, $gravatar, $timezone, $description);
-            if (!array_key_exists(0, $models) || !($models[0] instanceof Department)) {
-                throw new InvalidConfigException('Invalid Department Model.');
+            $models = $this->createDepartment($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            if (!array_key_exists(0, $models) || !($models[0] instanceof Organization)) {
+                throw new InvalidConfigException('Invalid Organization Model.');
             }
             $result = $models[0]->register($models['associatedModels']);
             if ($result instanceof \Exception) {
@@ -154,10 +145,8 @@ trait UserOrganizationTrait
             if ($result !== true) {
                 throw new \Exception('Failed to set up.');
             }
-            if ($parent instanceof BaseOrganization && !$parent->getIsNewRecord()) {
-                $setParentResult = $models[0]->setParent($parent);
-            } else {
-                throw new InvalidParamException('Invalid Parent Parameter.');
+            if ($parent instanceof Organization && !$parent->getIsNewRecord()) {
+                $setParentResult = ($models[0]->setParent($parent) && $models[0]->save());
             }
             if (isset($setParentResult) && $setParentResult === false) {
                 throw new \Exception('Failed to set parent.');
@@ -166,9 +155,9 @@ trait UserOrganizationTrait
         } catch (\Exception $ex) {
             $transaction->rollBack();
             Yii::error($ex->getMessage(), __METHOD__);
-            return false;
+            throw $ex;
         }
-        $this->lastSetUpDepartment = $models[0];
+        $this->lastSetUpOrganization = $models[0];
         return true;
     }
 
@@ -191,15 +180,15 @@ trait UserOrganizationTrait
      * Create department.
      * @param string $name
      * @param string $nickname
-     * @param integer $gravatar_type
+     * @param string $gravatar_type
      * @param string $gravatar
      * @param string $timezone
      * @param string $description
-     * @return Department
+     * @return Organization
      */
     public function createDepartment($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
-        return $this->createBaseOrganization($name, $nickname, $gravatar_type, $gravatar, $timezone, $description, BaseOrganization::TYPE_DEPARTMENT);
+        return $this->createBaseOrganization($name, $nickname, $gravatar_type, $gravatar, $timezone, $description, Organization::TYPE_DEPARTMENT);
     }
 
     /**
@@ -214,14 +203,11 @@ trait UserOrganizationTrait
      * @return array This array contains two elements, the first is `Organization` or `Department` depends on `$type`.
      * The other is `associatedModels` array, contains two elements `Profile`(profile) and `Creator`(creator).
      */
-    protected function createBaseOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '', $type = BaseOrganization::TYPE_ORGANIZATION)
+    protected function createBaseOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '', $type = Organization::TYPE_ORGANIZATION)
     {
         $class = $this->organizationClass;
-        if ($type == BaseOrganization::TYPE_DEPARTMENT) {
-            $class = $this->departmentClass;
-        }
-        $organization = new $class();
-        /* @var $organization BaseOrganization */
+        $organization = new $class(['type' => $type]);
+        /* @var $organization Organization */
         $profileConfig = [
             'name' => $name,
             'nickname' => $nickname,
