@@ -109,6 +109,7 @@ class OrganizationTest extends TestCase
         $this->assertInstanceOf(Member::class, $member);
         $organization = $this->user->getAtOrganizations()->one();
         $this->assertInstanceOf(Organization::class, $organization);
+        $this->assertArrayHasKey('guid', $organization->attributeLabels());
     }
 
     /**
@@ -128,6 +129,7 @@ class OrganizationTest extends TestCase
         $profile = $organization->profile;
         /* @var $profile Profile */
         $this->assertEquals($orgName, $profile->name);
+        $this->assertArrayHasKey('guid', $profile->attributeLabels());
     }
 
     /**

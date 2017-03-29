@@ -220,4 +220,40 @@ trait UserOrganizationTrait
         $member = $organization->createMemberModelWithUser($this);
         return [0 => $organization, 'associatedModels' => ['profile' => $profile, 'creator'=> $member]];
     }
+
+    /**
+     * Revoke organization.
+     * @param static|string|integer $organization
+     * @param boolean $removeIfHasChildren
+     */
+    public function revokeOrganization($organization, $removeIfHasChildren = false)
+    {
+        
+    }
+
+    /**
+     * 
+     * @param Organization $organization
+     */
+    public function isOrganizationCreator($organization)
+    {
+        $member = $organization->getMember($this);
+        if (!$member) {
+            return false;
+        }
+        return $member->isCreator();
+    }
+
+    /**
+     * 
+     * @param Organization $organization
+     */
+    public function isOrganizationAdministrator($organization)
+    {
+        $member = $organization->getMember($this);
+        if (!$member) {
+            return false;
+        }
+        return $member->isAdministrator();
+    }
 }

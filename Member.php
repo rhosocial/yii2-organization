@@ -13,10 +13,16 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\models\BaseBlameableModel;
+use rhosocial\user\rbac\Role;
 use rhosocial\user\User;
+use rhosocial\organization\rbac\roles\DepartmentAdmin;
+use rhosocial\organization\rbac\roles\DepartmentCreator;
+use rhosocial\organization\rbac\roles\OrganizationAdmin;
+use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\OrganizationQuery;
 use rhosocial\organization\queries\MemberQuery;
 use Yii;
+use yii\base\InvalidValueException;
 
 /**
  * Organization member.
@@ -128,14 +134,59 @@ class Member extends BaseBlameableModel
         return $this->setHost($organization);
     }
 
+    /**
+     * Assign role.
+     * @param Role $role
+     */
     public function assignRole($role)
     {
-        
+        $user = $this->memberUser;
+        if (!$user) {
+            throw new InvalidValueException('Invalid User');
+        }
+        $assignment = Yii::$app->authManager->assign($role, $user);
+        if (!$assignment) {
+            return false;
+        }
+        return $this->setRole($role);
     }
 
-    public function removeRole($role)
+    protected function setRole($role = null)
     {
-        
+        if (empty($role)) {
+            $role = '';
+        }
+        if ($role instanceof Role) {
+            $role = $role->name;
+        }
+        $this->role = $role;
+        return $this->save();
+    }
+
+    /**
+     * Revoke role.
+     * @param Role $role
+     */
+    public function revokeRole($role)
+    {
+        $user = $this->memberUser;
+        if (!$user) {
+            throw new InvalidValueException('Invalid User');
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $result = Yii::$app->authManager->revoke($role, $user);
+            if (!$result) {
+                return false;
+            }
+            $this->setRole($role);
+            $this->save();
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            return false;
+        }
+        return true;
     }
 
     public function rules()
@@ -162,11 +213,39 @@ class Member extends BaseBlameableModel
             'organization_guid' => Yii::t('app', 'Organization GUID'),
             'user_guid' => Yii::t('app', 'User GUID'),
             'nickname' => Yii::t('app', 'Nickname'),
+            'role' => Yii::t('app', 'Role'),
             'description' => Yii::t('app', 'Description'),
             'ip' => Yii::t('app', 'IP'),
             'ip_type' => Yii::t('app', 'IP Address Type'),
             'created_at' => Yii::t('app', 'Create Time'),
             'updated_at' => Yii::t('app', 'Update Time'),
         ];
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function isAdministrator()
+    {
+        return ($this->role == (new DepartmentAdmin)->name) || ($this->role == (new OrganizationAdmin)->name);
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function isCreator()
+    {
+        return ($this->role == (new DepartmentCreator)->name) || ($this->role == (new OrganizationCreator)->name);
+    }
+
+    /**
+     * We think it a `member` if `role` property is empty.
+     * @return boolean
+     */
+    public function isMember()
+    {
+        return empty($this->role);
     }
 }

@@ -247,4 +247,32 @@ class Organization extends User
         $member = $this->getMember($member);
         return $member && $member->delete() > 0;
     }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function isOrganization()
+    {
+        return $this->type == static::TYPE_ORGANIZATION;
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    public function isDepartment()
+    {
+        return $this->type == static::TYPE_DEPARTMENT;
+    }
+
+    /**
+     * Check whether the current organization has a member.
+     * @param User $user
+     * @return boolean
+     */
+    public function hasMember($user)
+    {
+        return !is_null($this->getMember($user));
+    }
 }
