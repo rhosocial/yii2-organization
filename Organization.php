@@ -85,7 +85,7 @@ class Organization extends User
     {
         if (!$this->noInitMember) {
             $class = $this->memberClass;
-            $this->noInitMember = $class::buildNoInitMember();
+            $this->noInitMember = $class::buildNoInitModel();
         }
         return $this->noInitMember;
     }
@@ -94,7 +94,7 @@ class Organization extends User
     {
         $this->parentAttribute = 'parent_guid';
         if (class_exists($this->memberClass)) {
-            $this->addSubsidiaryClass('Member', ['class' => Member::class]);
+            $this->addSubsidiaryClass('Member', ['class' => $this->memberClass]);
         }
         if ($this->skipInit) {
             return;
@@ -148,7 +148,7 @@ class Organization extends User
      */
     public function getMembers()
     {
-        return $this->hasMany($this->memberClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->inverseOf('organization');
+        return $this->hasMany($this->memberClass, [$this->getNoInitMember()->createdByAttribute => $this->guidAttribute])->inverseOf('organization');
     }
 
     /**
@@ -160,7 +160,7 @@ class Organization extends User
         $noInit = $this->getNoInitMember();
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
-        return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members')->inverseOf('atOrganizations');
+        return $this->hasMany($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('members')->inverseOf('atOrganizations');
     }
 
     /**
@@ -170,9 +170,6 @@ class Organization extends User
      */
     public function getMember($user)
     {
-        if ($user instanceof $this->memberClass) {
-            return $user;
-        }
         return $this->getMembers()->user($user)->one();
     }
 
@@ -243,6 +240,9 @@ class Organization extends User
     {
         if ($this->getIsNewRecord()) {
             return false;
+        }
+        if ($member instanceof $this->memberClass) {
+            $member = $member->{$member->memberAttribute};
         }
         $member = $this->getMember($member);
         return $member && $member->delete() > 0;

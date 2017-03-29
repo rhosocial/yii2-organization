@@ -82,4 +82,20 @@ class DepartmentTest extends TestCase
         $this->assertTrue($this->user->setUpOrganization($this->orgName));
         $this->assertTrue($this->user->setUpDepartment($this->orgName . '-department', $this->user->lastSetUpOrganization));
     }
+
+    /**
+     * @group department
+     * @group profile
+     */
+    public function testInvalidParent()
+    {
+        $this->orgName = $this->faker->lastName;
+        $this->assertTrue($this->user->setUpOrganization($this->orgName));
+        try {
+            $this->assertTrue($this->user->setUpDepartment($this->orgName . 'department'));
+            $this->fail();
+        } catch (\yii\base\InvalidConfigException $ex) {
+            $this->assertEquals('Invalid Parent Parameter.', $ex->getMessage());
+        }
+    }
 }
