@@ -13,9 +13,11 @@
 namespace rhosocial\organization;
 
 use rhosocial\organization\queries\MemberQuery;
+use rhosocial\organization\queries\DepartmentQuery;
 use rhosocial\organization\queries\OrganizationQuery;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\base\InvalidParamException;
 
 /**
  * @property string $guidAttribute GUID Attribute.
@@ -76,6 +78,15 @@ trait UserOrganizationTrait
     }
 
     /**
+     * 
+     * @return DepartmentQuery
+     */
+    public function getAtDepartments()
+    {
+        return $this->hasMany($this->departmentClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofMembers');
+    }
+
+    /**
      * Set up organization.
      * @param string $name
      * @param string $nickname
@@ -102,9 +113,9 @@ trait UserOrganizationTrait
                 throw new \Exception('Failed to set up.');
             }
             if ($parent instanceof BaseOrganization && !$parent->getIsNewRecord()) {
-                $result = $models[0]->setParent($parent);
+                $setParentResult = $models[0]->setParent($parent);
             }
-            if ($result === false) {
+            if (isset($setParentResult) && $setParentResult === false) {
                 throw new \Exception('Failed to set parent.');
             }
             $transaction->commit();
@@ -144,9 +155,11 @@ trait UserOrganizationTrait
                 throw new \Exception('Failed to set up.');
             }
             if ($parent instanceof BaseOrganization && !$parent->getIsNewRecord()) {
-                $result = $models[0]->setParent($parent);
+                $setParentResult = $models[0]->setParent($parent);
+            } else {
+                throw new InvalidParamException('Invalid Parent Parameter.');
             }
-            if ($result === false) {
+            if (isset($setParentResult) && $setParentResult === false) {
                 throw new \Exception('Failed to set parent.');
             }
             $transaction->commit();

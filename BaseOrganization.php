@@ -157,15 +157,27 @@ abstract class BaseOrganization extends User
     }
 
     /**
-     * Get member users' query.
+     * Get organization member users' query.
      * @return BaseUserQuery
      */
-    public function getMemberUsers()
+    public function getOrganizationMemberUsers()
     {
         $noInit = $this->getNoInitMember();
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
         return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members')->inverseOf('atOrganizations');
+    }
+ 
+    /**
+     * Get department member users' query.
+     * @return BaseUserQuery
+     */
+    public function getDepartmentMemberUsers()
+    {
+        $noInit = $this->getNoInitMember();
+        $class = $noInit->memberUserClass;
+        $noInitUser = $class::buildNoInitModel();
+        return $this->hasMany($class, [$this->guidAttribute => $noInitUser->guidAttribute])->via('members')->inverseOf('atDepartments');
     }
 
     /**

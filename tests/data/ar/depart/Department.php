@@ -10,24 +10,24 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organization\tests\data\ar\org;
+namespace rhosocial\organization\tests\data\ar\depart;
 
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\member\Member;
-use rhosocial\organization\tests\data\ar\queries\OrganizationQuery;
+use rhosocial\organization\tests\data\ar\queries\DepartmentQuery;
 
 /**
  * @version 1.0
- * @author vistart <i@vistart.name>
+ * @author vistart <i@vistart.me>
  */
-class Organization extends \rhosocial\organization\Organization
+class Department extends \rhosocial\organization\Department
 {
     public $profileClass = Profile::class;
     public $memberClass = Member::class;
     public function init()
     {
         if (!is_string($this->queryClass)) {
-            $this->queryClass = OrganizationQuery::class;
+            $this->queryClass = DepartmentQuery::class;
         }
         parent::init();
     }

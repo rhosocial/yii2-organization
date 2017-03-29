@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization;
 
+use rhosocial\organization\queries\DepartmentQuery;
 use yii\behaviors\AttributeBehavior;
 
 /**
@@ -32,6 +33,14 @@ use yii\behaviors\AttributeBehavior;
 class Department extends BaseOrganization
 {
     public $parentAttribute = 'parent';
+
+    public function init()
+    {
+        if (!is_string($this->queryClass)) {
+            $this->queryClass = DepartmentQuery::class;
+        }
+        parent::init();
+    }
 
     protected function typeAttributeBehavior()
     {

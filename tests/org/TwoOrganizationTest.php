@@ -10,7 +10,7 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organization\tests\data\models;
+namespace rhosocial\organization\tests\data\org\models;
 
 use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
@@ -19,6 +19,10 @@ use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 
 /**
+ * The test case simulates the registration of two organizations.
+ * Most test cases are premised on the fact that the two organizations have
+ * successfully registered, and both organizations have their own profiles.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -28,6 +32,7 @@ class TwoOrganizationTest extends TestCase
      * @var User 
      */
     protected $user;
+
     /**
      * @var Organization; 
      */
@@ -106,6 +111,10 @@ class TwoOrganizationTest extends TestCase
     }
 
     /**
+     * Registration must be successful.
+     * At the point, there should be two registered organizations.
+     * Each organization has its own profile.
+     *
      * @group organization
      * @group profile
      * @group user

@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization;
 
+use rhosocial\organization\queries\OrganizationQuery;
 use yii\behaviors\AttributeBehavior;
 
 /**
@@ -21,6 +22,14 @@ use yii\behaviors\AttributeBehavior;
 class Organization extends BaseOrganization
 {
     public $parentAttribute = 'parent';
+
+    public function init()
+    {
+        if (!is_string($this->queryClass)) {
+            $this->queryClass = OrganizationQuery::class;
+        }
+        parent::init();
+    }
 
     protected function typeAttributeBehavior()
     {

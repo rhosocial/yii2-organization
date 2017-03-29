@@ -10,7 +10,7 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organization\tests\models;
+namespace rhosocial\organization\tests\org\models;
 
 use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
