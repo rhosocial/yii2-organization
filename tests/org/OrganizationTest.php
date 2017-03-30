@@ -110,6 +110,8 @@ class OrganizationTest extends TestCase
         $organization = $this->user->getAtOrganizations()->one();
         $this->assertInstanceOf(Organization::class, $organization);
         $this->assertArrayHasKey('guid', $organization->attributeLabels());
+        $this->assertTrue($organization->isOrganization());
+        $this->assertFalse($organization->isDepartment());
     }
 
     /**
@@ -153,6 +155,21 @@ class OrganizationTest extends TestCase
         
         $this->assertEquals($organization->getGUID(), $member->{$member->createdByAttribute});
         $this->assertEquals($this->user->getGUID(), $member->{$member->memberAttribute});
+    }
+
+    /**
+     * @group organization
+     * @group profile
+     * @group user
+     * @group member
+     * @depends testUser
+     */
+    public function testHasMember()
+    {
+        $orgName = $this->faker->lastName;
+        $this->assertTrue($this->user->setUpOrganization($orgName));
+        $this->assertTrue($this->user->lastSetUpOrganization->hasMember($this->user));
+        $this->assertFalse($this->user->lastSetUpOrganization->hasMember(null));
     }
 
     /**

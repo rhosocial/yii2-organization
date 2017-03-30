@@ -14,6 +14,7 @@ namespace rhosocial\organization\queries;
 
 use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\user\User;
+use rhosocial\user\rbac\Role;
 use rhosocial\organization\Member;
 use rhosocial\organization\Organization;
 
@@ -58,5 +59,21 @@ class MemberQuery extends BaseBlameableQuery
     public function organization($organization)
     {
         return $this->createdBy($organization);
+    }
+
+    /**
+     * Specify role.
+     * @param Role|string $role
+     * @param boolean|string $like
+     * @return static
+     */
+    public function role($role = '', $like = false)
+    {
+        if ($role instanceof Role) {
+            return $this->andWhere(['role' => $role->name]);
+        }
+        if (is_string($role) || empty($role)) {
+            return $this->likeCondition($role, 'role', $like);
+        }
     }
 }

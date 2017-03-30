@@ -16,7 +16,9 @@ use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
+use rhosocial\organization\tests\data\ar\user\CreateInvalidDepartmentUser;
 use rhosocial\organization\tests\TestCase;
+use yii\base\InvalidConfigException;
 
 /**
  * @version 1.0
@@ -80,7 +82,29 @@ class DepartmentTest extends TestCase
     {
         $this->orgName = $this->faker->lastName;
         $this->assertTrue($this->user->setUpOrganization($this->orgName));
+        $this->assertTrue($this->user->lastSetUpOrganization->isOrganization());
+        $this->assertFalse($this->user->lastSetUpOrganization->isDepartment());
         $this->assertTrue($this->user->setUpDepartment($this->orgName . '-department', $this->user->lastSetUpOrganization));
+        $this->assertFalse($this->user->lastSetUpOrganization->isOrganization());
+        $this->assertTrue($this->user->lastSetUpOrganization->isDepartment());
+    }
+
+    /**
+     * @group department
+     * @group profile
+     */
+    public function testSetUpInvalid()
+    {
+        $this->user = new CreateInvalidDepartmentUser(['password' => '123456']);
+        $this->assertTrue($this->user->register([$this->user->createProfile(['nickname' => 'vistart'])]));
+        $this->orgName = $this->faker->lastName;
+        $this->assertTrue($this->user->setUpOrganization($this->orgName));
+        try {
+            $this->user->setUpDepartment($this->orgName . '-department', $this->user->lastSetUpOrganization);
+            $this->fail();
+        } catch (InvalidConfigException $ex) {
+            $this->assertEquals('Invalid Organization Model.', $ex->getMessage());
+        }
     }
 
     /**

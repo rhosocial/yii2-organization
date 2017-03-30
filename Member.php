@@ -136,6 +136,9 @@ class Member extends BaseBlameableModel
 
     /**
      * Assign role.
+     * The setting role operation will not take effect immediately. You should
+     * wrap this method and the subsequent save operations together into a
+     * transaction, in order to ensure data cosistency.
      * @param Role $role
      */
     public function assignRole($role)
@@ -144,14 +147,19 @@ class Member extends BaseBlameableModel
         if (!$user) {
             throw new InvalidValueException('Invalid User');
         }
-        $assignment = Yii::$app->authManager->assign($role, $user);
+        $assignment = Yii::$app->authManager->getAssignment($role->name, $user);
         if (!$assignment) {
-            return false;
+            $assignment = Yii::$app->authManager->assign($role, $user->getGUID());
         }
         return $this->setRole($role);
     }
 
-    protected function setRole($role = null)
+    /**
+     * Set role.
+     * @param Role $role
+     * @return boolean
+     */
+    public function setRole($role = null)
     {
         if (empty($role)) {
             $role = '';
@@ -160,7 +168,6 @@ class Member extends BaseBlameableModel
             $role = $role->name;
         }
         $this->role = $role;
-        return $this->save();
     }
 
     /**
@@ -175,16 +182,20 @@ class Member extends BaseBlameableModel
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $result = Yii::$app->authManager->revoke($role, $user);
-            if (!$result) {
-                return false;
+            $assignment = Yii::$app->authManager->getAssignment($role->name, $user);
+            if ($assignment) {
+                $count = (int)($user->getOfMembers()->role($role->name)->count());
+                if ($count == 1) {
+                    Yii::$app->authManager->revoke($role, $user);
+                }
             }
-            $this->setRole($role);
+            $this->setRole();
             $this->save();
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();
-            return false;
+            Yii::error($ex->getMessage(), __METHOD__);
+            throw $ex;
         }
         return true;
     }

@@ -16,9 +16,9 @@ namespace rhosocial\organization\tests\data\ar\user;
  * @version 1.0
  * @author vistart <i@vistart.name>
  */
-class CreateInvalidOrganizationUser extends User
+class CreateInvalidDepartmentUser extends User
 {
-    public function createOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    public function createDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
         return [];
     }

@@ -25,7 +25,7 @@ use rhosocial\organization\tests\TestCase;
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class TwoOrganizationTest extends TestCase
+class TwoOrganizationsTest extends TestCase
 {
     /**
      * @var User 

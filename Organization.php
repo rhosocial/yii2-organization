@@ -15,6 +15,7 @@ namespace rhosocial\organization;
 use rhosocial\base\models\traits\SelfBlameableTrait;
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\user\User;
+use rhosocial\user\rbac\Role;
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\DepartmentQuery;
 use rhosocial\organization\queries\OrganizationQuery;

@@ -14,6 +14,8 @@ namespace rhosocial\organization;
 
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
+use rhosocial\organization\rbac\roles\DepartmentCreator;
+use rhosocial\organization\rbac\roles\OrganizationCreator;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
@@ -89,23 +91,8 @@ trait UserOrganizationTrait
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $models = $this->createOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
-            if (!array_key_exists(0, $models) || !($models[0] instanceof Organization)) {
-                throw new InvalidConfigException('Invalid Organization Model.');
-            }
-            $result = $models[0]->register($models['associatedModels']);
-            if ($result instanceof \Exception) {
-                throw $result;
-            }
-            if ($result !== true) {
-                throw new \Exception('Failed to set up.');
-            }
-            if ($parent instanceof Organization && !$parent->getIsNewRecord()) {
-                $setParentResult = ($models[0]->setParent($parent) && $models[0]->save());
-            }
-            if (isset($setParentResult) && $setParentResult === false) {
-                throw new \Exception('Failed to set parent.');
-            }
+            $models = $this->createOrganization($name, $parent, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            $this->setUpBaseOrganization($models);
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();
@@ -134,23 +121,8 @@ trait UserOrganizationTrait
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $models = $this->createDepartment($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
-            if (!array_key_exists(0, $models) || !($models[0] instanceof Organization)) {
-                throw new InvalidConfigException('Invalid Organization Model.');
-            }
-            $result = $models[0]->register($models['associatedModels']);
-            if ($result instanceof \Exception) {
-                throw $result;
-            }
-            if ($result !== true) {
-                throw new \Exception('Failed to set up.');
-            }
-            if ($parent instanceof Organization && !$parent->getIsNewRecord()) {
-                $setParentResult = ($models[0]->setParent($parent) && $models[0]->save());
-            }
-            if (isset($setParentResult) && $setParentResult === false) {
-                throw new \Exception('Failed to set parent.');
-            }
+            $models = $this->createDepartment($name, $parent, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            $this->setUpBaseOrganization($models);
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();
@@ -162,8 +134,32 @@ trait UserOrganizationTrait
     }
 
     /**
+     * Set up base organization.
+     * @param array $models
+     * @return boolean
+     * @throws InvalidConfigException
+     * @throws \Exception
+     */
+    protected function setUpBaseOrganization($models)
+    {
+        if (!array_key_exists(0, $models) || !($models[0] instanceof Organization))
+        {
+            throw new InvalidConfigException('Invalid Organization Model.');
+        }
+        $result = $models[0]->register($models['associatedModels']);
+        if ($result instanceof \Exception) {
+            throw $result;
+        }
+        if ($result !== true) {
+            throw new \Exception('Failed to set up.');
+        }
+        return true;
+    }
+
+    /**
      * Create organization.
      * @param string $name
+     * @param Organization $parent
      * @param string $nickname
      * @param string $gravatar_type
      * @param string $gravatar
@@ -171,14 +167,15 @@ trait UserOrganizationTrait
      * @param string $description
      * @return Organization
      */
-    public function createOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    public function createOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
-        return $this->createBaseOrganization($name, $nickname, $gravatar_type, $gravatar, $timezone, $description);
+        return $this->createBaseOrganization($name, $parent, $nickname, $gravatar_type, $gravatar, $timezone, $description);
     }
 
     /**
      * Create department.
      * @param string $name
+     * @param Organization $parent
      * @param string $nickname
      * @param string $gravatar_type
      * @param string $gravatar
@@ -186,14 +183,15 @@ trait UserOrganizationTrait
      * @param string $description
      * @return Organization
      */
-    public function createDepartment($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    public function createDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
-        return $this->createBaseOrganization($name, $nickname, $gravatar_type, $gravatar, $timezone, $description, Organization::TYPE_DEPARTMENT);
+        return $this->createBaseOrganization($name, $parent, $nickname, $gravatar_type, $gravatar, $timezone, $description, Organization::TYPE_DEPARTMENT);
     }
 
     /**
      * Create Base Organization.
      * @param string $name
+     * @param Organization $parent
      * @param string $nickname
      * @param integer $gravatar_type
      * @param string $gravatar
@@ -202,11 +200,20 @@ trait UserOrganizationTrait
      * @param integer $type
      * @return array This array contains two elements, the first is `Organization` or `Department` depends on `$type`.
      * The other is `associatedModels` array, contains two elements `Profile`(profile) and `Creator`(creator).
+     * @throws InvalidParamException throw if setting parent failed. Possible reasons include:
+     * - The parent is itself.
+     * - The parent has already been its ancestor.
+     * - The current organization has reached the limit of ancestors.
      */
-    protected function createBaseOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '', $type = Organization::TYPE_ORGANIZATION)
+    protected function createBaseOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '', $type = Organization::TYPE_ORGANIZATION)
     {
         $class = $this->organizationClass;
         $organization = new $class(['type' => $type]);
+        if (empty($parent)) {
+            $organization->setNullParent();
+        } elseif ($organization->setParent($parent) === false) {
+            throw new InvalidParamException("Failed to set parent.");
+        }
         /* @var $organization Organization */
         $profileConfig = [
             'name' => $name,
@@ -217,16 +224,23 @@ trait UserOrganizationTrait
             'description' => $description,
         ];
         $profile = $organization->createProfile($profileConfig);
+        $role = null;
+        if ($type == Organization::TYPE_ORGANIZATION) {
+            $role = new OrganizationCreator();
+        } elseif ($type == Organization::TYPE_DEPARTMENT) {
+            $role = new DepartmentCreator();
+        }
         $member = $organization->createMemberModelWithUser($this);
+        $member->assignRole($role);
         return [0 => $organization, 'associatedModels' => ['profile' => $profile, 'creator'=> $member]];
     }
 
     /**
      * Revoke organization.
      * @param static|string|integer $organization
-     * @param boolean $removeIfHasChildren
+     * @param boolean $revokeIfHasChildren
      */
-    public function revokeOrganization($organization, $removeIfHasChildren = false)
+    public function revokeOrganization($organization, $revokeIfHasChildren = false)
     {
         
     }

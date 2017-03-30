@@ -17,6 +17,8 @@ use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
+use rhosocial\organization\rbac\roles\OrganizationCreator;
+use Yii;
 
 /**
  * @version 1.0
@@ -146,5 +148,24 @@ class MemberTest extends TestCase
         $this->assertCount(2, $this->organization->members);
         $this->assertTrue($this->organization->removeMember($member));
         $this->assertCount(1, $this->organization->getMembers()->all());
+    }
+
+    /**
+     * @group member
+     */
+    public function testMemberCreator()
+    {
+        $members = $this->organization->members;
+        $this->assertCount(1, $members);
+        foreach ($members as $member)
+        {
+            $this->assertEquals($member->memberUser->getGUID(), $this->user->getGUID());
+            $role = new OrganizationCreator();
+            $this->assertEquals($role->name, $member->role);
+            $assignment = Yii::$app->authManager->getAssignment($role->name, $this->user);
+            $this->assertNotNull($assignment);
+            $this->assertEquals($assignment->userGuid, $this->user->getGUID());
+            $this->assertEquals($assignment->roleName, $role->name);
+        }
     }
 }
