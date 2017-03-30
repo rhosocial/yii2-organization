@@ -23,6 +23,7 @@ use rhosocial\organization\queries\OrganizationQuery;
 use rhosocial\organization\queries\MemberQuery;
 use Yii;
 use yii\base\InvalidValueException;
+use yii\db\IntegrityException;
 
 /**
  * Organization member.
@@ -106,7 +107,7 @@ class Member extends BaseBlameableModel
         if ($user instanceof $class) {
             $user = $user->getGUID();
         }
-        $this->user_guid = $user;
+        $this->{$this->memberAttribute} = $user;
     }
 
     public function getMemberUser()
@@ -191,7 +192,7 @@ class Member extends BaseBlameableModel
             }
             $this->setRole();
             if (!$this->save()) {
-                throw new \yii\db\IntegrityException('Save failed.');
+                throw new IntegrityException('Save failed.');
             }
             $transaction->commit();
         } catch (\Exception $ex) {
@@ -277,7 +278,7 @@ class Member extends BaseBlameableModel
      * We think it a `member` if `role` property is empty.
      * @return boolean
      */
-    public function isMember()
+    public function isOnlyMember()
     {
         return empty($this->role);
     }

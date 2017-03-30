@@ -23,7 +23,7 @@ use rhosocial\user\migrations\Migration;
 ```SQL
 CREATE TABLE `organization_profile` (
   `guid` varbinary(16) NOT NULL COMMENT 'Organization GUID',
-  `nickname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nickname',
+  `nickname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Nickname',
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Name',
   `gravatar_type` smallint(6) NOT NULL DEFAULT '0' COMMENT 'Gravatar Type',
   `gravatar` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Gravatar',
@@ -49,7 +49,7 @@ class m170327_071501_createOrganizationProfileTable extends Migration
             $tableOptions = "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Organization Profile'";
             $this->createTable(Profile::tableName(), [
                 'guid' => $this->varbinary(16)->notNull()->comment('Organization GUID'),
-                'nickname' => $this->varchar(255)->notNull()->comment('Nickname'),
+                'nickname' => $this->varchar(255)->notNull()->defaultValue('')->comment('Nickname'),
                 'name' => $this->varchar(255)->notNull()->defaultValue('')->comment('Name'),
                 'gravatar_type' => $this->smallInteger()->notNull()->defaultValue(0)->comment('Gravatar Type'),
                 'gravatar'=> $this->varchar(255)->notNull()->defaultValue('')->comment('Gravatar'),

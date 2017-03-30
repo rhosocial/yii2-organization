@@ -99,7 +99,7 @@ trait UserOrganizationTrait
             Yii::error($ex->getMessage(), __METHOD__);
             throw $ex;
         }
-        $this->lastSetUpOrganization = $models[0];
+        $this->lastSetUpOrganization = is_array($models) ? $models[0] : $models;
         return true;
     }
 
@@ -129,24 +129,31 @@ trait UserOrganizationTrait
             Yii::error($ex->getMessage(), __METHOD__);
             throw $ex;
         }
-        $this->lastSetUpOrganization = $models[0];
+        $this->lastSetUpOrganization = is_array($models) ? $models[0] : $models;
         return true;
     }
 
     /**
      * Set up base organization.
-     * @param array $models
+     * @param Organization $models
      * @return boolean
      * @throws InvalidConfigException
      * @throws \Exception
      */
     protected function setUpBaseOrganization($models)
     {
-        if (!array_key_exists(0, $models) || !($models[0] instanceof Organization))
-        {
-            throw new InvalidConfigException('Invalid Organization Model.');
+        $model = null;
+        $associatedModels = [];
+        if (is_array($models)) {
+            if (!array_key_exists(0, $models)) {
+                throw new InvalidConfigException('Invalid Organization Model.');
+            }
+            $model = $models[0];
+            $associatedModels = array_key_exists('associatedModels', $models) ? $models['associatedModels'] : [];
+        } elseif ($models instanceof Organization) {
+            $model = $models;
         }
-        $result = $models[0]->register($models['associatedModels']);
+        $result = $model->register($associatedModels);
         if ($result instanceof \Exception) {
             throw $result;
         }
@@ -198,8 +205,7 @@ trait UserOrganizationTrait
      * @param string $timezone
      * @param string $description
      * @param integer $type
-     * @return array This array contains two elements, the first is `Organization` or `Department` depends on `$type`.
-     * The other is `associatedModels` array, contains two elements `Profile`(profile) and `Creator`(creator).
+     * @return Organization
      * @throws InvalidParamException throw if setting parent failed. Possible reasons include:
      * - The parent is itself.
      * - The parent has already been its ancestor.
@@ -208,13 +214,6 @@ trait UserOrganizationTrait
     protected function createBaseOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '', $type = Organization::TYPE_ORGANIZATION)
     {
         $class = $this->organizationClass;
-        $organization = new $class(['type' => $type]);
-        if (empty($parent)) {
-            $organization->setNullParent();
-        } elseif ($organization->setParent($parent) === false) {
-            throw new InvalidParamException("Failed to set parent.");
-        }
-        /* @var $organization Organization */
         $profileConfig = [
             'name' => $name,
             'nickname' => $nickname,
@@ -223,16 +222,13 @@ trait UserOrganizationTrait
             'timezone' => $timezone,
             'description' => $description,
         ];
-        $profile = $organization->createProfile($profileConfig);
-        $role = null;
-        if ($type == Organization::TYPE_ORGANIZATION) {
-            $role = new OrganizationCreator();
-        } elseif ($type == Organization::TYPE_DEPARTMENT) {
-            $role = new DepartmentCreator();
+        $organization = new $class(['type' => $type, 'creator' => $this, 'profileConfig' => $profileConfig]);
+        if (empty($parent)) {
+            $organization->setNullParent();
+        } elseif ($organization->setParent($parent) === false) {
+            throw new InvalidParamException("Failed to set parent.");
         }
-        $member = $organization->createMemberModelWithUser($this);
-        $member->assignRole($role);
-        return [0 => $organization, 'associatedModels' => ['profile' => $profile, 'creator'=> $member]];
+        return $organization;
     }
 
     /**

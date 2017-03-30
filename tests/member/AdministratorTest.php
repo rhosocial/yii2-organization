@@ -63,8 +63,7 @@ class AdministratorTest extends TestCase
         $member = $this->user1;
         $this->assertTrue($this->organization->addMember($member));
         $this->assertFalse($this->user1->isOrganizationAdministrator($this->organization));
-        //$this->assertTrue($this->organization->addAdministrator($this->user1));
-        //$this->assertTrue($this->user1->isOrganizationAdministrator($this->organization));
+        $this->assertTrue($member->isOnlyMember());
     }
 
     /**
@@ -76,5 +75,7 @@ class AdministratorTest extends TestCase
         $this->assertFalse($this->user1->isOrganizationAdministrator($this->organization));
         $this->assertTrue($this->organization->addAdministrator($this->user1));
         $this->assertTrue($this->user1->isOrganizationAdministrator($this->organization));
+        $member = $this->organization->getMember($this->user1);
+        $this->assertFalse($member->isOnlyMember());
     }
 }

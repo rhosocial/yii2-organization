@@ -17,6 +17,7 @@ use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
+use yii\base\InvalidParamException;
 
 /**
  * @version 1.0
@@ -36,7 +37,7 @@ class OrganizationTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->organization = new Organization();
+        $this->organization = new Organization(['profileConfig' => ['name' => $this->faker->lastName, 'nickname' => 'vistart']]);
         $this->user = new User(['password' => '123456']);
         $profile = $this->user->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user->register([$profile]));
@@ -57,10 +58,9 @@ class OrganizationTest extends TestCase
     {
         try {
             $result = $this->organization->register();
-            if ($result instanceof \Exception) {
-                throw $result;
-            }
-            $this->assertTrue($result);
+            $this->fail("InvalidParamExcetion should be thrown.");
+        } catch (InvalidParamException $ex) {
+            $this->assertEquals('Creator Invalid.', $ex->getMessage());
         } catch (\Exception $ex) {
             $this->fail(get_class($ex) . ' : ' . $ex->getMessage());
         }

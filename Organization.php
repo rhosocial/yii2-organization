@@ -25,6 +25,7 @@ use rhosocial\organization\queries\DepartmentQuery;
 use rhosocial\organization\queries\OrganizationQuery;
 use Yii;
 use yii\base\Event;
+use yii\base\InvalidParamException;
 use yii\db\IntegrityException;
 
 /**
@@ -85,6 +86,8 @@ class Organization extends User
 
     public $memberClass = Member::class;
     private $noInitMember;
+    public $creator;
+    public $profileConfig;
     /**
      * @return Member
      */
@@ -106,7 +109,11 @@ class Organization extends User
         if ($this->skipInit) {
             return;
         }
-        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeCreatorBeforeDeregister']);
+        $this->on(static::$eventAfterRegister, [$this, 'onAddProfile'], $this->profileConfig);
+        $this->on(static::$eventAfterRegister, [$this, 'onAssignCreator'], $this->creator);
+        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeCreator']);
+        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeAdministrators']);
+        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokePermissions']);
         parent::init();
     }
 
@@ -260,7 +267,29 @@ class Organization extends User
      * 
      * @param Event $event
      */
-    public function onRevokeCreatorBeforeDeregister($event)
+    public function onAddProfile($event)
+    {
+        $profile = $event->sender->createProfile($event->data);
+        if (!$profile->save()) {
+            throw new IntegrityException('Profile Save Failed.');
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @param Event $event
+     */
+    public function onAssignCreator($event)
+    {
+        return $event->sender->addCreator($event->data);
+    }
+
+    /**
+     * 
+     * @param Event $event
+     */
+    public function onRevokeCreator($event)
     {
         $sender = $event->sender;
         /* @var $sender static */
@@ -268,6 +297,32 @@ class Organization extends User
         /* @var $member Member */
         $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator) : (new DepartmentCreator);
         return $member->revokeRole($role);
+    }
+
+    /**
+     * 
+     * @param Event $event
+     */
+    public function onRevokeAdministrators($event)
+    {
+        $sender = $event->sender;
+        /* @var $sender static */
+        $members = $sender->getMemberAdministrators()->all();
+        /* @var $members Member[] */
+        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin) : (new DepartmentAdmin);
+        foreach ($members as $member)
+        {
+            $member->revokeRole($role);
+        }
+    }
+
+    /**
+     * 
+     * @param Event $event
+     */
+    public function onRevokePermissions($event)
+    {
+        
     }
 
     /**
@@ -325,6 +380,41 @@ class Organization extends User
     /**
      * 
      * @param User $user
+     * @return boolean
+     * @throws \Exception
+     * @throws IntegrityException
+     */
+    protected function addCreator($user)
+    {
+        if (!$user) {
+            throw new InvalidParamException('Creator Invalid.');
+        }
+        $member = $user;
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (!$this->addMember($member)) {
+                throw new IntegrityException('Failed to add member.');
+            }
+            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator) : (new DepartmentCreator);
+            $member->assignRole($role);
+            if (!$member->save()) {
+                throw new IntegrityException('Failed to assign creator.');
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::error($ex->getMessage(), __METHOD__);
+            throw $ex;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @param User $user
+     * @return boolean
+     * @throws \Exception
+     * @throws IntegrityException
      */
     public function addAdministrator($user)
     {
