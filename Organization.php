@@ -16,10 +16,16 @@ use rhosocial\base\models\traits\SelfBlameableTrait;
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\user\User;
 use rhosocial\user\rbac\Role;
+use rhosocial\organization\rbac\roles\DepartmentAdmin;
+use rhosocial\organization\rbac\roles\DepartmentCreator;
+use rhosocial\organization\rbac\roles\OrganizationAdmin;
+use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\DepartmentQuery;
 use rhosocial\organization\queries\OrganizationQuery;
 use Yii;
+use yii\base\Event;
+use yii\db\IntegrityException;
 
 /**
  * Base Organization.
@@ -100,6 +106,7 @@ class Organization extends User
         if ($this->skipInit) {
             return;
         }
+        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeCreatorBeforeDeregister']);
         parent::init();
     }
 
@@ -251,6 +258,20 @@ class Organization extends User
 
     /**
      * 
+     * @param Event $event
+     */
+    public function onRevokeCreatorBeforeDeregister($event)
+    {
+        $sender = $event->sender;
+        /* @var $sender static */
+        $member = $sender->getMemberCreators()->one();
+        /* @var $member Member */
+        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator) : (new DepartmentCreator);
+        return $member->revokeRole($role);
+    }
+
+    /**
+     * 
      * @return boolean
      */
     public function isOrganization()
@@ -275,5 +296,55 @@ class Organization extends User
     public function hasMember($user)
     {
         return !is_null($this->getMember($user));
+    }
+
+    /**
+     * Get creator query.
+     * @return MemberQuery
+     */
+    public function getMemberCreators()
+    {
+        $roleNames = [];
+        $roleNames[] = (new DepartmentCreator)->name;
+        $roleNames[] = (new OrganizationCreator)->name;
+        return $this->getMembers()->andWhere(['role' => $roleNames]);
+    }
+
+    /**
+     * Get administrator query.
+     * @return MemberQuery
+     */
+    public function getMemberAdministrators()
+    {
+        $roleNames = [];
+        $roleNames[] = (new DepartmentAdmin)->name;
+        $roleNames[] = (new OrganizationAdmin)->name;
+        return $this->getMembers()->andWhere(['role' => $roleNames]);
+    }
+
+    /**
+     * 
+     * @param User $user
+     */
+    public function addAdministrator($user)
+    {
+        $member = $user;
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (!$this->addMember($member)) {
+                throw new IntegrityException('Failed to add member.');
+            }
+            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin) : (new DepartmentAdmin);
+            $member->assignRole($role);
+            if (!$member->save()) {
+                throw new IntegrityException('Failed to assign administrator.');
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::error($ex->getMessage(), __METHOD__);
+            throw $ex;
+        }
+        return true;
     }
 }

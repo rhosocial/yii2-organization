@@ -190,7 +190,9 @@ class Member extends BaseBlameableModel
                 }
             }
             $this->setRole();
-            $this->save();
+            if (!$this->save()) {
+                throw new \yii\db\IntegrityException('Save failed.');
+            }
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();
@@ -233,13 +235,33 @@ class Member extends BaseBlameableModel
         ];
     }
 
+    public function isDepartmentAdministrator()
+    {
+        return $this->role == (new DepartmentAdmin())->name;
+    }
+    
+    public function isDepartmentCreator()
+    {
+        return $this->role == (new DepartmentCreator())->name;
+    }
+
+    public function isOrganizationAdministrator()
+    {
+        return $this->role == (new OrganizationAdmin())->name;
+    }
+    
+    public function isOrganizationCreator()
+    {
+        return $this->role == (new OrganizationCreator())->name;
+    }
+
     /**
      * 
      * @return boolean
      */
     public function isAdministrator()
     {
-        return ($this->role == (new DepartmentAdmin)->name) || ($this->role == (new OrganizationAdmin)->name);
+        return $this->isDepartmentAdministrator() || $this->isOrganizationAdministrator();
     }
 
     /**
@@ -248,7 +270,7 @@ class Member extends BaseBlameableModel
      */
     public function isCreator()
     {
-        return ($this->role == (new DepartmentCreator)->name) || ($this->role == (new OrganizationCreator)->name);
+        return $this->isDepartmentCreator() || $this->isOrganizationCreator();
     }
 
     /**

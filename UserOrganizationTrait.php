@@ -239,10 +239,38 @@ trait UserOrganizationTrait
      * Revoke organization.
      * @param static|string|integer $organization
      * @param boolean $revokeIfHasChildren
+     * @throws InvalidParamException throw if current user is not the creator of organization.
      */
     public function revokeOrganization($organization, $revokeIfHasChildren = false)
     {
-        
+        if (!($organization instanceof $this->organizationClass))
+        {
+            $class = $this->organizationClass;
+            if (is_int($organization)) {
+                $organization = $class::find()->id($organization)->one();
+            } elseif (is_string($organization)) {
+                $organization = $class::find()->guid($organization)->one();
+            }
+        }
+        if (!$this->isOrganizationCreator($organization)) {
+            throw new InvalidParamException('You are not the creator of the this organization and have no right to revoke it.');
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $result = $organization->deregister();
+            if ($result instanceof \Exception){
+                throw $result;
+            }
+            if ($result !== true) {
+                throw new InvalidParamException();
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::error($ex->getMessage(), __METHOD__);
+            throw $ex;
+        }
+        return true;
     }
 
     /**
