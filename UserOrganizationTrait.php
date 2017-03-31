@@ -69,11 +69,47 @@ trait UserOrganizationTrait
 
     /**
      * 
+     * @return MemberQuery
+     */
+    public function getOfCreators()
+    {
+        return $this->getOfMembers()->andWhere(['role' => [(new DepartmentCreator)->name, (new OrganizationCreator)->name]]);
+    }
+
+    /**
+     * 
+     * @return MemberQuery
+     */
+    public function getOfAdministrators()
+    {
+        return $this->getOfMembers()->andWhere(['role' => [(new DepartmentAdmin)->name, (new OrganizationAdmin)->name]]);
+    }
+
+    /**
+     * 
      * @return OrganizationQuery
      */
     public function getAtOrganizations()
     {
         return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofMembers');
+    }
+
+    /**
+     * 
+     * @return OrganizationQuery
+     */
+    public function getCreatorsAtOrganizations()
+    {
+        return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofCreators');
+    }
+
+    /**
+     * 
+     * @return OrganizationQuery
+     */
+    public function getAdministratorsAtOrganizations()
+    {
+        return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofAdministrators');
     }
 
     /**

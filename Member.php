@@ -257,7 +257,7 @@ class Member extends BaseBlameableModel
     }
 
     /**
-     * 
+     * Check whether current member is administrator.
      * @return boolean
      */
     public function isAdministrator()
@@ -266,7 +266,7 @@ class Member extends BaseBlameableModel
     }
 
     /**
-     * 
+     * Check whether current member is creator.
      * @return boolean
      */
     public function isCreator()

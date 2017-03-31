@@ -20,7 +20,6 @@
             <file>Member.php</file>
             <directory>console</directory>
             <directory>queries</directory>
-            <directory>rbac</directory>
         </whitelist>
     </filter>
 </phpunit>

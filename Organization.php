@@ -359,10 +359,7 @@ class Organization extends User
      */
     public function getMemberCreators()
     {
-        $roleNames = [];
-        $roleNames[] = (new DepartmentCreator)->name;
-        $roleNames[] = (new OrganizationCreator)->name;
-        return $this->getMembers()->andWhere(['role' => $roleNames]);
+        return $this->getMembers()->andWhere(['role' => [(new DepartmentCreator)->name, (new OrganizationCreator)->name]]);
     }
 
     /**
@@ -371,10 +368,31 @@ class Organization extends User
      */
     public function getMemberAdministrators()
     {
-        $roleNames = [];
-        $roleNames[] = (new DepartmentAdmin)->name;
-        $roleNames[] = (new OrganizationAdmin)->name;
-        return $this->getMembers()->andWhere(['role' => $roleNames]);
+        return $this->getMembers()->andWhere(['role' => [(new DepartmentAdmin)->name, (new OrganizationAdmin)->name]]);
+    }
+
+    /**
+     * 
+     * @return BaseUserQuery
+     */
+    public function getCreator()
+    {
+        $noInit = $this->getNoInitMember();
+        $class = $noInit->memberUserClass;
+        $noInitUser = $class::buildNoInitModel();
+        return $this->hasOne($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('memberCreators')->inverseOf('creatorsAtOrganizations');
+    }
+
+    /**
+     * 
+     * @return BaseUserQuery
+     */
+    public function getAdministrators()
+    {
+        $noInit = $this->getNoInitMember();
+        $class = $noInit->memberUserClass;
+        $noInitUser = $class::buildNoInitModel();
+        return $this->hasMany($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('memberAdministrators')->inverseOf('administratorsAtOrganizations');
     }
 
     /**
@@ -436,5 +454,19 @@ class Organization extends User
             throw $ex;
         }
         return true;
+    }
+
+    /**
+     * 
+     * @param type $user
+     * @return boolean
+     */
+    public function hasAdministrator($user)
+    {
+        $member = $this->getMember($user);
+        if (!$member) {
+            return false;
+        }
+        return $member->isAdministrator();
     }
 }
