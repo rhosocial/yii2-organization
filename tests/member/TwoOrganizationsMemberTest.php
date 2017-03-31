@@ -113,7 +113,7 @@ class TwoOrganizationsMemberTest extends TestCase
     }
 
     /**
-     * @group member1
+     * @group member
      * @group role
      */
     public function testMemberRole()

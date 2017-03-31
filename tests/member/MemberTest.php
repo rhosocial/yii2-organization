@@ -89,6 +89,7 @@ class MemberTest extends TestCase
         $this->assertCount(1, $members);
         foreach ($members as $member) {
             $this->assertEquals($member->{$member->memberAttribute}, $this->user->getGUID());
+            $this->assertArrayHasKey('guid', $member->attributeLabels());
         }
         $users = $this->organization->memberUsers;
         $this->assertCount(1, $users);

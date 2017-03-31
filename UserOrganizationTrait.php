@@ -14,7 +14,9 @@ namespace rhosocial\organization;
 
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
+use rhosocial\organization\rbac\roles\DepartmentAdmin;
 use rhosocial\organization\rbac\roles\DepartmentCreator;
+use rhosocial\organization\rbac\roles\OrganizationAdmin;
 use rhosocial\organization\rbac\roles\OrganizationCreator;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -24,6 +26,8 @@ use yii\base\InvalidParamException;
  * @property string $guidAttribute GUID Attribute.
  * @property-read Member[] $ofMembers
  * @property-read Organization[] $atOrganizations
+ * @property-read Organization[] $creatorsAtOrganizations
+ * @property-read Organization[] $administratorsAtOrganizations
  *
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -258,7 +262,7 @@ trait UserOrganizationTrait
             'timezone' => $timezone,
             'description' => $description,
         ];
-        $organization = new $class(['type' => $type, 'creator' => $this, 'profileConfig' => $profileConfig]);
+        $organization = new $class(['type' => $type, 'creatorModel' => $this, 'profileConfig' => $profileConfig]);
         if (empty($parent)) {
             $organization->setNullParent();
         } elseif ($organization->setParent($parent) === false) {
@@ -278,11 +282,14 @@ trait UserOrganizationTrait
         if (!($organization instanceof $this->organizationClass))
         {
             $class = $this->organizationClass;
-            if (is_int($organization)) {
+            if (is_numeric($organization)) {
                 $organization = $class::find()->id($organization)->one();
             } elseif (is_string($organization)) {
                 $organization = $class::find()->guid($organization)->one();
             }
+        }
+        if (!$organization) {
+            throw new InvalidParamException('Invalid Organization.');
         }
         if (!$this->isOrganizationCreator($organization)) {
             throw new InvalidParamException('You are not the creator of the this organization and have no right to revoke it.');

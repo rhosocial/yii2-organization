@@ -71,40 +71,7 @@ class TwoOrganizationsTest extends TestCase
 
     protected function tearDown()
     {
-        if ($this->organization1 instanceof Organization)
-        {
-            try {
-                if (!$this->organization1->getIsNewRecord()) {
-                    $this->organization1->deregister();
-                }
-            } catch (\Exception $ex) {
-
-            }
-            $this->organization1 = null;
-        }
-        if ($this->organization2 instanceof Organization)
-        {
-            try {
-                if (!$this->organization2->getIsNewRecord()) {
-                    $this->organization2->deregister();
-                }
-            } catch (\Exception $ex) {
-
-            }
-            $this->organization2 = null;
-        }
         Organization::deleteAll();
-        if ($this->user instanceof User)
-        {
-            try {
-                if (!$this->user->getIsNewRecord()) {
-                    $this->user->deregister();
-                }
-            } catch (\Exception $ex) {
-
-            }
-            $this->user = null;
-        }
         User::deleteAll();
         parent::tearDown();
     }
@@ -159,5 +126,27 @@ class TwoOrganizationsTest extends TestCase
 
         $results = $this->user->getAtOrganizations()->andWhere([$this->organization2->guidAttribute => $this->faker->lastName])->all();
         $this->assertCount(0, $results);
+    }
+
+    /**
+     * @group organization
+     * @group profile
+     * @group user
+     * @group member
+     */
+    public function testRevokeByGUID()
+    {
+        $this->assertTrue($this->user->revokeOrganization($this->organization2->getGUID()));
+    }
+
+    /**
+     * @group organization
+     * @group profile
+     * @group user
+     * @group member
+     */
+    public function testRevokeByID()
+    {
+        $this->assertTrue($this->user->revokeOrganization($this->organization2->getID()));
     }
 }

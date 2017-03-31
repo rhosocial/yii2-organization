@@ -35,6 +35,8 @@ use yii\db\IntegrityException;
  *
  * @method Member createMember(array $config) Create member who is subordinate to this.
  * @property integer $type Whether indicate this instance is an organization or a department.
+ * @property-read User $creator
+ * @property-read User[] $administrators
  
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -86,7 +88,7 @@ class Organization extends User
 
     public $memberClass = Member::class;
     private $noInitMember;
-    public $creator;
+    public $creatorModel;
     public $profileConfig;
     /**
      * @return Member
@@ -110,7 +112,7 @@ class Organization extends User
             return;
         }
         $this->on(static::$eventAfterRegister, [$this, 'onAddProfile'], $this->profileConfig);
-        $this->on(static::$eventAfterRegister, [$this, 'onAssignCreator'], $this->creator);
+        $this->on(static::$eventAfterRegister, [$this, 'onAssignCreator'], $this->creatorModel);
         $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeCreator']);
         $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeAdministrators']);
         $this->on(static::$eventBeforeDeregister, [$this, 'onRevokePermissions']);
@@ -354,7 +356,7 @@ class Organization extends User
     }
 
     /**
-     * Get creator query.
+     * Get member query which role is specified `Creator`.
      * @return MemberQuery
      */
     public function getMemberCreators()
@@ -363,7 +365,7 @@ class Organization extends User
     }
 
     /**
-     * Get administrator query.
+     * Get member query which role is specified `Administrator`.
      * @return MemberQuery
      */
     public function getMemberAdministrators()
@@ -372,7 +374,7 @@ class Organization extends User
     }
 
     /**
-     * 
+     * Get user query which role is specified `Creator`.
      * @return BaseUserQuery
      */
     public function getCreator()
@@ -384,7 +386,7 @@ class Organization extends User
     }
 
     /**
-     * 
+     * Get user query which role is specified `Administrator`.
      * @return BaseUserQuery
      */
     public function getAdministrators()

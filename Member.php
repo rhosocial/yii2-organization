@@ -101,7 +101,7 @@ class Member extends BaseBlameableModel
     public function setMemberUser($user)
     {
         $class = $this->memberUserClass;
-        if (is_int($user)) {
+        if (is_numeric($user)) {
             $user = $class::find()->id($user)->one();
         }
         if ($user instanceof $class) {
