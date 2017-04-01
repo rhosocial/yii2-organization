@@ -13,6 +13,7 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
+use rhosocial\organization\rbac\rules\ManageMemberRule;
 
 /**
  * @version 1.0
@@ -29,4 +30,9 @@ class ManageMember extends Permission
      * @inheritdoc
      */
     public $description = 'Manage organization member.';
+
+    public function init()
+    {
+        $this->ruleName = empty($this->ruleName) ? (new ManageMemberRule)->name : $this->ruleName;
+    }
 }

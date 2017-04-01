@@ -13,6 +13,7 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
+use rhosocial\organization\rbac\rules\SetUpDepartmentRule;
 
 /**
  * @version 1.0
@@ -29,4 +30,9 @@ class SetUpDepartment extends Permission
      * @inheritdoc
      */
     public $description = 'Set up a department.';
+
+    public function init()
+    {
+        $this->ruleName = empty($this->ruleName) ? (new SetUpDepartmentRule)->name : $this->ruleName;
+    }
 }

@@ -13,6 +13,7 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
+use rhosocial\organization\rbac\rules\ManageProfileRule;
 
 /**
  * @version 1.0
@@ -29,4 +30,9 @@ class ManageProfile extends Permission
      * @inheritdoc
      */
     public $description = 'Manage organization profile.';
+
+    public function init()
+    {
+        $this->ruleName = empty($this->ruleName) ? (new ManageProfileRule)->name : $this->ruleName;
+    }
 }

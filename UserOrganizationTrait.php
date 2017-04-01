@@ -163,11 +163,11 @@ trait UserOrganizationTrait
      */
     public function setUpDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
-        if (!($parent instanceof Organization)) {
+        if (!($parent instanceof $this->organizationClass)) {
             throw new InvalidParamException('Invalid Parent Parameter.');
         }
         $accessChecker = Yii::$app->authManager;
-        if (!$accessChecker->checkAccess($this, (new SetUpDepartment)->name)) {
+        if (!$accessChecker->checkAccess($this, (new SetUpDepartment)->name, ['organization' => $parent])) {
             throw new InvalidParamException("You do not have permission to set up department.");
         }
         $transaction = Yii::$app->db->beginTransaction();
@@ -201,7 +201,7 @@ trait UserOrganizationTrait
             }
             $model = $models[0];
             $associatedModels = array_key_exists('associatedModels', $models) ? $models['associatedModels'] : [];
-        } elseif ($models instanceof Organization) {
+        } elseif ($models instanceof $this->organizationClass) {
             $model = $models;
         }
         $result = $model->register($associatedModels);
@@ -299,7 +299,7 @@ trait UserOrganizationTrait
                 $organization = $class::find()->guid($organization)->one();
             }
         }
-        if (!($organization instanceof Organization)) {
+        if (!($organization instanceof $this->organizationClass)) {
             throw new InvalidParamException('Invalid Organization.');
         }
         $accessChecker = Yii::$app->authManager;
@@ -310,7 +310,7 @@ trait UserOrganizationTrait
                 throw new InvalidParamException("You do not have permission to revoke it.");
             }
         } elseif ($organization->type == Organization::TYPE_DEPARTMENT) {
-            if (!$accessChecker->checkAccess($this, (new RevokeDepartment)-name, [
+            if (!$accessChecker->checkAccess($this, (new RevokeDepartment)->name, [
                 'organization' => $organization,
             ])) {
                 throw new InvalidParamException("You do not have permission to revoke it.");

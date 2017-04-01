@@ -438,12 +438,12 @@ class Organization extends User
      */
     public function addAdministrator($user)
     {
-        $member = $user;
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$this->addMember($member)) {
+            if (!$this->hasMember($user) && !$this->addMember($user)) {
                 throw new IntegrityException('Failed to add member.');
             }
+            $member = $this->getMember($user);
             $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin)->name : (new DepartmentAdmin)->name;
             $member->assignRole($role);
             if (!$member->save()) {

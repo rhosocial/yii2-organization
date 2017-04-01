@@ -13,8 +13,11 @@
 namespace rhosocial\organization\rbac\migrations;
 
 use rhosocial\user\migrations\Migration;
+use rhosocial\organization\rbac\rules\ManageMemberRule;
+use rhosocial\organization\rbac\rules\ManageProfileRule;
 use rhosocial\organization\rbac\rules\RevokeDepartmentRule;
 use rhosocial\organization\rbac\rules\RevokeOrganizationRule;
+use rhosocial\organization\rbac\rules\SetUpDepartmentRule;
 use rhosocial\organization\rbac\permissions\ManageMember;
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\rbac\permissions\RevokeDepartment;
@@ -64,20 +67,32 @@ class m170328_063048_insertPermissionsRolesAndRules extends Migration
     {
         $authManager = Yii::$app->authManager;
         
+        $manageMemberRule = new ManageMemberRule();
+        $manageProfileRule = new ManageProfileRule();
         $revokeDepartmentRule = new RevokeDepartmentRule();
         $revokeOrganizationRule = new RevokeOrganizationRule();
+        $setUpDepartmentRule = new SetUpDepartmentRule();
+        $authManager->add($manageMemberRule);
+        $authManager->add($manageProfileRule);
         $authManager->add($revokeDepartmentRule);
         $authManager->add($revokeOrganizationRule);
+        $authManager->add($setUpDepartmentRule);
     }
 
     protected function removeRules()
     {
         $authManager = Yii::$app->authManager;
         
+        $manageMemberRule = new ManageMemberRule();
+        $manageProfileRule = new ManageProfileRule();
         $revokeDepartmentRule = new RevokeDepartmentRule();
         $revokeOrganizationRule = new RevokeOrganizationRule();
+        $setUpDepartmentRule = new SetUpDepartmentRule();
+        $authManager->remove($manageMemberRule);
+        $authManager->remove($manageProfileRule);
         $authManager->remove($revokeDepartmentRule);
         $authManager->remove($revokeOrganizationRule);
+        $authManager->remove($setUpDepartmentRule);
     }
 
     protected function addRoles()
