@@ -32,6 +32,7 @@ use yii\db\IntegrityException;
  * @property string $user_guid store guid of user who represents this member.
  * @property string $nickname
  * @property string $role
+ * @property string $position
  * @property string $description
  * 
  * @property string $department_guid
@@ -91,6 +92,14 @@ class Member extends BaseBlameableModel
     {
         return [
             ['role', 'string', 'max' => 255],
+        ];
+    }
+
+    public function getMemberPositionRules()
+    {
+        return [
+            ['position', 'default', 'value' => ''],
+            ['position', 'string', 'max' => 255],
         ];
     }
 
@@ -205,7 +214,7 @@ class Member extends BaseBlameableModel
 
     public function rules()
     {
-        return array_merge($this->getMemberUserRules(), $this->getMemberRoleRules(), parent::rules());
+        return array_merge($this->getMemberUserRules(), $this->getMemberRoleRules(), $this->getMemberPositionRules(), parent::rules());
     }
 
     /**
@@ -228,6 +237,7 @@ class Member extends BaseBlameableModel
             'user_guid' => Yii::t('app', 'User GUID'),
             'nickname' => Yii::t('app', 'Nickname'),
             'role' => Yii::t('app', 'Role'),
+            'position' => Yii::t('app', 'Position'),
             'description' => Yii::t('app', 'Description'),
             'ip' => Yii::t('app', 'IP'),
             'ip_type' => Yii::t('app', 'IP Address Type'),

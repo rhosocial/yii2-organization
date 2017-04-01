@@ -37,7 +37,7 @@ use yii\db\IntegrityException;
  * @property integer $type Whether indicate this instance is an organization or a department.
  * @property-read User $creator
  * @property-read User[] $administrators
- 
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

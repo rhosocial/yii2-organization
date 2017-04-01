@@ -11,7 +11,7 @@ and a trait for `User` model:
 
 ## Getting Started
 
-- Installation
+- [Installation](Installation.md)
 
 ## Basic Usage
 

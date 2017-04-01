@@ -59,6 +59,7 @@ class m170327_111508_createOrganizationMemberTable extends Migration
                 'user_guid' => $this->varbinary(16)->notNull()->comment('User GUID'),
                 'nickname' => $this->varchar(255)->notNull()->defaultValue('')->comment('Nickname'),
                 'role' => $this->varchar(255)->notNull()->defaultValue('')->comment('Role in organization'),
+                'position' => $this->varchar(255)->notNull()->defaultValue('')->comment('Position'),
                 'description' => $this->text()->notNull()->comment('Description'),
                 'ip' => $this->varbinary(16)->notNull()->defaultValue(0)->comment('IP Address'),
                 'ip_type' => $this->tinyInteger(3)->unsigned()->notNull()->defaultValue(4)->comment('IP Address Type'),
