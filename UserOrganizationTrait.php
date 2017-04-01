@@ -14,6 +14,10 @@ namespace rhosocial\organization;
 
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
+use rhosocial\organization\rbac\permissions\SetUpDepartment;
+use rhosocial\organization\rbac\permissions\RevokeOrganization;
+use rhosocial\organization\rbac\permissions\RevokeDepartment;
 use rhosocial\organization\rbac\roles\DepartmentAdmin;
 use rhosocial\organization\rbac\roles\DepartmentCreator;
 use rhosocial\organization\rbac\roles\OrganizationAdmin;
@@ -129,6 +133,10 @@ trait UserOrganizationTrait
      */
     public function setUpOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
+        $accessChecker = Yii::$app->authManager;
+        if (!$accessChecker->checkAccess($this, (new SetUpOrganization)->name)) {
+            throw new InvalidParamException("You do not have permission to set up organization.");
+        }
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $models = $this->createOrganization($name, $parent, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
@@ -156,8 +164,12 @@ trait UserOrganizationTrait
      */
     public function setUpDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
+        $accessChecker = Yii::$app->authManager;
+        if (!$accessChecker->checkAccess($this, (new SetUpDepartment())->name)) {
+            throw new InvalidParamException("You do not have permission to set up department.");
+        }
         if ($parent == null) {
-            throw new InvalidConfigException('Invalid Parent Parameter.');
+            throw new InvalidParamException('Invalid Parent Parameter.');
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -272,7 +284,7 @@ trait UserOrganizationTrait
     }
 
     /**
-     * Revoke organization.
+     * Revoke organization or department.
      * @param static|string|integer $organization
      * @param boolean $revokeIfHasChildren
      * @throws InvalidParamException throw if current user is not the creator of organization.
@@ -288,11 +300,18 @@ trait UserOrganizationTrait
                 $organization = $class::find()->guid($organization)->one();
             }
         }
-        if (!$organization) {
+        if (!($organization instanceof Organization)) {
             throw new InvalidParamException('Invalid Organization.');
         }
-        if (!$this->isOrganizationCreator($organization)) {
-            throw new InvalidParamException('You are not the creator of the this organization and have no right to revoke it.');
+        $accessChecker = Yii::$app->authManager;
+        if ($organization->type == Organization::TYPE_ORGANIZATION) {
+            if (!$accessChecker->checkAccess($this, (new RevokeOrganization)->name)) {
+                throw new InvalidParamException("You do not have permission to revoke it.");
+            }
+        } elseif ($organization->type == Organization::TYPE_DEPARTMENT) {
+            if (!$accessChecker->checkAccess($this, (new RevokeDepartment)-name)) {
+                throw new InvalidParamException("You do not have permission to revoke it.");
+            }
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -301,7 +320,7 @@ trait UserOrganizationTrait
                 throw $result;
             }
             if ($result !== true) {
-                throw new InvalidParamException();
+                throw new InvalidParamException("Failed to revoke.");
             }
             $transaction->commit();
         } catch (\Exception $ex) {

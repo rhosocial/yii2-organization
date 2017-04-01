@@ -10,11 +10,13 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organizations\tests\member;
+namespace rhosocial\organization\tests\member;
 
 use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\user\User;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use rhosocial\organization\tests\TestCase;
+use Yii;
 
 /**
  * @version 1.0
@@ -33,6 +35,7 @@ class MultiOrganizationsTest extends TestCase
         $this->user = new User(['password' => '123456']);
         $profile = $this->user->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user->register([$profile]));
+        Yii::$app->authManager->assign(new SetUpOrganization, $this->user);
         
         for ($i = 0; $i < $this->organizationCount = 5; $i++) {
             $this->assertTrue($this->user->setUpOrganization("org$i"));

@@ -10,13 +10,15 @@
  * @license https://vistart.me/license/
  */
 
-namespace rhosocial\organization\tests\org\models;
+namespace rhosocial\organization\tests\org;
 
 use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
+use Yii;
 use yii\base\InvalidParamException;
 
 /**
@@ -41,6 +43,7 @@ class OrganizationTest extends TestCase
         $this->user = new User(['password' => '123456']);
         $profile = $this->user->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user->register([$profile]));
+        Yii::$app->authManager->assign(new SetUpOrganization, $this->user);
     }
 
     protected function tearDown()
@@ -176,6 +179,7 @@ class OrganizationTest extends TestCase
         $orgName = $this->faker->lastName;
         $user = new \rhosocial\organization\tests\data\ar\user\CreateInvalidOrganizationUser(['password' => '123456']);
         $this->assertTrue($user->register());
+        Yii::$app->authManager->assign(new SetUpOrganization, $user);
         $this->assertEmpty($user->createOrganization($orgName));
         try {
             $user->setUpOrganization($orgName);

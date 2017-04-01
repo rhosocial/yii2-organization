@@ -18,6 +18,7 @@ use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 use rhosocial\organization\rbac\roles\OrganizationCreator;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use Yii;
 
 /**
@@ -43,9 +44,12 @@ class MemberTest extends TestCase
         $this->user = new User(['password' => '123456']);
         $profile = $this->user->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user->register([$profile]));
+        Yii::$app->authManager->assign(new SetUpOrganization, $this->user);
+
         $this->user1 = new User(['password' => '123456']);
         $profile1 = $this->user1->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user1->register([$profile1]));
+
         $this->orgName = $this->faker->lastName;
         $this->assertTrue($this->user->setUpOrganization($this->orgName));
         $this->organization = $this->user->lastSetUpOrganization;

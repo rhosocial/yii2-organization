@@ -17,7 +17,9 @@ use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\data\ar\user\CreateInvalidDepartmentUser;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use rhosocial\organization\tests\TestCase;
+use Yii;
 use yii\base\InvalidConfigException;
 
 /**
@@ -43,6 +45,7 @@ class DepartmentTest extends TestCase
         $this->user = new User(['password' => '123456']);
         $profile = $this->user->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user->register([$profile]));
+        Yii::$app->authManager->assign(new SetUpOrganization, $this->user);
     }
 
     protected function tearDown()
@@ -97,6 +100,7 @@ class DepartmentTest extends TestCase
     {
         $this->user = new CreateInvalidDepartmentUser(['password' => '123456']);
         $this->assertTrue($this->user->register([$this->user->createProfile(['nickname' => 'vistart'])]));
+        Yii::$app->authManager->assign(new SetUpOrganization, $this->user);
         $this->orgName = $this->faker->lastName;
         $this->assertTrue($this->user->setUpOrganization($this->orgName));
         try {
@@ -118,7 +122,7 @@ class DepartmentTest extends TestCase
         try {
             $this->assertTrue($this->user->setUpDepartment($this->orgName . 'department'));
             $this->fail();
-        } catch (\yii\base\InvalidConfigException $ex) {
+        } catch (\yii\base\InvalidParamException $ex) {
             $this->assertEquals('Invalid Parent Parameter.', $ex->getMessage());
         }
     }

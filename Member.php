@@ -13,6 +13,7 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\models\BaseBlameableModel;
+use rhosocial\user\rbac\Item;
 use rhosocial\user\rbac\Role;
 use rhosocial\user\User;
 use rhosocial\organization\rbac\roles\DepartmentAdmin;
@@ -157,7 +158,10 @@ class Member extends BaseBlameableModel
         if (!$user) {
             throw new InvalidValueException('Invalid User');
         }
-        $assignment = Yii::$app->authManager->getAssignment($role->name, $user);
+        if ($role instanceof Item) {
+            $role = $role->name;
+        }
+        $assignment = Yii::$app->authManager->getAssignment($role, $user);
         if (!$assignment) {
             $assignment = Yii::$app->authManager->assign($role, $user->getGUID());
         }
@@ -174,7 +178,7 @@ class Member extends BaseBlameableModel
         if (empty($role)) {
             $role = '';
         }
-        if ($role instanceof Role) {
+        if ($role instanceof Item) {
             $role = $role->name;
         }
         $this->role = $role;
@@ -190,11 +194,14 @@ class Member extends BaseBlameableModel
         if (!$user) {
             throw new InvalidValueException('Invalid User');
         }
+        if ($role instanceof Item) {
+            $role = $role->name;
+        }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $assignment = Yii::$app->authManager->getAssignment($role->name, $user);
+            $assignment = Yii::$app->authManager->getAssignment($role, $user);
             if ($assignment) {
-                $count = (int)($user->getOfMembers()->role($role->name)->count());
+                $count = (int)($user->getOfMembers()->role($role)->count());
                 if ($count == 1) {
                     Yii::$app->authManager->revoke($role, $user);
                 }
@@ -248,22 +255,22 @@ class Member extends BaseBlameableModel
 
     public function isDepartmentAdministrator()
     {
-        return $this->role == (new DepartmentAdmin())->name;
+        return $this->role == (new DepartmentAdmin)->name;
     }
     
     public function isDepartmentCreator()
     {
-        return $this->role == (new DepartmentCreator())->name;
+        return $this->role == (new DepartmentCreator)->name;
     }
 
     public function isOrganizationAdministrator()
     {
-        return $this->role == (new OrganizationAdmin())->name;
+        return $this->role == (new OrganizationAdmin)->name;
     }
     
     public function isOrganizationCreator()
     {
-        return $this->role == (new OrganizationCreator())->name;
+        return $this->role == (new OrganizationCreator)->name;
     }
 
     /**

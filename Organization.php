@@ -297,7 +297,7 @@ class Organization extends User
         /* @var $sender static */
         $member = $sender->getMemberCreators()->one();
         /* @var $member Member */
-        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator) : (new DepartmentCreator);
+        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator)->name : (new DepartmentCreator)->name;
         return $member->revokeRole($role);
     }
 
@@ -311,7 +311,7 @@ class Organization extends User
         /* @var $sender static */
         $members = $sender->getMemberAdministrators()->all();
         /* @var $members Member[] */
-        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin) : (new DepartmentAdmin);
+        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin)->name : (new DepartmentAdmin)->name;
         foreach ($members as $member)
         {
             $member->revokeRole($role);
@@ -415,7 +415,7 @@ class Organization extends User
             if (!$this->addMember($member)) {
                 throw new IntegrityException('Failed to add member.');
             }
-            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator) : (new DepartmentCreator);
+            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator)->name : (new DepartmentCreator)->name;
             $member->assignRole($role);
             if (!$member->save()) {
                 throw new IntegrityException('Failed to assign creator.');
@@ -444,7 +444,7 @@ class Organization extends User
             if (!$this->addMember($member)) {
                 throw new IntegrityException('Failed to add member.');
             }
-            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin) : (new DepartmentAdmin);
+            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin)->name : (new DepartmentAdmin)->name;
             $member->assignRole($role);
             if (!$member->save()) {
                 throw new IntegrityException('Failed to assign administrator.');

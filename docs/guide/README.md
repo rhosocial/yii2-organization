@@ -15,6 +15,8 @@ and a trait for `User` model:
 
 ## Basic Usage
 
+- [Using the Role-Based Authorization Control Features](usage-rbac.md)
+
 ## Console Commands
 
 ## Organization Module

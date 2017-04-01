@@ -16,6 +16,8 @@ use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
+use Yii;
 
 /**
  * @version 1.0
@@ -54,6 +56,7 @@ class OrganizationChildrenTest extends TestCase
         $this->user = new User(['password' => '123456']);
         $profile = $this->user->createProfile(['nickname' => 'vistart']);
         $this->assertTrue($this->user->register([$profile]));
+        Yii::$app->authManager->assign(new SetUpOrganization, $this->user);
         $this->orgName1 = $this->faker->lastName;
         $this->orgName2 = $this->faker->lastName;
         if ($this->orgName1 == $this->orgName2) {
