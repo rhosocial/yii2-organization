@@ -13,6 +13,7 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
+use rhosocial\organization\rbac\rules\RevokeDepartmentRule;
 
 /**
  * @version 1.0
@@ -29,4 +30,9 @@ class RevokeDepartment extends Permission
      * @inheritdoc
      */
     public $description = 'Revoke department.';
+
+    public function init()
+    {
+        $this->ruleName = empty($this->ruleName) ? (new RevokeDepartmentRule)->name : $this->ruleName;
+    }
 }

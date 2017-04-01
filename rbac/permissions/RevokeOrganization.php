@@ -13,6 +13,7 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
+use rhosocial\organization\rbac\rules\RevokeOrganizationRule;
 
 /**
  * @version 1.0
@@ -29,4 +30,9 @@ class RevokeOrganization extends Permission
      * @inheritdoc
      */
     public $description = 'Revoke organization.';
+
+    public function init()
+    {
+        $this->ruleName = empty($this->ruleName) ? (new RevokeOrganizationRule)->name : $this->ruleName;
+    }
 }

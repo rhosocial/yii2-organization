@@ -13,6 +13,8 @@
 namespace rhosocial\organization\rbac\migrations;
 
 use rhosocial\user\migrations\Migration;
+use rhosocial\organization\rbac\rules\RevokeDepartmentRule;
+use rhosocial\organization\rbac\rules\RevokeOrganizationRule;
 use rhosocial\organization\rbac\permissions\ManageMember;
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\rbac\permissions\RevokeDepartment;
@@ -60,12 +62,22 @@ class m170328_063048_insertPermissionsRolesAndRules extends Migration
 
     protected function addRules()
     {
+        $authManager = Yii::$app->authManager;
         
+        $revokeDepartmentRule = new RevokeDepartmentRule();
+        $revokeOrganizationRule = new RevokeOrganizationRule();
+        $authManager->add($revokeDepartmentRule);
+        $authManager->add($revokeOrganizationRule);
     }
 
     protected function removeRules()
     {
+        $authManager = Yii::$app->authManager;
         
+        $revokeDepartmentRule = new RevokeDepartmentRule();
+        $revokeOrganizationRule = new RevokeOrganizationRule();
+        $authManager->remove($revokeDepartmentRule);
+        $authManager->remove($revokeOrganizationRule);
     }
 
     protected function addRoles()
@@ -98,14 +110,13 @@ class m170328_063048_insertPermissionsRolesAndRules extends Migration
 
         $authManager->addChild($departmentAdmin, $manageMember);
         $authManager->addChild($departmentAdmin, $manageProfile);
+        $authManager->addChild($departmentAdmin, $setUpDepartment);
+        $authManager->addChild($departmentAdmin, $revokeDepartment);
 
         $authManager->addChild($departmentCreator, $departmentAdmin);
-        $authManager->addChild($departmentCreator, $revokeDepartment);
-        
+
         $authManager->addChild($organizationAdmin, $departmentCreator);
-        $authManager->addChild($organizationAdmin, $setUpDepartment);
-        $authManager->addChild($organizationAdmin, $revokeDepartment);
-        
+
         $authManager->addChild($organizationCreator, $organizationAdmin);
         $authManager->addChild($organizationCreator, $revokeOrganization);
     }

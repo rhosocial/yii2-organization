@@ -20,6 +20,9 @@
             <file>Member.php</file>
             <directory>console</directory>
             <directory>queries</directory>
+            <directory>rbac/permissions</directory>
+            <directory>rbac/roles</directory>
+            <directory>rbac/rules</directory>
         </whitelist>
     </filter>
 </phpunit>

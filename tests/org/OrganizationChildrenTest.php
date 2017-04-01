@@ -130,7 +130,7 @@ class OrganizationChildrenTest extends TestCase
     {
         $this->assertTrue($this->user->setUpOrganization($this->orgName1));
         $this->organization1 = $this->user->lastSetUpOrganization;
-        $this->assertTrue($this->user->setUpOrganization($this->orgName2, $this->user->lastSetUpOrganization));
+        $this->assertTrue($this->user->setUpDepartment($this->orgName2, $this->user->lastSetUpOrganization));
         $this->organization2 = $this->user->lastSetUpOrganization;
         $children = $this->organization1->children;
         $this->assertCount(1, $children);
@@ -150,7 +150,7 @@ class OrganizationChildrenTest extends TestCase
     {
         $this->assertTrue($this->user->setUpOrganization($this->orgName1));
         $this->organization1 = $this->user->lastSetUpOrganization;
-        $this->assertTrue($this->user->setUpOrganization($this->orgName2, $this->user->lastSetUpOrganization));
+        $this->assertTrue($this->user->setUpDepartment($this->orgName2, $this->user->lastSetUpOrganization));
         $this->organization2 = $this->user->lastSetUpOrganization;
         $parent = $this->organization2->parent;
         $this->assertInstanceOf(Organization::class, $parent);

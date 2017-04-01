@@ -123,7 +123,6 @@ trait UserOrganizationTrait
     /**
      * Set up organization.
      * @param string $name
-     * @param Organization $parent
      * @param string $nickname
      * @param integer $gravatar_type
      * @param string $gravatar
@@ -131,7 +130,7 @@ trait UserOrganizationTrait
      * @param string $description
      * @return boolean Whether indicate the setting-up succeeded or not.
      */
-    public function setUpOrganization($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    public function setUpOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
         $accessChecker = Yii::$app->authManager;
         if (!$accessChecker->checkAccess($this, (new SetUpOrganization)->name)) {
@@ -139,7 +138,7 @@ trait UserOrganizationTrait
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $models = $this->createOrganization($name, $parent, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            $models = $this->createOrganization($name, null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
             $this->setUpBaseOrganization($models);
             $transaction->commit();
         } catch (\Exception $ex) {
@@ -164,12 +163,12 @@ trait UserOrganizationTrait
      */
     public function setUpDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
-        $accessChecker = Yii::$app->authManager;
-        if (!$accessChecker->checkAccess($this, (new SetUpDepartment())->name)) {
-            throw new InvalidParamException("You do not have permission to set up department.");
-        }
-        if ($parent == null) {
+        if (!($parent instanceof Organization)) {
             throw new InvalidParamException('Invalid Parent Parameter.');
+        }
+        $accessChecker = Yii::$app->authManager;
+        if (!$accessChecker->checkAccess($this, (new SetUpDepartment)->name)) {
+            throw new InvalidParamException("You do not have permission to set up department.");
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -305,11 +304,15 @@ trait UserOrganizationTrait
         }
         $accessChecker = Yii::$app->authManager;
         if ($organization->type == Organization::TYPE_ORGANIZATION) {
-            if (!$accessChecker->checkAccess($this, (new RevokeOrganization)->name)) {
+            if (!$accessChecker->checkAccess($this, (new RevokeOrganization)->name, [
+                'organization' => $organization,
+            ])) {
                 throw new InvalidParamException("You do not have permission to revoke it.");
             }
         } elseif ($organization->type == Organization::TYPE_DEPARTMENT) {
-            if (!$accessChecker->checkAccess($this, (new RevokeDepartment)-name)) {
+            if (!$accessChecker->checkAccess($this, (new RevokeDepartment)-name, [
+                'organization' => $organization,
+            ])) {
                 throw new InvalidParamException("You do not have permission to revoke it.");
             }
         }
