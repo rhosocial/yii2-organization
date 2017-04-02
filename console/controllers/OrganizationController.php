@@ -128,6 +128,25 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Revoke SetUpOrganization permission.
+     * @param User|string|integer $user
+     * @return boolean
+     */
+    public function actionRevokeSetUpOrganization($user)
+    {
+        $user = $this->getUser($user);
+        $permission = new SetUpOrganization();
+        $assignment = Yii::$app->authManager->revoke($permission->name, $user);
+        if ($assignment) {
+            echo "`$permission->name`" . " revoked from User (" . $user->getID() . ").\n";
+        } else {
+            echo "Failed to revoke `" . $permission->name . "`.\n";
+            echo "Maybe the role has not been assigned yet.\n";
+        }
+        return true;
+    }
+
+    /**
      * Show Organization Information.
      * @param Organization|string|integer $organization Organization's or department's ID.
      */
