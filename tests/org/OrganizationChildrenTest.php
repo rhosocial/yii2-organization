@@ -66,40 +66,7 @@ class OrganizationChildrenTest extends TestCase
 
     protected function tearDown()
     {
-        if ($this->organization1 instanceof Organization)
-        {
-            try {
-                if (!$this->organization1->getIsNewRecord()) {
-                    $this->organization1->deregister();
-                }
-            } catch (\Exception $ex) {
-
-            }
-            $this->organization1 = null;
-        }
-        if ($this->organization2 instanceof Organization)
-        {
-            try {
-                if (!$this->organization2->getIsNewRecord()) {
-                    $this->organization2->deregister();
-                }
-            } catch (\Exception $ex) {
-
-            }
-            $this->organization1 = null;
-        }
         Organization::deleteAll();
-        if ($this->user instanceof User)
-        {
-            try {
-                if (!$this->user->getIsNewRecord()) {
-                    $this->user->deregister();
-                }
-            } catch (\Exception $ex) {
-
-            }
-            $this->user = null;
-        }
         User::deleteAll();
         parent::tearDown();
     }
