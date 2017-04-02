@@ -23,6 +23,7 @@ use rhosocial\organization\rbac\roles\DepartmentCreator;
 use rhosocial\organization\rbac\roles\OrganizationAdmin;
 use rhosocial\organization\rbac\roles\OrganizationCreator;
 use Yii;
+use yii\base\Event;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 
@@ -350,5 +351,29 @@ trait UserOrganizationTrait
             return false;
         }
         return $member->isAdministrator();
+    }
+
+    /**
+     * Attach events associated with organization.
+     */
+    public function initOrganizationEvents()
+    {
+        $this->on(static::EVENT_BEFORE_DELETE, [$this, "onRevokeOrganizationsByCreator"]);
+    }
+
+    /**
+     * Revoke Organization Event.
+     * It should be triggered when deleting (not deregistering).
+     * @param Event $event
+     */
+    public function onRevokeOrganizationsByCreator($event)
+    {
+        $sender = $event->sender;
+        /* @var $sender static */
+        $organizations = $this->creatorsAtOrganizations;
+        foreach ($organizations as $org)
+        {
+            $sender->revokeOrganization($org);
+        }
     }
 }

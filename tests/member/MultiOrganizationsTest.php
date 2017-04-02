@@ -48,14 +48,7 @@ class MultiOrganizationsTest extends TestCase
     
     protected function tearDown()
     {
-        foreach ($this->organizations as $org) {
-            $this->assertTrue($this->user->revokeOrganization($org));
-        }
         Organization::deleteAll();
-        foreach ($this->users as $user) {
-            $this->assertTrue($user->deregister());
-        }
-        $this->assertTrue($this->user->deregister());
         User::deleteAll();
         parent::tearDown();
     }

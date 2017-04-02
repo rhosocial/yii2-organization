@@ -229,6 +229,22 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Add member.
+     * @param Organization|string|intger $organization
+     * @param User|string|integer $user
+     */
+    public function actionAddMember($organization, $user)
+    {
+        $organization = $this->getOrganization($organization);
+        $user = $this->getUser($user);
+        $id = $user->getID();
+        if (!$organization->addMember($user)) {
+            throw new Exception('Failed to add member.');
+        }
+        echo "User ($id) added to Organization ({$organization->getID()}).\n";
+    }
+
+    /**
      * Remove member.
      * @param Organization|string|intger $organization
      * @param User|string|integer $user

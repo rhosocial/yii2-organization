@@ -43,6 +43,10 @@ class NestedDepartmentTest extends TestCase
      */
     public $organizationCount = 5;
 
+    /**
+     * Prepare a user with `setUpOrganization` permission.
+     * And set up an organization.
+     */
     protected function setUp()
     {
         parent::setUp();
@@ -130,5 +134,26 @@ class NestedDepartmentTest extends TestCase
             $this->assertNull(Organization::find()->id($this->organizations[$i]->getID())->one());
             $this->assertEmpty(Member::findAll(['organization_guid' => $this->organizations[$i]->getGUID()]));
         }
+    }
+
+    /**
+     * Prepare the other user, and add him to organization 0, assign him administrator.
+     * It should revoke organization before its creator deregister.
+     * @group department
+     */
+    public function testRevokeOrganizationBeforeUserDeregister()
+    {
+        $this->users[1] = new User(['password' => '123456']);
+        $this->assertTrue($this->users[1]->register([$this->users[1]->createProfile(['nickname' => 'vistart'])]));
+        $member = $this->users[1];
+        $this->assertTrue($this->organizations[0]->addAdministrator($member));
+        $this->assertTrue($this->users[1]->setUpDepartment("department1", $this->organizations[0]));
+        $this->organizations[1] = $this->users[1]->lastSetUpOrganization;
+        $orgs = $this->users[1]->creatorsAtOrganizations;
+        $this->assertCount(1, $orgs);
+        $this->assertEquals($this->organizations[1]->getGUID(), $orgs[0]->getGUID());
+        
+        $this->assertTrue($this->users[1]->deregister());
+        $this->assertNull(Organization::find()->guid($orgs[0]->getGUID())->one());
     }
 }
