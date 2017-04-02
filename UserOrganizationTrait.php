@@ -302,19 +302,11 @@ trait UserOrganizationTrait
         if (!($organization instanceof $this->organizationClass)) {
             throw new InvalidParamException('Invalid Organization.');
         }
-        $accessChecker = Yii::$app->authManager;
-        if ($organization->type == Organization::TYPE_ORGANIZATION) {
-            if (!$accessChecker->checkAccess($this, (new RevokeOrganization)->name, [
-                'organization' => $organization,
-            ])) {
-                throw new InvalidParamException("You do not have permission to revoke it.");
-            }
-        } elseif ($organization->type == Organization::TYPE_DEPARTMENT) {
-            if (!$accessChecker->checkAccess($this, (new RevokeDepartment)->name, [
-                'organization' => $organization,
-            ])) {
-                throw new InvalidParamException("You do not have permission to revoke it.");
-            }
+        if (!Yii::$app->authManager->checkAccess(
+                $this,
+                $organization->type == Organization::TYPE_ORGANIZATION ? (new RevokeOrganization)->name : (new RevokeDepartment)->name,
+                ['organization' => $organization])) {
+            throw new InvalidParamException("You do not have permission to revoke it.");
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {

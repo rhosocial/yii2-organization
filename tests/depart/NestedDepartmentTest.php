@@ -13,6 +13,7 @@
 namespace rhosocial\organization\tests\depart;
 
 use rhosocial\organization\rbac\permissions\SetUpOrganization;
+use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
@@ -62,9 +63,12 @@ class NestedDepartmentTest extends TestCase
     }
 
     /**
+     * One organization, Four child departments.
+     * One creator and four administrators of organization.
+     * Each administrator set up a department.
      * @group department
      */
-    public function testNew()
+    public function testOneOrganizationFourDepartments()
     {
         $members = [];
         for ($i = 1; $i < $this->userCount; $i++) {
@@ -80,14 +84,51 @@ class NestedDepartmentTest extends TestCase
             $this->assertTrue($this->organizations[0]->hasAdministrator($this->users[$i]));
             $this->assertTrue($this->users[$i]->setUpDepartment("org$i", $this->organizations[0]));
             $this->organizations[$i] = $this->users[$i]->lastSetUpOrganization;
+            $this->assertTrue($this->users[$i]->isOrganizationCreator($this->organizations[$i]));
+            $this->assertFalse($this->users[$i]->isOrganizationAdministrator($this->organizations[$i]));
         }
         for ($i = 1; $i < $this->userCount; $i++) {
+            $this->assertFalse($this->users[$i]->isOrganizationCreator($this->organizations[$this->userCount - $i]));
+            $this->assertFalse($this->users[$i]->isOrganizationAdministrator($this->organizations[$this->userCount - $i]));
             try {
                 $this->users[$i]->revokeOrganization($this->organizations[$this->userCount - $i]);
                 $this->fail();
             } catch (InvalidParamException $ex) {
                 $this->assertEquals("You do not have permission to revoke it.", $ex->getMessage());
             }
+        }
+    }
+
+    /**
+     * One organization.
+     * Each department has a child department.
+     * @group department
+     */
+    public function testOneOrganizationNestedDepartments()
+    {
+        $users = $this->organizations[0]->memberUsers;
+        $this->assertCount(1, $users);
+        for ($i = 1; $i < $this->userCount; $i++)
+        {
+            try {
+                $this->users[$i]->setUpDepartment("org$i", $this->organizations[$i - 1]);
+                $this->fail("Exception should be thrown.");
+            } catch (\Exception $ex) {
+                $this->assertEquals("You do not have permission to set up department.", $ex->getMessage());
+            }
+            $this->assertTrue($this->organizations[$i - 1]->addAdministrator($this->users[$i]));
+            $this->assertTrue($this->users[$i]->setUpDepartment("org$i", $this->organizations[$i - 1]));
+            $this->organizations[$i] = $this->users[$i]->lastSetUpOrganization;
+        }
+        for ($i = 0; $i < $this->userCount - 1; $i++) {
+            for ($j = $i + 1; $j < $this->userCount; $j++) {
+                $this->assertTrue($this->organizations[$j]->hasAncestor($this->organizations[$i]));
+            }
+        }
+        $this->assertTrue($this->users[0]->revokeOrganization($this->organizations[0]));
+        for ($i = 1; $i < $this->userCount; $i++) {
+            $this->assertNull(Organization::find()->id($this->organizations[$i]->getID())->one());
+            $this->assertEmpty(Member::findAll(['organization_guid' => $this->organizations[$i]->getGUID()]));
         }
     }
 }

@@ -15,14 +15,11 @@ namespace rhosocial\organization;
 use rhosocial\base\models\traits\SelfBlameableTrait;
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\user\User;
-use rhosocial\user\rbac\Role;
 use rhosocial\organization\rbac\roles\DepartmentAdmin;
 use rhosocial\organization\rbac\roles\DepartmentCreator;
 use rhosocial\organization\rbac\roles\OrganizationAdmin;
 use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\MemberQuery;
-use rhosocial\organization\queries\DepartmentQuery;
-use rhosocial\organization\queries\OrganizationQuery;
 use Yii;
 use yii\base\Event;
 use yii\base\InvalidParamException;
@@ -116,6 +113,7 @@ class Organization extends User
         $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeCreator']);
         $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeAdministrators']);
         $this->on(static::$eventBeforeDeregister, [$this, 'onRevokePermissions']);
+        $this->initSelfBlameableEvents();
         parent::init();
     }
 
@@ -266,6 +264,31 @@ class Organization extends User
     }
 
     /**
+     * Remove administrator.
+     * @param Member|User $member
+     * @param boolean $keepMember Keep member after administrator being revoked.
+     * @return boolean
+     * @throws IntegrityException
+     */
+    public function removeAdministrator(&$member, $keepMember = true)
+    {
+        if ($this->getIsNewRecord()) {
+            return false;
+        }
+        if ($member instanceof $this->memberClass) {
+            $member = $member->{$member->memberAttribute};
+        }
+        $member = $this->getMember($member);
+        if ($member && $member->isAdministrator()) {
+            if ($keepMember) {
+                return $member->revokeAdministrator();
+            }
+            return $this->removeMember($member);
+        }
+        return false;
+    }
+
+    /**
      * 
      * @param Event $event
      */
@@ -311,10 +334,9 @@ class Organization extends User
         /* @var $sender static */
         $members = $sender->getMemberAdministrators()->all();
         /* @var $members Member[] */
-        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin)->name : (new DepartmentAdmin)->name;
         foreach ($members as $member)
         {
-            $member->revokeRole($role);
+            $member->revokeAdministrator();
         }
     }
 
@@ -444,11 +466,7 @@ class Organization extends User
                 throw new IntegrityException('Failed to add member.');
             }
             $member = $this->getMember($user);
-            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationAdmin)->name : (new DepartmentAdmin)->name;
-            $member->assignRole($role);
-            if (!$member->save()) {
-                throw new IntegrityException('Failed to assign administrator.');
-            }
+            $member->assignAdministrator();
             $transaction->commit();
         } catch (\Exception $ex) {
             $transaction->rollBack();

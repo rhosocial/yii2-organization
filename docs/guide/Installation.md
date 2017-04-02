@@ -60,3 +60,30 @@ Migrated up successfully.
 It means successful.
 
 ## Authorization
+
+### DbManager (Only Supports MySQL)
+
+We use the DbManager provided by yii2-user to implement role-based authorization control.(MySQL Only).
+
+Before using the database manager, you need to perform the migrations:
+```
+yii migrate/up --migrationPath=@vendor --migrationNamespaces=rhosocial\organization\rbac\migrations --interactive=0
+```
+
+> Note: In the linux system, you may need to add additional escape characters(`\`).
+
+Then, you will see the following tips:
+```
+Yii Migration Tool (based on Yii v2.0.11.2)
+
+Total 1 new migration to be applied:
+	rhosocial\organization\rbac\migrations\m170328_063048_insertPermissionsRolesAndRules
+
+*** applying rhosocial\organization\rbac\migrations\m170328_063048_insertPermissionsRolesAndRules
+*** applied rhosocial\organization\rbac\migrations\m170328_063048_insertPermissionsRolesAndRules (time: 0.276s)
+
+1 migration was applied.
+
+Migrated up successfully.
+```
+It means successful.

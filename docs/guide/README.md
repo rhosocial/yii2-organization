@@ -15,6 +15,7 @@ and a trait for `User` model:
 
 ## Basic Usage
 
+- [Using the Organization, Profile, Member and UserOrganizationTrait](usage-org-profile-member-trait.md)
 - [Using the Role-Based Authorization Control Features](usage-rbac.md)
 
 ## Console Commands

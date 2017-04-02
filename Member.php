@@ -151,6 +151,7 @@ class Member extends BaseBlameableModel
      * wrap this method and the subsequent save operations together into a
      * transaction, in order to ensure data cosistency.
      * @param Role $role
+     * @return boolean
      */
     public function assignRole($role)
     {
@@ -169,6 +170,37 @@ class Member extends BaseBlameableModel
     }
 
     /**
+     * Assign administrator.
+     * @return boolean
+     * @throws \Exception
+     * @throws IntegrityException
+     */
+    public function assignAdministrator()
+    {
+        $host = $this->organization;
+        /* @var $host Organization */
+        $role = null;
+        if ($host->type == Organization::TYPE_ORGANIZATION) {
+            $role = new OrganizationAdmin();
+        } elseif ($host->type == Organization::TYPE_DEPARTMENT) {
+            $role = new DepartmentAdmin();
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->assignRole($role);
+            if (!$this->save()) {
+                throw new IntegrityException("Failed to assign administrator.");
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::error($ex->getMessage(), __METHOD__);
+            throw $ex;
+        }
+        return true;
+    }
+
+    /**
      * Set role.
      * @param Role $role
      * @return boolean
@@ -182,6 +214,7 @@ class Member extends BaseBlameableModel
             $role = $role->name;
         }
         $this->role = $role;
+        return true;
     }
 
     /**
@@ -209,6 +242,36 @@ class Member extends BaseBlameableModel
             $this->setRole();
             if (!$this->save()) {
                 throw new IntegrityException('Save failed.');
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::error($ex->getMessage(), __METHOD__);
+            throw $ex;
+        }
+        return true;
+    }
+
+    /**
+     * Revoke administrator.
+     * @return boolean
+     * @throws IntegrityException
+     */
+    public function revokeAdministrator()
+    {
+        $host = $this->organization;
+        /* @var $host Organization */
+        $role = null;
+        if ($host->type == Organization::TYPE_ORGANIZATION) {
+            $role = new OrganizationAdmin();
+        } elseif ($host->type == Organization::TYPE_DEPARTMENT) {
+            $role = new DepartmentAdmin();
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->revokeRole($role);
+            if (!$this->save()) {
+                throw new IntegrityException("Failed to revoke administrator.");
             }
             $transaction->commit();
         } catch (\Exception $ex) {
