@@ -72,18 +72,8 @@ class OrganizationController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'allow' => false,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['update'],
                         'allow' => true,
-                        'roles' => ['manageProfile'],
-                    ],
-                    [
-                        'actions' => ['revoke'],
-                        'allow' => true,
-                        'roles' => ['revokeOrganization'],
+                        'roles' => ['@'],
                     ],
                 ],
             ],
