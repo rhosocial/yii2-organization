@@ -90,6 +90,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
                                         'user' => 'user.php',
                                     ],
                                 ],
+                                'organization*' => [
+                                    'class' => 'yii\i18n\PhpMessageSource',
+                                    'basePath' => dirname(__DIR__) . '/messages',
+                                    'sourceLanguage' => 'en-US',
+                                    'fileMap' => [
+                                        'organization' => 'organization.php',
+                                    ],
+                                ],
                             ],
                         ],
                         'request' => [
