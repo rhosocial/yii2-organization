@@ -15,6 +15,7 @@ namespace rhosocial\organization\rbac\rules;
 use rhosocial\user\User;
 use rhosocial\user\rbac\Item;
 use rhosocial\organization\Organization;
+use Yii;
 use yii\rbac\Rule;
 
 /**
@@ -33,6 +34,13 @@ class RevokeDepartmentRule extends Rule
      */
     public function execute($user, $item, $params)
     {
+        $class = Yii::$app->user->identityClass;
+        if (is_numeric($user) || is_int($user)) {
+            $user = $class::find()->id($user)->one();
+        }
+        if (is_string($user)) {
+            $user = $class::find()->guid($user)->one();
+        }
         $organization = $params['organization'];
         /* @var $organization Organization */// The department to be revoked.
         // If current user is creator of department, he is allowed to revoke it.

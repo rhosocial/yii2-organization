@@ -104,10 +104,10 @@ class SetUpForm extends Model
     {
         return [
             'name' => Yii::t('organization', 'Name'),
-            'nickname' => Yii::t('organization', 'Nickname'),
-            'gravatar_type' => Yii::t('organization', 'Gravatar Type'),
-            'gravatar' => Yii::t('organization', 'Gravatar'),
-            'timezone' => Yii::t('organization', 'Timezone'),
+            'nickname' => Yii::t('user', 'Nickname'),
+            'gravatar_type' => Yii::t('user', 'Gravatar Type'),
+            'gravatar' => Yii::t('user', 'Gravatar'),
+            'timezone' => Yii::t('user', 'Timezone'),
             'description' => Yii::t('organization', 'Description'),
         ];
     }
@@ -121,7 +121,7 @@ class SetUpForm extends Model
             ['name', 'required'],
             [['nickname', 'gravatar', 'description'], 'default', 'value' => ''],
             ['gravatar_type', 'default', 'value' => 0],
-            ['timezone', 'default', 'UTC'],
+            ['timezone', 'default', 'value' => 'UTC'],
             [['name', 'nickname', 'gravatar', 'timezone'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 65535],
             ['gravatar_type', 'integer'],
@@ -136,7 +136,7 @@ class SetUpForm extends Model
      */
     public function setUpOrganization()
     {
-        return $this->getUser()->setUpOrganization($this->name, $this->nickname, $this->gravatar_type, $this->gravatar, $this->timezone, $this->descritption);
+        return $this->getUser()->setUpOrganization($this->name, $this->nickname, $this->gravatar_type, $this->gravatar, $this->timezone, $this->description);
     }
 
     /**

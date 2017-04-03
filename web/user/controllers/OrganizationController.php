@@ -15,8 +15,10 @@ namespace rhosocial\organization\web\user\controllers;
 use rhosocial\organization\forms\SetUpForm;
 use Yii;
 use yii\data\ActiveDataProvider;
-use yii\web\ServerErrorHttpException;
+use yii\filters\AccessControl;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Organization Controller, designed for user module.
@@ -26,6 +28,7 @@ use yii\web\Controller;
  */
 class OrganizationController extends Controller
 {
+    public $layout = '@rhosocial/organization/web/user/views/layouts/organization';
     const RESULT_SUCCESS = 'success';
     const RESULT_FAILED = 'failed';
     const SESSION_KEY_MESSAGE = 'session_key_message';
@@ -59,9 +62,37 @@ class OrganizationController extends Controller
         parent::init();
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['manageProfile'],
+                    ],
+                    [
+                        'actions' => ['revoke'],
+                        'allow' => true,
+                        'roles' => ['revokeOrganization'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render($this->viewBasePath . 'index');
     }
 
     /**
@@ -98,7 +129,7 @@ class OrganizationController extends Controller
                 if (($result = $model->setUpOrganization()) === true) {
                     Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
                     Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->organizationSetUpSuccessMessage);
-                    return $this->redirect(['index']);
+                    return $this->redirect(['list']);
                 }
                 if ($result instanceof \Exception) {
                     throw $result;
@@ -109,7 +140,7 @@ class OrganizationController extends Controller
                 Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->organizationSetUpFailedMessage);
             }
         }
-        return $this->render('set-up-organization', ['model' => $model]);
+        return $this->render($this->viewBasePath . 'set-up-organization', ['model' => $model]);
     }
 
     /**
@@ -120,12 +151,15 @@ class OrganizationController extends Controller
     public function actionSetUpDepartment($parent)
     {
         $model = new SetUpForm(['user' => Yii::$app->user->identity, 'parent' => $parent]);
+        if (!$model->getParent()) {
+            throw new BadRequestHttpException(Yii::t('organization', 'Parent Organization/Department Not Exist.'));
+        }
         if ($model->load(Yii::$app->request->post())) {
             try {
                 if (($result = $model->setUpDepartment()) === true) {
                     Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
                     Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->departmentSetUpSuccessMessage);
-                    return $this->redirect(['index']);
+                    return $this->redirect(['list']);
                 }
                 if ($result instanceof \Exception) {
                     throw $result;
@@ -136,6 +170,21 @@ class OrganizationController extends Controller
                 Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->departmentSetUpFailedMessage);
             }
         }
-        return $this->render('set-up-organization', ['model' => $model]);
+        return $this->render($this->viewBasePath . 'set-up-organization', ['model' => $model]);
+    }
+
+    public function actionView($id)
+    {
+        return $this->render($this->viewBasePath . 'view');
+    }
+
+    public function actionUpdate($id)
+    {
+        return $this->render($this->viewBasePath . 'update');
+    }
+
+    public function actionRevoke($id)
+    {
+        
     }
 }

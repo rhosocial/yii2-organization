@@ -15,6 +15,7 @@ namespace rhosocial\organization\rbac\rules;
 use rhosocial\user\User;
 use rhosocial\user\rbac\Item;
 use rhosocial\organization\Organization;
+use Yii;
 use yii\rbac\Rule;
 
 /**
@@ -33,6 +34,13 @@ class ManageMemberRule extends Rule
      */
     public function execute($user, $item, $params)
     {
+        $class = Yii::$app->user->identityClass;
+        if (is_numeric($user) || is_int($user)) {
+            $user = $class::find()->id($user)->one();
+        }
+        if (is_string($user)) {
+            $user = $class::find()->guid($user)->one();
+        }
         $organization = $params['organization'];
         /* @var $organization Organization */// The Organization or department to be decided.
         // If current user is creator of organization or department, he is allowed to manage it's members.

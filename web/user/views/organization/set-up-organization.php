@@ -14,4 +14,6 @@ use rhosocial\organization\forms\SetUpForm;
 use rhosocial\organization\widgets\SetUpFormWidget;
 /* @var $this yii\web\View */
 /* @var $model SetUpForm */
+$this->title = Yii::t('organization', ($model->getParent()) ? 'Set Up New Department' : 'Set Up New Organization');
+$this->params['breadcrumbs'][] = $this->title;
 echo SetUpFormWidget::widget(['model' => $model]);

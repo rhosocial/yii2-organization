@@ -18,8 +18,10 @@ return [
     'Creator' => '创建人',
     'Administrator' => '管理员',
     'Set Up New Organization' => '开设新组织',
+    'Set Up New Department' => '开设新部门',
     'Member' => '成员',
     'Parent' => '上级',
+    'Children' => '下级',
     'Organization GUID' => '组织全球统一编码',
     'User GUID' => '用户全球统一编码',
     'Role' => '角色',
@@ -33,4 +35,6 @@ return [
     'Organization Set Up Failed.' => '组织开设失败。',
     'Department Set Up.'=> '部门已开设。',
     'Department Set Up Failed.' => '部门开设失败。',
+    'Parent Organization/Department Not Exist.' => '上级组织/部门不存在。',
+    'List' => '列表',
 ];

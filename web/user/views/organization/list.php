@@ -12,11 +12,14 @@
 
 use rhosocial\organization\Organization;
 use yii\data\ActiveDataProvider;
+use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $dataProvider ActiveDataProvider */
-$this->title = Yii::t('organization', 'Organization');
+$this->title = Yii::t('organization', 'List');
 $this->params['breadcrumbs'][] = $this->title;
 Pjax::begin([
     'id' => 'organization-pjax',
@@ -34,6 +37,26 @@ echo empty($dataProvider) ? '' : GridView::widget([
             },
         ],
         'id',
+        'parent' => [
+            'class' => 'yii\grid\DataColumn',
+            'header' => Yii::t('organization', 'Parent'),
+            'content' => function ($model, $key, $index, $column) {
+                /* @var $model Organization */
+                if ($model->type == Organization::TYPE_ORGANIZATION) {
+                    return null;
+                }
+                $parent = $model->parent;
+                return $parent ? $parent->getID() : null;
+            },
+        ],
+        'children' => [
+            'class' => 'yii\grid\DataColumn',
+            'header' => Yii::t('organization', 'Parent'),
+            'content' => function ($model, $key, $index, $column) {
+                /* @var $model Organization */
+                return $model->getChildren()->count();
+            },
+        ],
         'creator' => [
             'class' => 'yii\grid\DataColumn',
             'header' => Yii::t('organization', 'Creator'),
@@ -54,11 +77,36 @@ echo empty($dataProvider) ? '' : GridView::widget([
         'member' => [
             'class' => 'yii\grid\DataColumn',
             'header' => Yii::t('organization', 'Member'),
-            'content' => function ($mode, $key, $index, $column) {
+            'content' => function ($model, $key, $index, $column) {
                 /* $var $model Organization */
                 return $model->getMemberUsers()->count();
             },
-        ]
+        ],
+        [
+            'class' => ActionColumn::class,
+            'header' => Yii::t('user', 'Action'),
+            'urlCreator' => function (string $action, $model, $key, $index, ActionColumn $column) {
+                /* @var $model Organization */
+                if ($action == 'view') {
+                    return Url::to(['view', 'id' => $model->getID()]);
+                } elseif ($action == 'update') {
+                    return Url::to(['update', 'id' => $model->getID()]);
+                } elseif ($action == 'delete') {
+                    return Url::to(['revoke', 'id' => $model->getID()]);
+                }
+                return '#';
+            },
+            'visibleButtons' => [
+                'view' => true,
+                'update' => function ($model, $key, $index) {
+                    return Yii::$app->user->can('manageProfile', ['organization' => $model]);
+                },
+                'delete' => function ($model, $key, $index) {
+                    $permission = ($model->type == Organization::TYPE_ORGANIZATION) ? 'revokeOrganization' : 'revokeDepartment';
+                    return Yii::$app->user->can($permission, ['organization' => $model]);
+                },
+            ],
+        ],
     ],
 ]);
 Pjax::end();
