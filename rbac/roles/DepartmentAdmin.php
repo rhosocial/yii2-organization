@@ -15,6 +15,9 @@ namespace rhosocial\organization\rbac\roles;
 use rhosocial\user\rbac\Role;
 
 /**
+ * This class described a `departAdmin` role, which assigned to the user who could
+ * manage a department.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

@@ -15,6 +15,9 @@ namespace rhosocial\organization\rbac\roles;
 use rhosocial\user\rbac\Role;
 
 /**
+ * This class described a `orgAdmin` role, which assigned to the user who could
+ * manage an organization.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

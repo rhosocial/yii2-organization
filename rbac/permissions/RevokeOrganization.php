@@ -16,6 +16,10 @@ use rhosocial\user\rbac\Permission;
 use rhosocial\organization\rbac\rules\RevokeOrganizationRule;
 
 /**
+ * This class described a `RevokeOrganization` permission, which allows user
+ * who had it to revoke an organization.
+ * This permission will be automatically assigned to creator of organization.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

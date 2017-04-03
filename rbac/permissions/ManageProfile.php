@@ -16,6 +16,11 @@ use rhosocial\user\rbac\Permission;
 use rhosocial\organization\rbac\rules\ManageProfileRule;
 
 /**
+ * This class described a `ManageProfile` permission, which allows user
+ * who had it to manage profile of organization or department.
+ * This permission will be automatically assigned to creator and administrators
+ * of organization or department.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

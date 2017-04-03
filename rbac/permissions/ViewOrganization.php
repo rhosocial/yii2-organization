@@ -13,30 +13,25 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
-use rhosocial\organization\rbac\rules\RevokeDepartmentRule;
 
 /**
- * This class described a `RevokeDepartment` permission, which allows user
- * who had it to revoke a department.
- * This permission will be automatically assigned to creator of department.
+ * This class described a `viewOrganization` permission, which allows user
+ * who had it to view all organizations and their departments, as well as their
+ * members.
+ * This permission will not be assigned to anyone by default.
  *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class RevokeDepartment extends Permission
+class ViewOrganization extends Permission
 {
     /**
      * @inheritdoc
      */
-    public $name = 'revokeDepartment';
-    
+    public $name = 'viewOrganization';
+
     /**
      * @inheritdoc
      */
-    public $description = 'Revoke department.';
-
-    public function init()
-    {
-        $this->ruleName = empty($this->ruleName) ? (new RevokeDepartmentRule)->name : $this->ruleName;
-    }
+    public $description = 'View all organization(s), including their department(s).';
 }

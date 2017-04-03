@@ -15,6 +15,10 @@ namespace rhosocial\organization\rbac\permissions;
 use rhosocial\user\rbac\Permission;
 
 /**
+ * This class described a `setUpOrganization` permission, which allows user
+ * who had it to set up an organization.
+ * This permission will not be assigned to anyone by default.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

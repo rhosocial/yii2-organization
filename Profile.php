@@ -27,14 +27,14 @@ class Profile extends \rhosocial\user\Profile
     public function attributeLabels()
     {
         return [
-            'guid' => Yii::t('app', 'GUID'),
-            'name' => Yii::t('app', 'Name'),
-            'gravatar_type' => Yii::t('app', 'Gravatar Type'),
-            'gravatar' => Yii::t('app', 'Gravatar'),
-            'timezone' => Yii::t('app', 'Timezone'),
-            'description' => Yii::t('app', 'Description'),
-            'created_at' => Yii::t('app', 'Creation Time'),
-            'updated_at' => Yii::t('app', 'Last Updated Time'),
+            'guid' => Yii::t('user', 'GUID'),
+            'name' => Yii::t('organization', 'Name'),
+            'gravatar_type' => Yii::t('user', 'Gravatar Type'),
+            'gravatar' => Yii::t('user', 'Gravatar'),
+            'timezone' => Yii::t('user', 'Timezone'),
+            'description' => Yii::t('organization', 'Description'),
+            'created_at' => Yii::t('user', 'Creation Time'),
+            'updated_at' => Yii::t('user', 'Last Updated Time'),
         ];
     }
 

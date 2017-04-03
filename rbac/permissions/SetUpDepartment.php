@@ -16,6 +16,11 @@ use rhosocial\user\rbac\Permission;
 use rhosocial\organization\rbac\rules\SetUpDepartmentRule;
 
 /**
+ * This class described a `setUpDepartment` permission, which allows user
+ * who had it to set up an department.
+ * This permission will be automatically assigned to creator or administrators
+ * of organization or department.
+ *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */

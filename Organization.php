@@ -123,15 +123,15 @@ class Organization extends User
     public function attributeLabels()
     {
         return [
-            'guid' => Yii::t('app', 'GUID'),
-            'id' => Yii::t('app', 'ID'),
-            'ip' => Yii::t('app', 'IP'),
-            'ip_type' => Yii::t('app', 'IP Address Type'),
-            'parent' => Yii::t('app', 'Parent'),
-            'created_at' => Yii::t('app', 'Create Time'),
-            'updated_at' => Yii::t('app', 'Update Time'),
-            'status' => Yii::t('app', 'Status'),
-            'type' => Yii::t('app', 'Type'),
+            'guid' => Yii::t('user', 'GUID'),
+            'id' => Yii::t('user', 'ID'),
+            'ip' => Yii::t('user', 'IP Address'),
+            'ip_type' => Yii::t('user', 'IP Address Type'),
+            'parent' => Yii::t('organization', 'Parent'),
+            'created_at' => Yii::t('user', 'Creation Time'),
+            'updated_at' => Yii::t('user', 'Last Updated Time'),
+            'status' => Yii::t('user', 'Status'),
+            'type' => Yii::t('user', 'Type'),
         ];
     }
 

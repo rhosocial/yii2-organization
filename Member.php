@@ -301,18 +301,18 @@ class Member extends BaseBlameableModel
     public function attributeLabels()
     {
         return [
-            'guid' => Yii::t('app', 'GUID'),
-            'id' => Yii::t('app', 'ID'),
-            'organization_guid' => Yii::t('app', 'Organization GUID'),
-            'user_guid' => Yii::t('app', 'User GUID'),
-            'nickname' => Yii::t('app', 'Nickname'),
-            'role' => Yii::t('app', 'Role'),
-            'position' => Yii::t('app', 'Position'),
-            'description' => Yii::t('app', 'Description'),
-            'ip' => Yii::t('app', 'IP'),
-            'ip_type' => Yii::t('app', 'IP Address Type'),
-            'created_at' => Yii::t('app', 'Create Time'),
-            'updated_at' => Yii::t('app', 'Update Time'),
+            'guid' => Yii::t('user', 'GUID'),
+            'id' => Yii::t('user', 'ID'),
+            'organization_guid' => Yii::t('organization', 'Organization GUID'),
+            'user_guid' => Yii::t('organization', 'User GUID'),
+            'nickname' => Yii::t('user', 'Nickname'),
+            'role' => Yii::t('organization', 'Role'),
+            'position' => Yii::t('organization', 'Member Position'),
+            'description' => Yii::t('organization', 'Description'),
+            'ip' => Yii::t('user', 'IP Address'),
+            'ip_type' => Yii::t('user', 'IP Address Type'),
+            'created_at' => Yii::t('user', 'Creation Time'),
+            'updated_at' => Yii::t('user', 'Last Updated Time'),
         ];
     }
 

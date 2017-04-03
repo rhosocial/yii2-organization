@@ -95,7 +95,9 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
+     * Get query of organization of which this user has been a member.
+     * If you access this method as magic-property `atOrganizations`, you will
+     * get all organizations the current user has joined in.
      * @return OrganizationQuery
      */
     public function getAtOrganizations()
@@ -130,6 +132,8 @@ trait UserOrganizationTrait
      * @param string $timezone
      * @param string $description
      * @return boolean Whether indicate the setting-up succeeded or not.
+     * @throws InvalidParamException
+     * @throws \Exception
      */
     public function setUpOrganization($name, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
@@ -161,6 +165,8 @@ trait UserOrganizationTrait
      * @param string $timezone
      * @param string $description
      * @return boolean Whether indicate the setting-up succeeded or not.
+     * @throws InvalidParamException
+     * @throws \Exception
      */
     public function setUpDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
