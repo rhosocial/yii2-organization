@@ -13,6 +13,7 @@
 use rhosocial\organization\Organization;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
+use yii\grid\DataColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -28,21 +29,21 @@ echo empty($dataProvider) ? '' : GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
         ['class' => 'yii\grid\SerialColumn'],
+        /* The GUID is not displayed by default.
         'guid' => [
             'class' => 'yii\grid\DataColumn',
             'header' => Yii::t('user', 'GUID'),
             'content' => function ($model, $key, $index, $column) {
-                /* @var $model Organization */
                 return $model->getReadableGUID();
             },
-        ],
+        ],*/
         'id',
         'parent' => [
-            'class' => 'yii\grid\DataColumn',
-            'header' => Yii::t('organization', 'Parent'),
+            'class' => DataColumn::class,
+            'header' => Yii::t('organization', 'Parent ID'),
             'content' => function ($model, $key, $index, $column) {
                 /* @var $model Organization */
-                if ($model->type == Organization::TYPE_ORGANIZATION) {
+                if ($model->isOrganization()) {
                     return null;
                 }
                 $parent = $model->parent;
@@ -50,15 +51,15 @@ echo empty($dataProvider) ? '' : GridView::widget([
             },
         ],
         'children' => [
-            'class' => 'yii\grid\DataColumn',
-            'header' => Yii::t('organization', 'Parent'),
+            'class' => DataColumn::class,
+            'header' => Yii::t('organization', 'Number of Children'),
             'content' => function ($model, $key, $index, $column) {
                 /* @var $model Organization */
                 return $model->getChildren()->count();
             },
         ],
         'creator' => [
-            'class' => 'yii\grid\DataColumn',
+            'class' => DataColumn::class,
             'header' => Yii::t('organization', 'Creator'),
             'content' => function ($model, $key, $index, $column) {
                 /* @var $model Organization */
@@ -67,19 +68,35 @@ echo empty($dataProvider) ? '' : GridView::widget([
             },
         ],
         'administrator' => [
-            'class' => 'yii\grid\DataColumn',
-            'header' => Yii::t('organization', 'Administrator'),
+            'class' => DataColumn::class,
+            'header' => Yii::t('organization', 'Number of Administrators'),
             'content' => function ($model, $key, $index, $column) {
                 /* @var $model Organization */
                 return $model->getAdministrators()->count();
             },
         ],
         'member' => [
-            'class' => 'yii\grid\DataColumn',
-            'header' => Yii::t('organization', 'Member'),
+            'class' => DataColumn::class,
+            'header' => Yii::t('organization', 'Number of Members'),
             'content' => function ($model, $key, $index, $column) {
                 /* $var $model Organization */
                 return $model->getMemberUsers()->count();
+            },
+        ],
+        'createdAt' => [
+            'class' => DataColumn::class,
+            'header' => Yii::t('user', 'Creation Time'),
+            'content' => function ($model, $key, $index, $column) {
+                /* @var $model Organization */
+                return $column->grid->formatter->format($model->getCreatedAt(), 'datetime');
+            },
+        ],
+        'updatedAt' => [
+            'class' => DataColumn::class,
+            'header' => Yii::t('user', 'Last Updated Time'),
+            'content' => function ($model, $key, $index, $column) {
+                /* @var $model Organization */
+                return $column->grid->formatter->format($model->getUpdatedAt(), 'datetime');
             },
         ],
         [
@@ -102,7 +119,7 @@ echo empty($dataProvider) ? '' : GridView::widget([
                     return Yii::$app->user->can('manageProfile', ['organization' => $model]);
                 },
                 'delete' => function ($model, $key, $index) {
-                    $permission = ($model->type == Organization::TYPE_ORGANIZATION) ? 'revokeOrganization' : 'revokeDepartment';
+                    $permission = ($model->isOrganization()) ? 'revokeOrganization' : 'revokeDepartment';
                     return Yii::$app->user->can($permission, ['organization' => $model]);
                 },
             ],

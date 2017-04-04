@@ -48,7 +48,7 @@ trait UserOrganizationTrait
     /**
      * @return Organization
      */
-    protected function getNoInitOrganization()
+    public function getNoInitOrganization()
     {
         if (!$this->noInitOrganization) {
             $class = $this->organizationClass;
@@ -59,7 +59,7 @@ trait UserOrganizationTrait
     /**
      * @return Member
      */
-    protected function getNoInitMember()
+    public function getNoInitMember()
     {
         if (!$this->noInitMember) {
             $class = $this->memberClass;

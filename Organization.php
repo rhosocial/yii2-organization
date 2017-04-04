@@ -32,8 +32,10 @@ use yii\db\IntegrityException;
  *
  * @method Member createMember(array $config) Create member who is subordinate to this.
  * @property integer $type Whether indicate this instance is an organization or a department.
- * @property-read User $creator
- * @property-read User[] $administrators
+ *
+ * @property-read User[] $memberUsers Get all members of this organization/department.
+ * @property-read User $creator Get creator of this organization/department.
+ * @property-read User[] $administrators Get administrators of this organization/department.
  *
  * @version 1.0
  * @author vistart <i@vistart.me>

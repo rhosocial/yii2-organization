@@ -14,6 +14,7 @@ namespace rhosocial\organization\web\user\controllers;
 
 use rhosocial\organization\exceptions\RevokePreventedException;
 use rhosocial\organization\forms\SetUpForm;
+use rhosocial\organization\Organization;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\data\ActiveDataProvider;
@@ -43,7 +44,7 @@ class OrganizationController extends Controller
     public $organizationRevokeSuccessMessage;
     public $organizationRevokeFailedMessage;
 
-    protected $viewBasePath = '@rhosocial/organization/web/user/views/organization/';
+    public $viewBasePath = '@rhosocial/organization/web/user/views/organization/';
 
     protected function initMessages()
     {
@@ -71,6 +72,41 @@ class OrganizationController extends Controller
     {
         $this->initMessages();
         parent::init();
+    }
+
+    /**
+     * Get organization by specific parameter.
+     * @param Organization|string|integer $organization
+     * @return Organization
+     */
+    public function getOrganization($organization)
+    {
+        if (!$organization) {
+            return null;
+        }
+        $class = Yii::$app->user->identity->organizationClass;
+        if ($organization instanceof $class) {
+            $organization = $organization->getID();
+        }
+        if (is_numeric($organization) || is_int($organization)) {
+            return $class::find()->id($organization)->one();
+        }
+        if (is_string($organization) && strlen($organization) == 16) {
+            return $class::find()->guid($organization)->one();
+        }
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function actions()
+    {
+        return [
+            'view-members' => [
+                'class' => 'rhosocial\organization\web\user\controllers\organization\ViewMembersAction',
+            ],
+        ];
     }
 
     /**
