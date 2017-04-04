@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization;
 
+use rhosocial\organization\exceptions\RevokePreventedException;
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
 use rhosocial\organization\rbac\permissions\SetUpOrganization;
@@ -68,7 +69,7 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
+     * Get member query.
      * @return MemberQuery
      */
     public function getOfMembers()
@@ -77,7 +78,7 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
+     * Get query of member whose role is creator.
      * @return MemberQuery
      */
     public function getOfCreators()
@@ -86,7 +87,7 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
+     * Get query of member whose role is administrator.
      * @return MemberQuery
      */
     public function getOfAdministrators()
@@ -157,8 +158,8 @@ trait UserOrganizationTrait
 
     /**
      * Set up organization.
-     * @param string $name
-     * @param Organization $parent
+     * @param string $name Department name.
+     * @param Organization $parent Parent organization or department.
      * @param string $nickname
      * @param integer $gravatar_type
      * @param string $gravatar
@@ -168,7 +169,7 @@ trait UserOrganizationTrait
      * @throws InvalidParamException
      * @throws \Exception
      */
-    public function setUpDepartment($name, $parent = null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
+    public function setUpDepartment($name, $parent, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '')
     {
         if (!($parent instanceof $this->organizationClass)) {
             throw new InvalidParamException('Invalid Parent Parameter.');
@@ -291,11 +292,16 @@ trait UserOrganizationTrait
 
     /**
      * Revoke organization or department.
-     * @param static|string|integer $organization
-     * @param boolean $revokeIfHasChildren
-     * @throws InvalidParamException throw if current user is not the creator of organization.
+     * @param Organization|string|integer $organization Organization or it's ID or GUID.
+     * @param boolean $revokeIfHasChildren True represents revoking organization if there are subordinates.
+     * @return boolean True if revocation is successful.
+     * @throws InvalidParamException throws if organization is invalid.
+     * @throws \Exception
+     * @throws RevokePreventedException throws if $revokeIfHasChildren is false, at the
+     * same time the current organization or department has subordinates.
+     * @throws @var:$organization@mtd:deregister
      */
-    public function revokeOrganization($organization, $revokeIfHasChildren = false)
+    public function revokeOrganization($organization, $revokeIfHasChildren = true)
     {
         if (!($organization instanceof $this->organizationClass))
         {
@@ -317,6 +323,10 @@ trait UserOrganizationTrait
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
+            if (!$revokeIfHasChildren && ((int)($organization->getChildren()->count())) > 0) {
+                $type = $organization->isOrganization() ? "organization" : "department";
+                throw new RevokePreventedException("The $type has children. Revoking prevented.");
+            }
             $result = $organization->deregister();
             if ($result instanceof \Exception){
                 throw $result;
@@ -334,8 +344,9 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
+     * Check whether current user is organization or department creator.
      * @param Organization $organization
+     * @return boolean True if current is organization or department creator.
      */
     public function isOrganizationCreator($organization)
     {
@@ -347,8 +358,9 @@ trait UserOrganizationTrait
     }
 
     /**
-     * 
+     * Check whether current user is organization or department administrator.
      * @param Organization $organization
+     * @return boolean True if current is organization or department administrator.
      */
     public function isOrganizationAdministrator($organization)
     {

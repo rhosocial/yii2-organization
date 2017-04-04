@@ -12,8 +12,10 @@
 
 namespace rhosocial\organization\web\user\controllers;
 
+use rhosocial\organization\exceptions\RevokePreventedException;
 use rhosocial\organization\forms\SetUpForm;
 use Yii;
+use yii\base\InvalidParamException;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\BadRequestHttpException;
@@ -37,6 +39,8 @@ class OrganizationController extends Controller
     public $organizationSetUpFailedMessage;
     public $departmentSetUpSuccessMessage;
     public $departmentSetUpFailedMessage;
+    public $organizationRevokeSuccessMessage;
+    public $organizationRevokeFailedMessage;
 
     protected $viewBasePath = '@rhosocial/organization/web/user/views/organization/';
 
@@ -53,6 +57,12 @@ class OrganizationController extends Controller
         }
         if (!is_string($this->departmentSetUpFailedMessage)) {
             $this->departmentSetUpFailedMessage = Yii::t('organization', 'Department Set Up Failed.');
+        }
+        if (!is_stirng($this->organizationRevokeSuccessMessage)) {
+            $this->organizationRevokeSuccessMessage = Yii::t('organization', 'Successfully revoked.');
+        }
+        if (!is_string($this->organizationRevokeFailedMessage)) {
+            $this->organizationRevokeFailedMessage = Yii::t('organization', 'Failed to revoke.');
         }
     }
 
@@ -118,7 +128,7 @@ class OrganizationController extends Controller
             try {
                 if (($result = $model->setUpOrganization()) === true) {
                     Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
-                    Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->organizationSetUpSuccessMessage);
+                    Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, '(' . $model->getUser()->lastSetUpOrganization->getID() . ') ' . $this->organizationSetUpSuccessMessage);
                     return $this->redirect(['list']);
                 }
                 if ($result instanceof \Exception) {
@@ -148,7 +158,7 @@ class OrganizationController extends Controller
             try {
                 if (($result = $model->setUpDepartment()) === true) {
                     Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
-                    Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->departmentSetUpSuccessMessage);
+                    Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, '(' . $model->getUser()->lastSetUpOrganization->getID() . ') ' . $this->departmentSetUpSuccessMessage);
                     return $this->redirect(['list']);
                 }
                 if ($result instanceof \Exception) {
@@ -173,8 +183,23 @@ class OrganizationController extends Controller
         return $this->render($this->viewBasePath . 'update');
     }
 
+    /**
+     * Revoke organization or department.
+     * @param string|integer $id
+     */
     public function actionRevoke($id)
     {
-        
+        try {
+            Yii::$app->user->identity->revokeOrganization($id, true);
+        } catch (InvalidParamException $ex) {
+            throw new BadRequestHttpException(Yii::t('organization', $ex->getMessage()));
+        } catch (RevokePreventedException $ex) {
+            throw new BadRequestHttpException(Yii::t('organization', $ex->getMessage()));
+        } catch (\Exception $ex) {
+            throw new ServerErrorHttpException($ex->getMessage());
+        }
+        Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
+        Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, "($id) " . $this->organizationRevokeSuccessMessage);
+        return $this->redirect(['index']);
     }
 }

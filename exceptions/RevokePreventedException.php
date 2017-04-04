@@ -10,4 +10,18 @@
  * @license https://vistart.me/license/
  */
 
-/* @var $this yii\web\View */
+namespace rhosocial\organization\exceptions;
+
+use yii\base\Exception;
+
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
+class RevokePreventedException extends Exception
+{
+    public function getName()
+    {
+        return 'RevokePreventedException';
+    }
+}

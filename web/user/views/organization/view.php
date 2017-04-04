@@ -10,3 +10,4 @@
  * @license https://vistart.me/license/
  */
 
+/* @var $this yii\web\View */

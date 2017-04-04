@@ -120,7 +120,7 @@ class DepartmentTest extends TestCase
         $this->orgName = $this->faker->lastName;
         $this->assertTrue($this->user->setUpOrganization($this->orgName));
         try {
-            $this->assertTrue($this->user->setUpDepartment($this->orgName . 'department'));
+            $this->assertTrue($this->user->setUpDepartment($this->orgName . 'department', null));
             $this->fail();
         } catch (\yii\base\InvalidParamException $ex) {
             $this->assertEquals('Invalid Parent Parameter.', $ex->getMessage());

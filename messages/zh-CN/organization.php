@@ -37,4 +37,9 @@ return [
     'Department Set Up Failed.' => '部门开设失败。',
     'Parent Organization/Department Not Exist.' => '上级组织/部门不存在。',
     'List' => '列表',
+    'Invalid Organization.' => '无效的组织',
+    'You do not have permission to revoke it.' => '您无权撤销。',
+    'The organization has children. Revoking prevented.' => '该组织存在下级。撤销已阻止。',
+    'The department has children. Revoking prevented.' => '该部门存在下级。撤销已阻止。',
+    'Failed to revoke.' => '未能撤销。',
 ];

@@ -350,7 +350,7 @@ class Organization extends User
     }
 
     /**
-     * 
+     * Check whether current instance is an organization.
      * @return boolean
      */
     public function isOrganization()
@@ -359,7 +359,7 @@ class Organization extends User
     }
 
     /**
-     * 
+     * Check whether current instance if a department.
      * @return boolean
      */
     public function isDepartment()
