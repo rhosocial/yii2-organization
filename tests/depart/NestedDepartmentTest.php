@@ -52,7 +52,7 @@ class NestedDepartmentTest extends TestCase
         parent::setUp();
         for ($i = 0; $i < $this->userCount; $i++) {
             $this->users[$i] = new User(['password' => '123456']);
-            $this->users[$i]->register([$this->users[$i]->createProfile(['nickname' => "vistart$i"])]);
+            $this->assertTrue($this->users[$i]->register([$this->users[$i]->createProfile(['nickname' => "vistart$i"])]));
         }
         Yii::$app->authManager->assign(new SetUpOrganization, $this->users[0]);
         $this->assertTrue($this->users[0]->setUpOrganization("org0"));

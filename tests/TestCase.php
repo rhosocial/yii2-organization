@@ -106,8 +106,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
                             'scriptUrl' => '/index.php',
                         ],
                         'user' => [
-                            'class' => 'rhosocial\user\tests\data\web\User',
-                            'identityClass' => 'rhosocial\user\tests\data\User',
+                            'class' => 'rhosocial\organization\tests\data\web\User',
+                            'identityClass' => 'rhosocial\organization\tests\data\ar\user\User',
                             'enableAutoLogin' => true,
                         ],
                         'authManager' => [
