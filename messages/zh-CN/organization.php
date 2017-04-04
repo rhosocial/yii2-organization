@@ -59,4 +59,6 @@ return [
     'Organization Creator' => '组织创建人',
     'Join Time' => '加入时间',
     'Back to List' => '返回列表',
+    'Here are all the organizations / departments you have joined:' => '以下列出你加入的所有组织/部门：',
+    'You do not have access to set up new organization.' => '您没有权限开设新组织。',
 ];

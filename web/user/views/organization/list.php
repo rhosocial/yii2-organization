@@ -10,7 +10,9 @@
  * @license https://vistart.me/license/
  */
 
+use rhosocial\user\User;
 use rhosocial\organization\Organization;
+use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\grid\DataColumn;
@@ -19,9 +21,18 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
+/* @var $user User */
 /* @var $dataProvider ActiveDataProvider */
 $this->title = Yii::t('organization', 'List');
 $this->params['breadcrumbs'][] = $this->title;
+?>
+<div class="row">
+    <div class="col-md-12">
+<?= Yii::t('organization', "Here are all the organizations / departments you have joined:"); ?>
+    </div>
+</div>
+<hr/>
+<?php
 Pjax::begin([
     'id' => 'organization-pjax',
 ]);
@@ -37,6 +48,13 @@ echo empty($dataProvider) ? '' : GridView::widget([
                 return $model->getReadableGUID();
             },
         ],*/
+        'type' => [
+            'class' => DataColumn::class,
+            'header' => Yii::t('user', 'Type'),
+            'content' => function ($model, $key, $index, $column) {
+                return Yii::t('organization', $model->isOrganization() ? 'Organization' : 'Department');
+            }
+        ],
         'id',
         'parent' => [
             'class' => DataColumn::class,
@@ -129,7 +147,9 @@ echo empty($dataProvider) ? '' : GridView::widget([
 Pjax::end();
 ?>
 <div class="row">
+    <?php if (Yii::$app->authManager->checkAccess($user, (new SetUpOrganization)->name)) :?>
     <div class="col-md-3">
         <?= Html::a(Yii::t('organization', 'Set Up New Organization'), ['set-up-organization'], ['class' => 'btn btn-primary']) ?>
     </div>
+    <?php endif; ?>
 </div>

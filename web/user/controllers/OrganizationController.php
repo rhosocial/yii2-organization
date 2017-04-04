@@ -12,17 +12,14 @@
 
 namespace rhosocial\organization\web\user\controllers;
 
-use rhosocial\organization\exceptions\RevokePreventedException;
 use rhosocial\organization\forms\SetUpForm;
 use rhosocial\organization\Organization;
 use Yii;
-use yii\base\InvalidParamException;
-use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\web\ServerErrorHttpException;
+use yii\web\UnauthorizedHttpException;
 
 /**
  * Organization Controller, designed for user module.
@@ -103,6 +100,12 @@ class OrganizationController extends Controller
     public function actions()
     {
         return [
+            'list' => [
+                'class' => 'rhosocial\organization\web\user\controllers\organization\ListAction',
+            ],
+            'revoke' => [
+                'class' => 'rhosocial\organization\web\user\controllers\organization\RevokeAction',
+            ],
             'view-members' => [
                 'class' => 'rhosocial\organization\web\user\controllers\organization\ViewMembersAction',
             ],
@@ -118,16 +121,31 @@ class OrganizationController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    [ // Disallow all unauthorized users to access this controller.
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+                    [ // Disallow user who does not have `setUpOrganization` permission to access this `set-up-organization` action.
+                        'actions' => ['set-up-organization'],
+                        'allow' => false,
+                        'matchCallback' => function ($rule, $action) {
+                            return !Yii::$app->user->can('setUpOrganization');
+                        },
+                        'denyCallback' => function ($rule, $action) {
+                            throw new UnauthorizedHttpException(Yii::t('organization', 'You do not have access to set up new organization.'));
+                        },
+                    ],
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                    ],
+                    ]
                 ],
             ],
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
                     'deregister' => ['post'],
+                    'revoke' => ['post'],
                 ],
             ],
         ];
@@ -136,29 +154,6 @@ class OrganizationController extends Controller
     public function actionIndex()
     {
         return $this->render($this->viewBasePath . 'index');
-    }
-
-    /**
-     * List all organization(s) and department(s) which current user has joined in.
-     * @return string the rendering result.
-     */
-    public function actionList()
-    {
-        $identity = Yii::$app->user->identity;
-        if (!$identity) {
-            throw new ServerErrorHttpException('User Not Found.');
-        }
-        $dataProvider = new ActiveDataProvider([
-            'query' => $identity->getAtOrganizations(),
-            'pagination' => [
-                'pageParam' => 'oganization-page',
-                'pageSize' => 20,
-            ],
-            'sort' => [
-                'sortParam' => 'organization-sort',
-            ],
-        ]);
-        return $this->render($this->viewBasePath . 'list', ['dataProvider' => $dataProvider]);
     }
 
     /**
@@ -227,25 +222,5 @@ class OrganizationController extends Controller
     public function actionUpdate($id)
     {
         return $this->render($this->viewBasePath . 'update');
-    }
-
-    /**
-     * Revoke organization or department.
-     * @param string|integer $id
-     */
-    public function actionRevoke($id)
-    {
-        try {
-            Yii::$app->user->identity->revokeOrganization($id, true);
-        } catch (InvalidParamException $ex) {
-            throw new BadRequestHttpException(Yii::t('organization', $ex->getMessage()));
-        } catch (RevokePreventedException $ex) {
-            throw new BadRequestHttpException(Yii::t('organization', $ex->getMessage()));
-        } catch (\Exception $ex) {
-            throw new ServerErrorHttpException($ex->getMessage());
-        }
-        Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
-        Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, "($id) " . $this->organizationRevokeSuccessMessage);
-        return $this->redirect(['list']);
     }
 }
