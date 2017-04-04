@@ -42,4 +42,7 @@ return [
     'The organization has children. Revoking prevented.' => '该组织存在下级。撤销已阻止。',
     'The department has children. Revoking prevented.' => '该部门存在下级。撤销已阻止。',
     'Failed to revoke.' => '未能撤销。',
+    'Successfully revoked.' => '成功撤销。',
+    'Update Organization' => '更新组织',
+    'Update Department' => '更新部门',
 ];

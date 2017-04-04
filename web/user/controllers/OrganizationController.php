@@ -18,6 +18,7 @@ use Yii;
 use yii\base\InvalidParamException;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\ServerErrorHttpException;
@@ -58,7 +59,7 @@ class OrganizationController extends Controller
         if (!is_string($this->departmentSetUpFailedMessage)) {
             $this->departmentSetUpFailedMessage = Yii::t('organization', 'Department Set Up Failed.');
         }
-        if (!is_stirng($this->organizationRevokeSuccessMessage)) {
+        if (!is_string($this->organizationRevokeSuccessMessage)) {
             $this->organizationRevokeSuccessMessage = Yii::t('organization', 'Successfully revoked.');
         }
         if (!is_string($this->organizationRevokeFailedMessage)) {
@@ -85,6 +86,12 @@ class OrganizationController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'deregister' => ['post'],
                 ],
             ],
         ];
@@ -175,6 +182,9 @@ class OrganizationController extends Controller
 
     public function actionView($id)
     {
+        $user = Yii::$app->user->identity;
+        $organization = $user->getAtOrganizations()->id($id)->one();
+        $profile = $organization->profile;
         return $this->render($this->viewBasePath . 'view');
     }
 
@@ -200,6 +210,6 @@ class OrganizationController extends Controller
         }
         Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
         Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, "($id) " . $this->organizationRevokeSuccessMessage);
-        return $this->redirect(['index']);
+        return $this->redirect(['list']);
     }
 }
