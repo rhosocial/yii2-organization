@@ -26,6 +26,24 @@ use yii\web\ServerErrorHttpException;
  */
 class RevokeAction extends Action
 {
+    public $organizationRevokeSuccessMessage;
+    public $organizationRevokeFailedMessage;
+
+    protected function initMessages()
+    {
+        if (!is_string($this->organizationRevokeSuccessMessage)) {
+            $this->organizationRevokeSuccessMessage = Yii::t('organization', 'Successfully revoked.');
+        }
+        if (!is_string($this->organizationRevokeFailedMessage)) {
+            $this->organizationRevokeFailedMessage = Yii::t('organization', 'Failed to revoke.');
+        }
+    }
+
+    public function init()
+    {
+        $this->initMessages();
+        parent::init();
+    }
     /**
      * Revoke organization or department.
      * @param string|integer $id
@@ -43,7 +61,7 @@ class RevokeAction extends Action
             throw new ServerErrorHttpException($ex->getMessage());
         }
         Yii::$app->session->setFlash(OrganizationController::SESSION_KEY_RESULT, OrganizationController::RESULT_SUCCESS);
-        Yii::$app->session->setFlash(OrganizationController::SESSION_KEY_MESSAGE, "($id) " . $this->controller->organizationRevokeSuccessMessage);
+        Yii::$app->session->setFlash(OrganizationController::SESSION_KEY_MESSAGE, "($id) " . $this->organizationRevokeSuccessMessage);
         return $this->controller->redirect(['list']);
     }
 }

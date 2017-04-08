@@ -26,17 +26,12 @@ use yii\widgets\Pjax;
 $this->title = Yii::t('organization', 'List');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="row">
-    <div class="col-md-12">
-<?= Yii::t('organization', "Here are all the organizations / departments you have joined:"); ?>
-    </div>
-</div>
-<hr/>
 <?php
 Pjax::begin([
     'id' => 'organization-pjax',
 ]);
 echo empty($dataProvider) ? '' : GridView::widget([
+    'caption' => Yii::t('organization', "Here are all the organizations / departments you have joined:"),
     'dataProvider' => $dataProvider,
     'columns' => [
         ['class' => 'yii\grid\SerialColumn'],

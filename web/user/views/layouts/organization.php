@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2016 - 2017 vistart
  * @license https://vistart.me/license/
  */
-use rhosocial\user\web\admin\controllers\UserController;
+use rhosocial\organization\web\user\controllers\OrganizationController;
 use yii\bootstrap\Alert;
 /* @var $this yii\web\View */
 $this->params['breadcrumbs'][] = [
@@ -18,16 +18,16 @@ $this->params['breadcrumbs'][] = [
 ];
 $this->params['breadcrumbs'] = array_reverse($this->params['breadcrumbs']);
 $this->beginContent('@app/views/layouts/main.php');
-if (($result = Yii::$app->session->getFlash(UserController::SESSION_KEY_RESULT)) !== null) {
-    $message = Yii::$app->session->getFlash(UserController::SESSION_KEY_MESSAGE);
-    if ($result == UserController::RESULT_SUCCESS) {
+if (($result = Yii::$app->session->getFlash(OrganizationController::SESSION_KEY_RESULT)) !== null) {
+    $message = Yii::$app->session->getFlash(OrganizationController::SESSION_KEY_MESSAGE);
+    if ($result == OrganizationController::RESULT_SUCCESS) {
         echo Alert::widget([
             'options' => [
                 'class' => 'alert-success',
             ],
             'body' => $message
         ]);
-    } elseif ($result == UserController::RESULT_FAILED) {
+    } elseif ($result == OrganizationController::RESULT_FAILED) {
         echo Alert::widget([
             'options' => [
                 'class' => 'alert-danger',

@@ -38,7 +38,8 @@ class ViewMembersAction extends Action
             'query' => $organization->getMembers(),
             'pagination' => [
                 'pageParam' => 'organization-member-page',
-                'pageSize' => 20,
+                'defaultPageSize' => 20,
+                'pageSizeParam' => 'organization-member-per-page',
             ],
             'sort' => [
                 'sortParam' => 'organization-member-sort',

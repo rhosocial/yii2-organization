@@ -34,42 +34,8 @@ class OrganizationController extends Controller
     const RESULT_FAILED = 'failed';
     const SESSION_KEY_MESSAGE = 'session_key_message';
     const SESSION_KEY_RESULT = 'session_key_result';
-    public $organizationSetUpSuccessMessage;
-    public $organizationSetUpFailedMessage;
-    public $departmentSetUpSuccessMessage;
-    public $departmentSetUpFailedMessage;
-    public $organizationRevokeSuccessMessage;
-    public $organizationRevokeFailedMessage;
 
     public $viewBasePath = '@rhosocial/organization/web/user/views/organization/';
-
-    protected function initMessages()
-    {
-        if (!is_string($this->organizationSetUpSuccessMessage)) {
-            $this->organizationSetUpSuccessMessage = Yii::t('organization' ,'Organization Set Up.');
-        }
-        if (!is_string($this->organizationSetUpFailedMessage)) {
-            $this->organizationSetUpFailedMessage = Yii::t('organization', 'Organization Set Up Failed.');
-        }
-        if (!is_string($this->departmentSetUpSuccessMessage)) {
-            $this->departmentSetUpSuccessMessage = Yii::t('organization' ,'Department Set Up.');
-        }
-        if (!is_string($this->departmentSetUpFailedMessage)) {
-            $this->departmentSetUpFailedMessage = Yii::t('organization', 'Department Set Up Failed.');
-        }
-        if (!is_string($this->organizationRevokeSuccessMessage)) {
-            $this->organizationRevokeSuccessMessage = Yii::t('organization', 'Successfully revoked.');
-        }
-        if (!is_string($this->organizationRevokeFailedMessage)) {
-            $this->organizationRevokeFailedMessage = Yii::t('organization', 'Failed to revoke.');
-        }
-    }
-
-    public function init()
-    {
-        $this->initMessages();
-        parent::init();
-    }
 
     /**
      * Get organization by specific parameter.
@@ -100,6 +66,9 @@ class OrganizationController extends Controller
     public function actions()
     {
         return [
+            'add-new-member' => [
+                'class' => 'rhosocial\organization\web\user\controllers\organization\AddNewMemberAction',
+            ],
             'list' => [
                 'class' => 'rhosocial\organization\web\user\controllers\organization\ListAction',
             ],
@@ -108,6 +77,12 @@ class OrganizationController extends Controller
             ],
             'view-members' => [
                 'class' => 'rhosocial\organization\web\user\controllers\organization\ViewMembersAction',
+            ],
+            'set-up-organization' => [
+                'class' => 'rhosocial\organization\web\user\controllers\organization\SetUpOrganizationAction',
+            ],
+            'set-up-department' => [
+                'class' => 'rhosocial\organization\web\user\controllers\organization\SetUpDepartmentAction',
             ],
         ];
     }
@@ -154,61 +129,6 @@ class OrganizationController extends Controller
     public function actionIndex()
     {
         return $this->render($this->viewBasePath . 'index');
-    }
-
-    /**
-     * @return string the rendering result.
-     */
-    public function actionSetUpOrganization()
-    {
-        $model = new SetUpForm(['user' => Yii::$app->user->identity]);
-        if ($model->load(Yii::$app->request->post())) {
-            try {
-                if (($result = $model->setUpOrganization()) === true) {
-                    Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
-                    Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, '(' . $model->getUser()->lastSetUpOrganization->getID() . ') ' . $this->organizationSetUpSuccessMessage);
-                    return $this->redirect(['list']);
-                }
-                if ($result instanceof \Exception) {
-                    throw $result;
-                }
-            } catch (\Exception $ex) {
-                Yii::error($ex->getMessage(), __METHOD__);
-                Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_FAILED);
-                Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->organizationSetUpFailedMessage);
-            }
-        }
-        return $this->render($this->viewBasePath . 'set-up-organization', ['model' => $model]);
-    }
-
-    /**
-     * Set up department.
-     * @param string $parent Parent organization or department ID.
-     * @return string the rendering result.
-     */
-    public function actionSetUpDepartment($parent)
-    {
-        $model = new SetUpForm(['user' => Yii::$app->user->identity, 'parent' => $parent]);
-        if (!$model->getParent()) {
-            throw new BadRequestHttpException(Yii::t('organization', 'Parent Organization/Department Not Exist.'));
-        }
-        if ($model->load(Yii::$app->request->post())) {
-            try {
-                if (($result = $model->setUpDepartment()) === true) {
-                    Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_SUCCESS);
-                    Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, '(' . $model->getUser()->lastSetUpOrganization->getID() . ') ' . $this->departmentSetUpSuccessMessage);
-                    return $this->redirect(['list']);
-                }
-                if ($result instanceof \Exception) {
-                    throw $result;
-                }
-            } catch (\Exception $ex) {
-                Yii::error($ex->getMessage(), __METHOD__);
-                Yii::$app->session->setFlash(self::SESSION_KEY_RESULT, self::RESULT_FAILED);
-                Yii::$app->session->setFlash(self::SESSION_KEY_MESSAGE, $this->departmentSetUpFailedMessage);
-            }
-        }
-        return $this->render($this->viewBasePath . 'set-up-organization', ['model' => $model]);
     }
 
     public function actionView($id)

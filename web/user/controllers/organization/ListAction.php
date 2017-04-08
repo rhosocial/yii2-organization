@@ -29,7 +29,8 @@ class ListAction extends Action
             'query' => $identity->getAtOrganizations(),
             'pagination' => [
                 'pageParam' => 'oganization-page',
-                'pageSize' => 20,
+                'defaultPageSize' => 20,
+                'pageSizeParam' => 'organization-per-page',
             ],
             'sort' => [
                 'sortParam' => 'organization-sort',

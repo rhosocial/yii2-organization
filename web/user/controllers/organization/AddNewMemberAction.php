@@ -21,12 +21,12 @@ use yii\base\Action;
 class AddNewMemberAction extends Action
 {
     /**
-     * 
+     * Add new member.
      * @param Organization|string|integer $organization
      * @return string rendering result.
      */
     public function run($organization)
     {
-        return $this->getController()->render($this->getController()->viewBasePath . 'add-new-member');
+        return $this->controller->render($this->controller->viewBasePath . 'add-new-member');
     }
 }
