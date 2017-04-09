@@ -12,12 +12,10 @@
 
 namespace rhosocial\organization\web\user\controllers;
 
-use rhosocial\organization\forms\SetUpForm;
 use rhosocial\organization\Organization;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\UnauthorizedHttpException;
 

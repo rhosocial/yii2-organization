@@ -10,10 +10,3 @@
  * @license https://vistart.me/license/
  */
 
-use rhosocial\organization\Organization;
-use yii\data\ActiveDataProvider;
-use yii\grid\GridView;
-use yii\web\View;
-
-/* @var $this View */
-/* @var $dataProvider ActiveDataProvider */

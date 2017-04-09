@@ -32,6 +32,8 @@ use yii\base\InvalidParamException;
  * @property string $guidAttribute GUID Attribute.
  * @property-read Member[] $ofMembers
  * @property-read Organization[] $atOrganizations
+ * @property-read Organization[] $atOrganizationsOnly
+ * @property-read Organization[] $atDepartmentsOnly
  * @property-read Organization[] $creatorsAtOrganizations
  * @property-read Organization[] $administratorsAtOrganizations
  *
@@ -104,6 +106,24 @@ trait UserOrganizationTrait
     public function getAtOrganizations()
     {
         return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofMembers');
+    }
+
+    /**
+     * 
+     * @return OrganizationQuery
+     */
+    public function getAtOrganizationsOnly()
+    {
+        return $this->getAtOrganizations()->andWhere(['type' => Organization::TYPE_ORGANIZATION]);
+    }
+
+    /**
+     * 
+     * @return OrganizationQuery
+     */
+    public function getAtDepartmentsOnly()
+    {
+        return $this->getAtOrganizations()->andWhere(['type' => Organization::TYPE_DEPARTMENT]);
     }
 
     /**

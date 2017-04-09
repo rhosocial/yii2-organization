@@ -10,10 +10,18 @@
  * @license https://vistart.me/license/
  */
 
-use rhosocial\organization\Organization;
-use yii\data\ActiveDataProvider;
-use yii\grid\GridView;
-use yii\web\View;
+namespace rhosocial\organization\user\controllers\organization;
 
-/* @var $this View */
-/* @var $dataProvider ActiveDataProvider */
+use yii\base\Action;
+
+/**
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
+class DepartmentAction extends Action
+{
+    public function run($id)
+    {
+        
+    }
+}
