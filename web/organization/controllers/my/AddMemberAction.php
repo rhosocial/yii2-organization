@@ -13,11 +13,10 @@
 namespace rhosocial\organization\web\organization\controllers\my;
 
 use rhosocial\organization\exceptions\UnauthorizedManageMemberException;
-use rhosocial\organization\web\organization\Module;
 use rhosocial\organization\Organization;
 use rhosocial\organization\rbac\permissions\ManageMember;
+use rhosocial\organization\web\organization\Module;
 use rhosocial\user\User;
-use rhosocial\user\UserProfileSearch;
 use Yii;
 use yii\base\Action;
 use yii\web\ServerErrorHttpException;
@@ -45,17 +44,45 @@ class AddMemberAction extends Action
         return true;
     }
 
-    public function run($org, $user = null)
+    /**
+     * Add member.
+     * @param Organization $org
+     * @param User|string|integer $user
+     * @return boolean
+     */
+    protected function addMember($org, &$user)
+    {
+        return $org->addMember($user);
+    }
+
+    public function run($org, $u = null)
     {
         $organization = Module::getOrganization($org);
         $user = Yii::$app->user->identity;
         static::checkAccess($organization, $user);
+
+        // If $u is not empty and the method is Post, it is considered to be a adding member operation.
+        if (!empty($u) && Yii::$app->request->isPost) {
+            $member = $u;
+            if ($this->addMember($organization, $member)) {
+                Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, "($u) " . Yii::t('organization', 'Member added.'));
+                return $this->controller->redirect(['add-member', 'org' => $org]);
+            }
+            Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, Yii::t('organization', 'Failed to add member.'));
+            return $this->controller->redirect(['add-member','org' => $org]);
+        }
         if (!class_exists($this->controller->userProfileSearchClass)) {
             throw new ServerErrorHttpException('Unknown User Profile View.');
         }
         $class = $this->controller->userProfileSearchClass;
         $searchModel = new $class();
         $dataProvider = $searchModel->search(Yii::$app->request->post());
-        return $this->controller->render('add-member', ['org' => $org, 'dataProvider' => $dataProvider, 'searchModel' => $searchModel]);
+        return $this->controller->render('add-member', [
+            'organization' => $organization,
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel
+        ]);
     }
 }

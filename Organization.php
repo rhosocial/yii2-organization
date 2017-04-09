@@ -204,9 +204,15 @@ class Organization extends User
         }
         $model = null;
         if ($member instanceof Member) {
+            if (!$member->getIsNewRecord()) {
+                return false;
+            }
             $model = $this->createMemberModel($member);
         }
         if (($member instanceof User) || is_string($member) || is_int($member)) {
+            if ($this->hasMember($member)) {
+                return false;
+            }
             $model = $this->createMemberModelWithUser($member);
         }
         $member = $model;
@@ -242,10 +248,9 @@ class Organization extends User
             'organization' => $this,
             'nickname' => '',
         ];
-        if ($user->profile) {
-            $config['nickname'] = $user->profile->nickname;
-        }
-        return $this->createMember($config);
+        $member = $this->createMember($config);
+        $member->nickname = $member->memberUser->profile->nickname;
+        return $member;
     }
 
     /**
@@ -371,7 +376,7 @@ class Organization extends User
 
     /**
      * Check whether the current organization has a member.
-     * @param User $user
+     * @param User|string|integer $user User instance, GUID or ID.
      * @return boolean
      */
     public function hasMember($user)

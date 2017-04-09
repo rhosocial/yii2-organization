@@ -55,6 +55,8 @@ return [
     'View Members' => '查看成员',
     'Add New Member' => '添加新成员',
     'Add member' => '添加成员',
+    'Member added.' => '成员已添加',
+    'Failed to add member.' => '添加成员失败',
     'Department Administrator' => '部门管理员',
     'Department Creator' => '部门创建人',
     'Organization Administrator' => '组织管理员',
@@ -70,4 +72,5 @@ return [
     'You are not a member of the organization.' => '您不是该组织的成员。',
     'Here are all members of the organization / department:' => '以下为该组织/部门的成员：',
     'You do not have permission to manage member.' => '您没有权限管理成员。',
+    'Are you sure to add this user to the organization / department?' => '您确定要将此用户添加到该组织/部门吗？',
 ];

@@ -41,7 +41,7 @@ class MemberQuery extends BaseBlameableQuery
             return $this;
         }
         $class = $model->memberUserClass;
-        if (is_int($user)) {
+        if (is_numeric($user)) {
             $user = $class::find()->id($user)->one();
         }
         if ($user instanceof $class) {
