@@ -54,6 +54,7 @@ return [
     'Update Department' => '更新部门',
     'View Members' => '查看成员',
     'Add New Member' => '添加新成员',
+    'Add member' => '添加成员',
     'Department Administrator' => '部门管理员',
     'Department Creator' => '部门创建人',
     'Organization Administrator' => '组织管理员',
@@ -68,4 +69,5 @@ return [
     'If you do not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.' => '如果您看不到“开设新组织”按钮，则表示当前登录用户没有权限开设新组织，或组织数量已达上限。',
     'You are not a member of the organization.' => '您不是该组织的成员。',
     'Here are all members of the organization / department:' => '以下为该组织/部门的成员：',
+    'You do not have permission to manage member.' => '您没有权限管理成员。',
 ];

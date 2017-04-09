@@ -12,10 +12,12 @@
 
 namespace rhosocial\organization\web\organization\controllers;
 
+use rhosocial\user\UserProfileSearch;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
+use yii\web\UnauthorizedHttpException;
 
 /**
  * @version 1.0
@@ -24,6 +26,11 @@ use yii\web\Controller;
 class MyController extends Controller
 {
     public $layout = 'main';
+
+    /**
+     * @var string UseProfileSearch Class.
+     */
+    public $userProfileSearchClass = UserProfileSearch::class;
 
     public function actions()
     {
