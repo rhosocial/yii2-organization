@@ -73,4 +73,5 @@ return [
     'Here are all members of the organization / department:' => '以下为该组织/部门的成员：',
     'You do not have permission to manage member.' => '您没有权限管理成员。',
     'Are you sure to add this user to the organization / department?' => '您确定要将此用户添加到该组织/部门吗？',
+    'Are you sure you want to revoke this organization / department?' => '您确定要撤销此组织/部门吗？',
 ];
