@@ -166,6 +166,15 @@ trait UserOrganizationTrait
     }
 
     /**
+     *
+     * @return OrganizationQuery
+     */
+    public function getCreatorsAtOrganizationsOnly()
+    {
+        return $this->getCreatorsAtOrganizations()->andWhere(['type' => Organization::TYPE_ORGANIZATION]);
+    }
+
+    /**
      * 
      * @return OrganizationQuery
      */
@@ -471,7 +480,7 @@ trait UserOrganizationTrait
         if ($limit === false) {
             return false;
         }
-        $count = (int)$this->getCreatorsAtOrganizations()->andWhere(['type' => Organization::TYPE_ORGANIZATION])->count();
+        $count = (int)$this->getCreatorsAtOrganizationsOnly()->count();
         return $count >= $limit;
     }
 }
