@@ -23,6 +23,7 @@ use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\OrganizationQuery;
 use rhosocial\organization\queries\MemberQuery;
 use Yii;
+use yii\base\InvalidParamException;
 use yii\base\InvalidValueException;
 use yii\db\IntegrityException;
 
@@ -220,6 +221,10 @@ class Member extends BaseBlameableModel
     /**
      * Revoke role.
      * @param Role $role
+     * @throws InvalidParamException
+     * @throws IntegrityException
+     * @throws \Exception
+     * @return boolean
      */
     public function revokeRole($role)
     {
@@ -235,7 +240,7 @@ class Member extends BaseBlameableModel
             $assignment = Yii::$app->authManager->getAssignment($role, $user);
             if ($assignment) {
                 $count = (int)($user->getOfMembers()->role($role)->count());
-                if ($count == 1) {
+                if ($count <= 1) {
                     Yii::$app->authManager->revoke($role, $user);
                 }
             }
@@ -256,6 +261,7 @@ class Member extends BaseBlameableModel
      * Revoke administrator.
      * @return boolean
      * @throws IntegrityException
+     * @throws \Exception
      */
     public function revokeAdministrator()
     {

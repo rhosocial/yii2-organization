@@ -377,11 +377,7 @@ trait UserOrganizationTrait
         if (!($organization instanceof $this->organizationClass))
         {
             $class = $this->organizationClass;
-            if (is_numeric($organization)) {
-                $organization = $class::find()->id($organization)->one();
-            } elseif (is_string($organization)) {
-                $organization = $class::find()->guid($organization)->one();
-            }
+            $organization = $class::find()->guidOrId($organization)->one();
         }
         if (!($organization instanceof $this->organizationClass)) {
             throw new InvalidParamException('Invalid Organization.');

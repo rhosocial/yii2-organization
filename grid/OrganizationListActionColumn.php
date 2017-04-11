@@ -12,8 +12,8 @@
 
 namespace rhosocial\organization\grid;
 
-use rhosocial\user\User;
 use rhosocial\organization\rbac\permissions\ManageProfile;
+use rhosocial\organization\rbac\permissions\SetUpDepartment;
 use rhosocial\organization\Organization;
 use Yii;
 use yii\grid\ActionColumn;
@@ -27,7 +27,7 @@ use yii\helpers\Url;
  */
 class OrganizationListActionColumn extends ActionColumn
 {
-    public $template = '{view} {member} {update} {delete}';
+    public $template = '{view} {member} {add} {update} {delete}';
 
     public function init()
     {
@@ -48,6 +48,8 @@ class OrganizationListActionColumn extends ActionColumn
             /* @var $model Organization */
             if ($action == 'member') {
                 return Url::to(['member', 'org' => $model->getID()]);
+            } elseif ($action == 'add') {
+                return Url::to(['set-up-department', 'parent' => $model->getID()]);
             } elseif ($action == 'view') {
                 return Url::to(['view', 'id' => $model->getID()]);
             } elseif ($action == 'update') {
@@ -67,6 +69,9 @@ class OrganizationListActionColumn extends ActionColumn
         $this->visibleButtons = [
             'view' => true,
             'member' => true,
+            'add' => function ($model, $key, $index) {
+                return Yii::$app->user->can((new SetUpDepartment)->name, ['organization' => $model]);
+            },
             'update' => function ($model, $key, $index) {
                 return Yii::$app->user->can((new ManageProfile)->name, ['organization' => $model]);
             },
@@ -84,6 +89,7 @@ class OrganizationListActionColumn extends ActionColumn
     {
         $this->initDefaultButton('view', 'eye-open');
         $this->initDefaultButton('member', 'user');
+        $this->initDefaultButton('add', 'plus');
         $this->initDefaultButton('update', 'pencil');
         $this->initDefaultButton('delete', 'trash', [
             'data-confirm' => Yii::t('organization', 'Are you sure you want to revoke this organization / department?'),

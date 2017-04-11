@@ -112,9 +112,9 @@ class Organization extends User
         }
         $this->on(static::$eventAfterRegister, [$this, 'onAddProfile'], $this->profileConfig);
         $this->on(static::$eventAfterRegister, [$this, 'onAssignCreator'], $this->creatorModel);
-        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeCreator']);
-        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokeAdministrators']);
-        $this->on(static::$eventBeforeDeregister, [$this, 'onRevokePermissions']);
+        $this->on(static::EVENT_BEFORE_DELETE, [$this, 'onRevokeCreator']);
+        $this->on(static::EVENT_BEFORE_DELETE, [$this, 'onRevokeAdministrators']);
+        $this->on(static::EVENT_BEFORE_DELETE, [$this, 'onRevokePermissions']);
         $this->initSelfBlameableEvents();
         parent::init();
     }
@@ -320,6 +320,7 @@ class Organization extends User
     /**
      * 
      * @param Event $event
+     * @return boolean
      */
     public function onRevokeCreator($event)
     {
@@ -334,6 +335,7 @@ class Organization extends User
     /**
      * 
      * @param Event $event
+     * @return boolean
      */
     public function onRevokeAdministrators($event)
     {
@@ -345,6 +347,7 @@ class Organization extends User
         {
             $member->revokeAdministrator();
         }
+        return true;
     }
 
     /**

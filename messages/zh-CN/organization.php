@@ -66,6 +66,7 @@ return [
     'Here are all the organizations you have joined:' => '以下列出你加入的所有组织：',
     'Here are all the organizations / departments you have joined:' => '以下列出你加入的所有组织/部门：',
     'You do not have access to set up new organization.' => '您没有权限开设新组织。',
+    'You do not have access to set up new department.' => '您没有权限开设新部门。',
     'If no search criteria are specified, all organizations are displayed.' => '如果没有指定搜索条件，则显示全部组织。',
     'When the creator column is green, it indicates that the user is the current logged-in user.' => '创建人一栏底色为绿色时，表示此用户为当前登录用户。',
     'If you do not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.' => '如果您看不到“开设新组织”按钮，则表示当前登录用户没有权限开设新组织，或组织数量已达上限。',
