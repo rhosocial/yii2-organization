@@ -468,10 +468,10 @@ trait UserOrganizationTrait
      */
     public function hasReachedOrganizationLimit()
     {
-        if (empty($this->organizationLimitClass)) {
+        $class = $this->organizationLimitClass;
+        if (empty($class)) {
             return false;
         }
-        $class = $this->organizationLimitClass;
         $limit = $class::getLimit($this);
         if ($limit === false) {
             return false;

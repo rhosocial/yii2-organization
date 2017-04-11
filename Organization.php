@@ -13,6 +13,7 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\traits\SelfBlameableTrait;
+use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\base\models\queries\BaseUserQuery;
 use rhosocial\user\User;
 use rhosocial\organization\rbac\roles\DepartmentAdmin;
@@ -86,7 +87,20 @@ class Organization extends User
     public $profileClass = Profile::class;
 
     public $memberClass = Member::class;
+    public $subordinateLimitClass = SubordinateLimit::class;
+    public $memberLimitClass = MemberLimit::class;
+    /**
+     * @var Member
+     */
     private $noInitMember;
+    /**
+     * @var SubordinateLimit
+     */
+    private $noInitSubordinateLimit;
+    /**
+     * @var MemberLimit
+     */
+    private $noInitMemberLimit;
     public $creatorModel;
     public $profileConfig;
     /**
@@ -99,6 +113,30 @@ class Organization extends User
             $this->noInitMember = $class::buildNoInitModel();
         }
         return $this->noInitMember;
+    }
+
+    /**
+     * @return SubordinateLimit
+     */
+    protected function getNoInitSubordinateLimit()
+    {
+        if (!$this->noInitSubordinateLimit) {
+            $class = $this->subordinateLimitClass;
+            $this->noInitSubordinateLimit = $class::buildNoInitModel();
+        }
+        return $this->noInitSubordinateLimit;
+    }
+
+    /**
+     * @return MemberLimit
+     */
+    protected function getNoInitMemberLimit()
+    {
+        if (!$this->noInitMemberLimit) {
+            $class = $this->memberLimitClass;
+            $this->noInitMemberLimit = $class::buildNoInitModel();
+        }
+        return $this->noInitMemberLimit;
     }
 
     public function init()
@@ -178,6 +216,30 @@ class Organization extends User
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
         return $this->hasMany($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('members')->inverseOf('atOrganizations');
+    }
+
+    /**
+     * Get subordinate limit query.
+     * @return null|BaseBlameableQuery
+     */
+    public function getSubordinateLimit()
+    {
+        if (empty($this->subordinateLimitClass)) {
+            return null;
+        }
+        return $this->hasOne($this->subordinateLimitClass, [$this->guidAttribute => $this->getNoInitSubordinateLimit()->createdByAttribute]);
+    }
+
+    /**
+     * Get member limit query.
+     * @return null|BaseBlameableQuery
+     */
+    public function getMemberLimit()
+    {
+        if (empty($this->memberLimitClass)) {
+            return null;
+        }
+        return $this->hasOne($this->memberLimitClass, [$this->guidAttribute => $this->getNoInitMemberLimit()->createdByAttribute]);
     }
 
     /**
@@ -498,5 +560,41 @@ class Organization extends User
             return false;
         }
         return $member->isAdministrator();
+    }
+
+    /**
+     * Check whether this organization has reached the upper limit of subordinates.
+     * @return boolean
+     */
+    public function hasReachedSubordinateLimit()
+    {
+        $class = $this->subordinateLimitClass;
+        if (empty($class)) {
+            return false;
+        }
+        $limit = $class::getLimit($this);
+        if ($limit === false) {
+            return false;
+        }
+        $count = (int)$this->getChildren()->count();
+        return $count >= $limit->limit;
+    }
+
+    /**
+     * Check whether this organization has reached the upper limit of members.
+     * @return boolean
+     */
+    public function hasReachedMemberLimit()
+    {
+        $class = $this->memberLimitClass;
+        if (empty($class)) {
+            return false;
+        }
+        $limit = $class::getLimit($this);
+        if ($limit === false) {
+            return false;
+        }
+        $count = (int)$this->getMembers()->count();
+        return $count >= $limit->limit;
     }
 }
