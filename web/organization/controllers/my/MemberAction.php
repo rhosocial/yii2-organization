@@ -32,6 +32,7 @@ class MemberAction extends Action
      * @param Organization $org
      * @param User $user
      * @return boolean
+     * @throws OrganizationNotFoundException
      * @throws NotMemberOfOrganizationException
      */
     public static function checkAccess($org, $user)
@@ -48,6 +49,7 @@ class MemberAction extends Action
     /**
      * 
      * @param Organization|string|integer $org
+     * @return string rendering results.
      */
     public function run($org)
     {
@@ -63,7 +65,7 @@ class MemberAction extends Action
             'sort' => [
                 'sortParam' => 'member-sort',
                 'attributes' => [
-                    'id',
+                    'user_id',
                 ],
             ],
         ]);

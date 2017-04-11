@@ -75,4 +75,8 @@ return [
     'You do not have permission to manage member.' => '您没有权限管理成员。',
     'Are you sure to add this user to the organization / department?' => '您确定要将此用户添加到该组织/部门吗？',
     'Are you sure you want to revoke this organization / department?' => '您确定要撤销此组织/部门吗？',
+    'Department Administrator' => '部门管理员',
+    'Deaprtment Creator' => '部门创建人',
+    'Organization Administrator' => '组织管理员',
+    'Organization Creator' => '组织创建人',
 ];
