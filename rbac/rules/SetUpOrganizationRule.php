@@ -19,32 +19,29 @@ use Yii;
 use yii\rbac\Rule;
 
 /**
+ * Class SetUpOrganizationRule
+ * @package rhosocial\organization\rbac\rules
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class SetUpDepartmentRule extends Rule
+class SetUpOrganizationRule extends Rule
 {
-    public $name = "canSetUpDepartment";
+    public $name = 'canSetUpOrganization';
 
     /**
-     * 
-     * @param User $user
+     * @param User|int|string $user
      * @param Item $item
      * @param array $params
+     * @return boolean
      */
     public function execute($user, $item, $params)
     {
         $class = Yii::$app->user->identityClass;
-        if (is_numeric($user) || is_int($user)) {
-            $user = $class::find()->id($user)->one();
+        if (is_numeric($user) || is_int($user) || is_string($user)) {
+            $user = $class::find()->guidOrId($user)->one();
         }
-        if (is_string($user)) {
-            $user = $class::find()->guid($user)->one();
-        }
-        $organization = $params['organization'];
-        /* @var $organization Organization */// The Organization or department which is parent.
-        // If current user is creator of organization or department, he is allowed to set up a child.
-        if (!$user->isOrganizationCreator($organization) && !$user->isOrganizationAdministrator($organization)) {
+        /* @var $user User */
+        if ($user->hasReachedOrganizationLimit()) {
             return false;
         }
         return true;

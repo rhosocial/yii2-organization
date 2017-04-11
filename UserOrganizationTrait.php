@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization;
 
+use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\organization\exceptions\RevokePreventedException;
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
@@ -36,17 +37,46 @@ use yii\base\InvalidParamException;
  * @property-read Organization[] $atDepartmentsOnly
  * @property-read Organization[] $creatorsAtOrganizations
  * @property-read Organization[] $administratorsAtOrganizations
+ * @property-read OrganizationLimit $organizationLimit
  *
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
 trait UserOrganizationTrait
 {
+    /**
+     * @var string The organization class.
+     * Note: Please assign it with your own Organization class.
+     */
     public $organizationClass = Organization::class;
+
+    /**
+     * @var string The organization limit class.
+     * Note: Please assign it with your own OrganizationLimit class.
+     */
+    public $organizationLimitClass = OrganizationLimit::class;
+
+    /**
+     * @var string The member class.
+     * Note: Please assign it with your own Member class.
+     */
     public $memberClass = Member::class;
+    private $noInitOrganizationLimit;
     private $noInitOrganization;
     private $noInitMember;
     public $lastSetUpOrganization;
+
+    /**
+     * @return OrganizationLimit
+     */
+    public function getNoInitOrganizationLimit()
+    {
+        if (!$this->noInitOrganizationLimit) {
+            $class = $this->organizationLimitClass;
+            $this->noInitOrganizationLimit = $class::buildNoInitModel();
+        }
+        return $this->noInitOrganizationLimit;
+    }
     /**
      * @return Organization
      */
@@ -142,6 +172,18 @@ trait UserOrganizationTrait
     public function getAdministratorsAtOrganizations()
     {
         return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofAdministrators');
+    }
+
+    /**
+     * Get Organization Limit Query.
+     * @return BaseBlameableQuery
+     */
+    public function getOrganizationLimit()
+    {
+        if (empty($this->organizationLimitClass)) {
+            return null;
+        }
+        return $this->hasOne($this->organizationLimitClass, [$this->guidAttribute => $this->getNoInitOrganizationLimit()->createdByAttribute]);
     }
 
     /**
@@ -413,5 +455,23 @@ trait UserOrganizationTrait
         {
             $sender->revokeOrganization($org);
         }
+    }
+
+    /**
+     * Check whether the current user has reached the upper limit of organizations.
+     * @return boolean the upper limit of organizations which current could be set up.
+     */
+    public function hasReachedOrganizationLimit()
+    {
+        if (empty($this->organizationLimitClass)) {
+            return false;
+        }
+        $class = $this->organizationLimitClass;
+        $limit = $class::getLimit($this);
+        if ($limit === false) {
+            return false;
+        }
+        $count = (int)$this->getCreatorsAtOrganizations()->andWhere(['type' => Organization::TYPE_ORGANIZATION])->count();
+        return $count >= $limit;
     }
 }

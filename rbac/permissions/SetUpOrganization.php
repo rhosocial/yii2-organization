@@ -13,6 +13,7 @@
 namespace rhosocial\organization\rbac\permissions;
 
 use rhosocial\user\rbac\Permission;
+use rhosocial\organization\rbac\rules\SetUpOrganizationRule;
 
 /**
  * This class described a `setUpOrganization` permission, which allows user
@@ -33,4 +34,9 @@ class SetUpOrganization extends Permission
      * @inheritdoc
      */
     public $description = 'Set up an organization.';
+
+    public function init()
+    {
+        $this->ruleName = empty($this->ruleName) ? (new SetUpOrganizationRule)->name : $this->ruleName;
+    }
 }

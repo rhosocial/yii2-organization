@@ -16,6 +16,7 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <file>UserOrganizationTrait.php</file>
             <file>Organization.php</file>
+            <file>OrganizationLimit.php</file>
             <file>Profile.php</file>
             <file>Member.php</file>
             <directory>console</directory>
