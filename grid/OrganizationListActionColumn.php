@@ -95,8 +95,8 @@ class OrganizationListActionColumn extends ActionColumn
             'aria-label' => Yii::t('organization', 'Member'),
         ]);
         $this->initDefaultButton('add', 'plus', [
-            'title' => Yii::t('organization', 'Add'),
-            'aria-label' => Yii::t('organization', 'Add'),
+            'title' => Yii::t('organization', 'Set Up New Department'),
+            'aria-label' => Yii::t('organization', 'Set Up New Department'),
         ]);
         $this->initDefaultButton('update', 'pencil');
         $this->initDefaultButton('delete', 'trash', [

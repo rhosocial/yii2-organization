@@ -265,7 +265,8 @@ class Organization extends User
 
     /**
      * Add member to organization.
-     * @param Member|User|string|integer $member
+     * @param Member|User|string|integer $member Member or User model, or User ID or GUID.
+     * If member is created, it will be re-assigned to this parameter.
      * @see createMemberModel
      * @see createMemberModelWithUser
      * @return boolean
@@ -273,6 +274,9 @@ class Organization extends User
     public function addMember(&$member)
     {
         if ($this->getIsNewRecord()) {
+            return false;
+        }
+        if ($this->hasReachedMemberLimit()) {
             return false;
         }
         $model = null;
@@ -592,7 +596,7 @@ class Organization extends User
             return false;
         }
         $count = (int)$this->getChildren()->count();
-        return $count >= $limit->limit;
+        return $count >= $limit;
     }
 
     /**
@@ -610,6 +614,6 @@ class Organization extends User
             return false;
         }
         $count = (int)$this->getMembers()->count();
-        return $count >= $limit->limit;
+        return $count >= $limit;
     }
 }

@@ -47,6 +47,9 @@ class SetUpDepartmentRule extends Rule
         if (!$user->isOrganizationCreator($organization) && !$user->isOrganizationAdministrator($organization)) {
             return false;
         }
+        if ($organization->hasReachedSubordinateLimit()) {
+            return false;
+        }
         return true;
     }
 }

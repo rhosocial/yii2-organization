@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization\web\organization\controllers\my;
 
+use rhosocial\organization\exceptions\NumberOfMembersExceededException;
 use rhosocial\organization\exceptions\UnauthorizedManageMemberException;
 use rhosocial\organization\Organization;
 use rhosocial\organization\rbac\permissions\ManageMember;
@@ -45,6 +46,9 @@ class AddMemberAction extends Action
         MemberAction::checkAccess($org, $user);
         if (!Yii::$app->authManager->checkAccess($user->getGUID(), (new ManageMember)->name, ['organization' => $org])) {
             throw new UnauthorizedManageMemberException();
+        }
+        if ($org->hasReachedMemberLimit()) {
+            throw new NumberOfMembersExceededException();
         }
         return true;
     }

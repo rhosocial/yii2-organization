@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization\web\organization\controllers\my;
 
+use rhosocial\organization\exceptions\NumberOfOrganizationsExceededException;
 use rhosocial\organization\forms\SetUpForm;
 use rhosocial\organization\web\organization\Module;
 use Yii;
@@ -44,7 +45,11 @@ class SetUpOrganizationAction extends Action
 
     public function run()
     {
-        $model = new SetUpForm(['user' => Yii::$app->user->identity]);
+        $user = Yii::$app->user->identity;
+        if ($user->hasReachedOrganizationLimit()) {
+            throw new NumberOfOrganizationsExceededException();
+        }
+        $model = new SetUpForm(['user' => $user]);
         if ($model->load(Yii::$app->request->post())) {
             try {
                 if (($result = $model->setUpOrganization()) === true) {

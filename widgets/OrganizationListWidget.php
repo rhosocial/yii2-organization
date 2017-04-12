@@ -50,6 +50,14 @@ class OrganizationListWidget extends Widget
     public $orgOnly = false;
     public $showGUID = false;
 
+    /**
+     * @var boolean|array Tips.
+     * If you do not want to show tips, please set false.
+     * If you want to show default tips, please set true.
+     * If you want to show tips including default ones and your owns, please set an array contains all tip text.
+     */
+    public $tips = true;
+
     public function init()
     {
         if (empty($this->dataProvider)) {
@@ -71,6 +79,7 @@ class OrganizationListWidget extends Widget
             'showGUID' => $this->showGUID,
             'additionalColumns' => $this->additionalColumns,
             'actionColumn' => $this->actionColumn,
+            'tips' => $this->tips,
         ]);
     }
 }

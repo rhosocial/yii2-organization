@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization\web\organization\controllers;
 
+use rhosocial\organization\exceptions\NumberOfOrganizationsExceededException;
 use rhosocial\user\UserProfileSearch;
 use Yii;
 use yii\filters\AccessControl;
@@ -74,6 +75,9 @@ class MyController extends Controller
                             return !Yii::$app->user->can('setUpOrganization');
                         },
                         'denyCallback' => function ($rule, $action) {
+                            if (Yii::$app->user->identity->hasReachedOrganizationLimit()) {
+                                throw new NumberOfOrganizationsExceededException();
+                            }
                             throw new UnauthorizedHttpException(Yii::t('organization', 'You do not have access to set up new organization.'));
                         },
                     ],
