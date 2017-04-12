@@ -44,6 +44,17 @@ $columns = [
         'visible' => !$orgOnly,
     ],
     'id',
+    'name' => [
+        'class' => DataColumn::class,
+        'attribute' => 'name',
+        'label' => Yii::t('organization', 'Name'),
+        'content' => function ($model, $Key, $index, $column) {
+            if (!$model->profile) {
+                return null;
+            }
+            return $model->profile->name;
+        },
+    ],
     'parent' => [
         'class' => DataColumn::class,
         'attribute' => 'parent',
