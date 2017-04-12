@@ -12,12 +12,10 @@
 
 use rhosocial\organization\Organization;
 use rhosocial\organization\grid\AddMemberActionColumn;
-use rhosocial\user\User;
 use rhosocial\user\widgets\UserProfileSearchWidget;
 use rhosocial\user\widgets\UserListWidget;
 use yii\data\ActiveDataProvider;
-use yii\grid\ActionColumn;
-use yii\helpers\Url;
+use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Pjax;
 
@@ -49,3 +47,10 @@ echo UserListWidget::widget([
     ],
 ]);
 Pjax::end();
+?>
+<div class="row">
+    <div class="col-md-12">
+        <?= Html::a(Yii::t('organization', 'Back to List'), ['index'], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('organization', 'Member'), ['member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
+    </div>
+</div>

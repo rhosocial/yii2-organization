@@ -78,6 +78,6 @@ class MemberAction extends Action
             ],
         ]);
 
-        return $this->controller->render('member', ['dataProvider' => $dataProvider]);
+        return $this->controller->render('member', ['dataProvider' => $dataProvider, 'organization' => $organization, 'user' => Yii::$app->user->identity]);
     }
 }

@@ -48,9 +48,9 @@ Pjax::end();
     </ol>
 </div>
 <div class="row">
-    <?php if (Yii::$app->authManager->checkAccess($user, (new SetUpOrganization)->name)) :?>
-    <div class="col-md-3">
+    <div class="col-md-12">
+        <?php if (Yii::$app->authManager->checkAccess($user, (new SetUpOrganization)->name)) :?>
         <?= Html::a(Yii::t('organization', 'Set Up New Organization'), ['set-up-organization'], ['class' => 'btn btn-primary']) ?>
+        <?php endif; ?>
     </div>
-    <?php endif; ?>
 </div>

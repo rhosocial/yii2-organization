@@ -84,6 +84,6 @@ return [
     'Member Removed.' => '成员已移除。',
     'Failed to Remove.' => '未能移除。',
     'If no search criteria are specified, all members are displayed.' => '如果没有指定搜索条件，则显示全部成员。',
-    'When the User ID column is green, it indicates that the user is the current logged-in user.' => '创建人一栏为绿色时，表示此用户为当前登录用户。',
+    'When the User ID column is green, it indicates that the user is the current logged-in user.' => '用户账户一栏为绿色时，表示此用户为当前登录用户。',
     'If you can not see the "Update" or "Remove Member" button, it means that the you do not have corresponding permission.' => '如果您看不到“更新”或“移除成员”按钮，则意味着您没有相应权限。',
 ];

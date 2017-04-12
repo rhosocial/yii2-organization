@@ -55,6 +55,9 @@ class AddMemberActionColumn extends ActionColumn
     public function init()
     {
         parent::init();
+        if (!isset($this->header)) {
+            $this->header = Yii::t('user', 'Action');
+        }
         $this->initUrlCreator();
         $this->initVisibleButtons();
     }

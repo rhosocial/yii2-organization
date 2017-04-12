@@ -10,6 +10,7 @@
  * @license https://vistart.me/license/
  */
 
+use rhosocial\organization\Member;
 use rhosocial\organization\grid\MemberListActionColumn;
 use yii\data\ActiveDataProvider;
 use yii\grid\DataColumn;
@@ -30,7 +31,14 @@ echo GridView::widget([
             'label' => Yii::t('user', 'User ID'),
             'content' => function ($model, $key, $index, $column) {
                 return $model->memberUser->getID();
-            }
+            },
+            'contentOptions' => function ($model, $key, $index, $column) {
+                /* @var $model Member */
+                if ($model->memberUser->getID() != Yii::$app->user->identity->getID()) {
+                    return [];
+                }
+                return ['bgcolor' => '#00FF00'];
+            },
         ],
         'name' => [
             'class' => DataColumn::class,
@@ -85,18 +93,18 @@ echo GridView::widget([
 ]);
 ?>
 <?php if ($tips): ?>
-<div class="well well-sm">
-    <?= Yii::t('user', 'Directions:') ?>
-    <ol>
-        <li><?= Yii::t('organization', 'If no search criteria are specified, all members are displayed.') ?></li>
-        <li><?= Yii::t('organization', 'When the User ID column is green, it indicates that the user is the current logged-in user.') ?></li>
-        <li><?= Yii::t('user', 'If the creation time is the same as the last update time, there is no change.') ?></li>
-        <li><?= Yii::t('organization', 'If you can not see the "Update" or "Remove Member" button, it means that the you do not have corresponding permission.') ?></li>
-        <?php if (is_array($tips)): ?>
-            <?php foreach ($tips as $tip): ?>
-                <li><?= $tip ?></li>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </ol>
-</div>
+    <div class="well well-sm">
+        <?= Yii::t('user', 'Directions:') ?>
+        <ol>
+            <li><?= Yii::t('organization', 'If no search criteria are specified, all members are displayed.') ?></li>
+            <li><?= Yii::t('organization', 'When the User ID column is green, it indicates that the user is the current logged-in user.') ?></li>
+            <li><?= Yii::t('user', 'If the creation time is the same as the last update time, there is no change.') ?></li>
+            <li><?= Yii::t('organization', 'If you can not see the "Update" or "Remove Member" button, it means that the you do not have corresponding permission.') ?></li>
+            <?php if (is_array($tips)): ?>
+                <?php foreach ($tips as $tip): ?>
+                    <li><?= $tip ?></li>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </ol>
+    </div>
 <?php endif; ?>

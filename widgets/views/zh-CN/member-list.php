@@ -10,6 +10,7 @@
  * @license https://vistart.me/license/
  */
 
+use rhosocial\organization\Member;
 use rhosocial\organization\grid\MemberListActionColumn;
 use yii\data\ActiveDataProvider;
 use yii\grid\DataColumn;
@@ -30,7 +31,14 @@ echo GridView::widget([
             'label' => Yii::t('user', 'User ID'),
             'content' => function ($model, $key, $index, $column) {
                 return $model->memberUser->getID();
-            }
+            },
+            'contentOptions' => function ($model, $key, $index, $column) {
+                /* @var $model Member */
+                if ($model->memberUser->getID() != Yii::$app->user->identity->getID()) {
+                    return [];
+                }
+                return ['bgcolor' => '#00FF00'];
+            },
         ],
         'name' => [
             'class' => DataColumn::class,
