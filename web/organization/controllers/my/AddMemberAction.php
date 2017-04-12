@@ -78,11 +78,7 @@ class AddMemberAction extends Action
             Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, Yii::t('organization', 'Failed to add member.'));
             return $this->controller->redirect(['add-member','org' => $org]);
         }
-        if (!class_exists($this->controller->userProfileSearchClass)) {
-            throw new ServerErrorHttpException('Unknown User Profile View.');
-        }
-        $class = $this->controller->userProfileSearchClass;
-        $searchModel = new $class();
+        $searchModel = Yii::$app->user->identity->getSearchModel();
         $dataProvider = $searchModel->search(Yii::$app->request->post());
         return $this->controller->render('add-member', [
             'organization' => $organization,

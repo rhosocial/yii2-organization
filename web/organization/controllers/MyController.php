@@ -27,11 +27,6 @@ class MyController extends Controller
 {
     public $layout = 'main';
 
-    /**
-     * @var string UseProfileSearch Class.
-     */
-    public $userProfileSearchClass = UserProfileSearch::class;
-
     public function actions()
     {
         return [
