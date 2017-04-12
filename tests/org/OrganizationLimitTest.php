@@ -13,8 +13,7 @@
 namespace rhosocial\organization\tests\org;
 
 use rhosocial\organization\tests\data\ar\org\Organization;
-use rhosocial\organization\tests\data\ar\org\OrganizationLimit;
-use rhosocial\organization\tests\data\ar\profile\Profile;
+use rhosocial\organization\tests\data\ar\user\OrganizationLimit;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 use rhosocial\organization\rbac\permissions\SetUpOrganization;
@@ -71,8 +70,8 @@ class OrganizationLimitTest extends TestCase
         $this->assertEquals($limit->defaultLimit, $limit->limit);
         $this->assertFalse($this->user->hasReachedOrganizationLimit());
 
-        $this->organization = $this->user->setUpOrganization($this->faker->name);
-        $this->assertTrue($this->organization);
+        $result = $this->user->setUpOrganization($this->faker->name);
+        $this->assertTrue($result);
         $this->assertEquals(1, (int)$this->user->getCreatorsAtOrganizations()->andWhere(['type' => Organization::TYPE_ORGANIZATION])->count());
         $limit = OrganizationLimit::getLimit($this->user);
         $this->assertEquals($noInit->defaultLimit, $limit);
