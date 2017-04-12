@@ -45,6 +45,8 @@ class AddMemberActionColumn extends ActionColumn
     {
         $buttonAddOptions = [
             'data-method' => 'post',
+            'title' => Yii::t('organization', 'Add'),
+            'aria-label' => Yii::t('organization', 'Add'),
         ];
         if ($this->addConfirm) {
             $buttonAddOptions['data-confirm'] = Yii::t('organization', 'Are you sure to add this user to the organization / department?');

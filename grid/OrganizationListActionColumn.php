@@ -90,12 +90,20 @@ class OrganizationListActionColumn extends ActionColumn
     protected function initDefaultButtons()
     {
         $this->initDefaultButton('view', 'eye-open');
-        $this->initDefaultButton('member', 'user');
-        $this->initDefaultButton('add', 'plus');
+        $this->initDefaultButton('member', 'user', [
+            'title' => Yii::t('organization', 'Member'),
+            'aria-label' => Yii::t('organization', 'Member'),
+        ]);
+        $this->initDefaultButton('add', 'plus', [
+            'title' => Yii::t('organization', 'Add'),
+            'aria-label' => Yii::t('organization', 'Add'),
+        ]);
         $this->initDefaultButton('update', 'pencil');
         $this->initDefaultButton('delete', 'trash', [
             'data-confirm' => Yii::t('organization', 'Are you sure you want to revoke this organization / department?'),
             'data-method' => 'post',
+            'title' => Yii::t('organization', 'Remove'),
+            'aria-label' => Yii::t('organization', 'Remove'),
         ]);
     }
 }

@@ -77,6 +77,8 @@ class MemberListActionColumn extends ActionColumn
         $this->initDefaultButton('delete', 'trash', [
             'data-confirm' => Yii::t('organization', 'Are you sure you want to remove this member from the organization / department?'),
             'data-method' => 'post',
+            'title' => Yii::t('organization', 'Remove'),
+            'aria-label' => Yii::t('organization', 'Remove'),
         ]);
     }
 }

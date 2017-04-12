@@ -45,6 +45,9 @@ echo UserListWidget::widget([
         'class' => AddMemberActionColumn::class,
         'organization' => $organization,
     ],
+    'tips' => [
+        Yii::t('organization', 'If you can not see the "Add" button, it means that the user is already a member of the current organization / department.')
+    ],
 ]);
 Pjax::end();
 ?>
