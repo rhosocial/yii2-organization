@@ -31,7 +31,7 @@ class UnauthorizedManageMemberException extends UnauthorizedHttpException
      */
     public function __construct($code = 0, \Exception $previous = null)
     {
-        parent::__construct(Yii::t('organization', 'You do not have permission to manage member.'), $code, $previous);
+        parent::__construct(Yii::t('organization', 'You do not have permission to manage the members of this organization / department.'), $code, $previous);
     }
 
     public function getName()

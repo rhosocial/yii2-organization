@@ -39,6 +39,7 @@ use yii\db\IntegrityException;
  * 
  * @property string $department_guid
  * @property string $member_guid
+ * @property Organization $organization
  * @property User $memberUser
  *
  * @version 1.0
@@ -299,6 +300,16 @@ class Member extends BaseBlameableModel
     public static function tableName()
     {
         return '{{%organization_member}}';
+    }
+
+    /**
+     * Find.
+     * Friendly to IDE.
+     * @return MemberQuery
+     */
+    public static function find()
+    {
+        return parent::find();
     }
 
     /**

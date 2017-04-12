@@ -141,5 +141,5 @@ echo GridView::widget([
     'columns' => $columns,
     'tableOptions' => [
         'class' => 'table table-striped'
-    ]
+    ],
 ]);

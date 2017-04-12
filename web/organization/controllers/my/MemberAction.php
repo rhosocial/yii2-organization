@@ -29,6 +29,13 @@ class MemberAction extends Action
 {
     /**
      * Check access.
+     * Check whether the organization is valid or not.
+     * The organization is null or new record, it will be considered as invalid. If so, the OrganizationNotFoundException
+     * will be thrown.
+     *
+     * Check whether the organization has the member ($user).
+     * If not, the NotMemberOfOrganizationException will be thrown.
+     *
      * @param Organization $org
      * @param User $user
      * @return boolean
@@ -37,7 +44,7 @@ class MemberAction extends Action
      */
     public static function checkAccess($org, $user)
     {
-        if (!$org) {
+        if (!$org || $org->getIsNewRecord()) {
             throw new OrganizationNotFoundException();
         }
         if (!$org->hasMember($user)) {
@@ -47,7 +54,8 @@ class MemberAction extends Action
     }
 
     /**
-     * 
+     * Run action.
+     * List all members of the organization or department.
      * @param Organization|string|integer $org
      * @return string rendering results.
      */

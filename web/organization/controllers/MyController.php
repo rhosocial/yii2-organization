@@ -53,6 +53,12 @@ class MyController extends Controller
             'add-member' => [
                 'class' => 'rhosocial\organization\web\organization\controllers\my\AddMemberAction',
             ],
+            'update-member' => [
+                'class' => 'rhosocial\organization\web\organization\controllers\my\UpdateMemberAction',
+            ],
+            'remove-member' => [
+                'class' => 'rhosocial\organization\web\organization\controllers\my\RemoveMemberAction',
+            ],
         ];
     }
 
@@ -85,7 +91,8 @@ class MyController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                     'revoke' => ['post'],
+                    'revoke' => ['post'],
+                    'remove-member' => ['post'],
                 ]
             ],
         ];

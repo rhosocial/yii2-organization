@@ -30,6 +30,11 @@ class AddMemberAction extends Action
 {
     /**
      * Check access.
+     * It will call [[MemberAction::checkAccess()]] first.
+     * Then, it will check whether the [[$user]] has the permission to manage member of the organization or department.
+     * If not, the UnauthorizedManageMemberException will be thrown.
+     *
+     * @see MemberAction
      * @param Organization $org
      * @param User $user
      * @return boolean

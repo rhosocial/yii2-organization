@@ -21,6 +21,7 @@ use rhosocial\organization\rbac\roles\DepartmentCreator;
 use rhosocial\organization\rbac\roles\OrganizationAdmin;
 use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\MemberQuery;
+use rhosocial\organization\queries\OrganizationQuery;
 use Yii;
 use yii\base\Event;
 use yii\base\InvalidParamException;
@@ -183,6 +184,16 @@ class Organization extends User
         return '{{%organization}}';
     }
 
+    /**
+     * Find.
+     * Friendly to IDE.
+     * @return OrganizationQuery
+     */
+    public static function find()
+    {
+        return parent::find();
+    }
+
     protected function getTypeRules()
     {
         return [
@@ -317,6 +328,7 @@ class Organization extends User
 
     /**
      * Remove member.
+     * Note: the creator cannot be removed.
      * @param Member|User $member
      * @return boolean
      */
@@ -329,7 +341,10 @@ class Organization extends User
             $member = $member->{$member->memberAttribute};
         }
         $member = $this->getMember($member);
-        return $member && $member->delete() > 0;
+        if (!$member || $member->isCreator()) {
+            return false;
+        }
+        return $member->delete() > 0;
     }
 
     /**

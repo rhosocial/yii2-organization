@@ -10,6 +10,7 @@
  * @license https://vistart.me/license/
  */
 
+use rhosocial\organization\widgets\MemberListWidget;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\grid\DataColumn;
@@ -24,47 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
 Pjax::begin([
     'id' => 'member-pjax',
 ]);
-echo GridView::widget([
-    'caption' => 'Here are all members of the organization / department:',
+echo MemberListWidget::widget([
     'dataProvider' => $dataProvider,
-    'columns' => [
-        ['class' => SerialColumn::class],
-        'user_id' => [
-            'class' => DataColumn::class,
-            'label' => Yii::t('user', 'User ID'),
-            'content' => function ($model, $key, $index, $column) {
-                return $model->memberUser->getID();
-            }
-        ],
-        'name' => [
-            'class' => DataColumn::class,
-            'label' => Yii::t('user', 'Name'),
-            'content' => function ($model, $key, $index, $column) {
-                if (!$model->memberUser || !$model->memberUser->profile) {
-                    return null;
-                }
-                return $model->memberUser->profile->first_name . ' ' . $model->memberUser->profile->last_name;
-            }
-        ],
-        'position',
-        'role' => [
-            'class' => DataColumn::class,
-            'label' => Yii::t('organization', 'Role'),
-            'content' => function ($model, $key, $index, $column) {
-                if (empty($model->role)) {
-                    return null;
-                }
-                $role = Yii::$app->authManager->getRole($model->role);
-                if (empty($role)) {
-                    return null;
-                }
-                return Yii::t('organization', $role->description);
-            },
-        ],
-        'action' => [
-            'class' => ActionColumn::class,
-
-        ]
-    ],
 ]);
 Pjax::end();

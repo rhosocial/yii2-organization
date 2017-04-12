@@ -14,6 +14,8 @@ namespace rhosocial\organization\grid;
 
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\rbac\permissions\SetUpDepartment;
+use rhosocial\organization\rbac\permissions\RevokeDepartment;
+use rhosocial\organization\rbac\permissions\RevokeOrganization;
 use rhosocial\organization\Organization;
 use Yii;
 use yii\grid\ActionColumn;
@@ -76,7 +78,7 @@ class OrganizationListActionColumn extends ActionColumn
                 return Yii::$app->user->can((new ManageProfile)->name, ['organization' => $model]);
             },
             'delete' => function ($model, $key, $index) {
-                $permission = ($model->isOrganization()) ? 'revokeOrganization' : 'revokeDepartment';
+                $permission = ($model->isOrganization()) ? (new RevokeOrganization)->name : (new RevokeDepartment)->name;
                 return Yii::$app->user->can($permission, ['organization' => $model]);
             },
         ];

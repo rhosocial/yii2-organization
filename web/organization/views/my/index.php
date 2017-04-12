@@ -26,7 +26,7 @@ use yii\widgets\Pjax;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 /* @var $orgOnly boolean*/
-$this->title = Yii::t('organization', 'List');
+$this->title = Yii::t('organization', 'Organization List');
 $this->params['breadcrumbs'][] = $this->title;
 Pjax::begin([
     'id' => 'organization-pjax',
@@ -44,7 +44,7 @@ Pjax::end();
         <li><?= Yii::t('organization', 'If no search criteria are specified, all organizations are displayed.') ?></li>
         <li><?= Yii::t('organization', 'When the creator column is green, it indicates that the user is the current logged-in user.') ?></li>
         <li><?= Yii::t('user', 'If the creation time is the same as the last update time, there is no change.') ?></li>
-        <li><?= Yii::t('organization', 'If you do not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.') ?></li>
+        <li><?= Yii::t('organization', 'If you can not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.') ?></li>
     </ol>
 </div>
 <div class="row">

@@ -49,6 +49,8 @@ class SetUpDepartmentAction extends Action
      * Set up department.
      * @param string $parent Parent organization or department ID.
      * @return string the rendering result.
+     * @throws BadRequestHttpException
+     * @throws UnauthorizedHttpException
      */
     public function run($parent)
     {
