@@ -92,6 +92,7 @@ class Organization extends User
     public $memberClass = Member::class;
     public $subordinateLimitClass = SubordinateLimit::class;
     public $memberLimitClass = MemberLimit::class;
+    public $searchClass = OrganizationSearch::class;
     /**
      * @var Member
      */
@@ -140,6 +141,18 @@ class Organization extends User
             $this->noInitMemberLimit = $class::buildNoInitModel();
         }
         return $this->noInitMemberLimit;
+    }
+
+    /**
+     * @return null|OrganizationSearch
+     */
+    public function getSearchModel()
+    {
+        $class = $this->searchClass;
+        if (empty($class) || !class_exists($class)) {
+            return null;
+        }
+        return new $class;
     }
 
     public function init()

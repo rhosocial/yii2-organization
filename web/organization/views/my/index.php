@@ -11,13 +11,11 @@
  */
 
 use rhosocial\user\User;
-use rhosocial\organization\grid\OrganizationListActionColumn;
+use rhosocial\organization\OrganizationSearch;
 use rhosocial\organization\widgets\OrganizationListWidget;
-use rhosocial\organization\Organization;
+use rhosocial\organization\widgets\OrganizationSearchWidget;
 use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use yii\data\ActiveDataProvider;
-use yii\grid\DataColumn;
-use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Pjax;
@@ -25,11 +23,18 @@ use yii\widgets\Pjax;
 /* @var $user User */
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
+/* @var $searchModel OrganizationSearch */
 /* @var $orgOnly boolean*/
 $this->title = Yii::t('organization', 'Organization List');
 $this->params['breadcrumbs'][] = $this->title;
+$formId = 'organization-search-form';
+echo OrganizationSearchWidget::widget([
+    'formId' => $formId,
+    'model' => $searchModel,
+]);
 Pjax::begin([
     'id' => 'organization-pjax',
+    'formSelector' => "#$formId",
 ]);
 echo OrganizationListWidget::widget([
     'dataProvider' => $dataProvider,

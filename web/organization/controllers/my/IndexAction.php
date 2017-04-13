@@ -12,10 +12,10 @@
 
 namespace rhosocial\organization\web\organization\controllers\my;
 
+use rhosocial\organization\Organization;
 use rhosocial\user\User;
 use Yii;
 use yii\base\Action;
-use yii\data\ActiveDataProvider;
 
 /**
  * @version 1.0
@@ -34,39 +34,16 @@ class IndexAction extends Action
     {
         $user = Yii::$app->user->identity;
         /* @var $user User */
+        $noInitOrg = $user->getNoInitOrganization();
+        /* @var $noInitOrg Organization */
+        $searchModel = $noInitOrg->getSearchModel();
+        $dataProvider = $searchModel->search(Yii::$app->request->post());
         $query = ($orgOnly == self::ORG_ONLY) ? $user->getAtOrganizationsOnly() : $user->getAtOrganizations();
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => [
-                'pageParam' => 'organization-page',
-                'defaultPageSize' => 20,
-                'pageSizeParam' => 'organization-per-page',
-            ],
-            'sort' => [
-                'sortParam' => 'organization-sort',
-                'attributes' => [
-                    'id',
-                    'parent' => [
-                        'asc' => ['parent_guid' => SORT_ASC],
-                        'desc' => ['parent_guid' => SORT_DESC],
-                        'default' => SORT_ASC,
-                        'label' => Yii::t('organization', 'Parent ID'),
-                    ],
-                    'createdAt' => [
-                        'asc' => ['created_at' => SORT_ASC],
-                        'desc' => ['created_at' => SORT_DESC],
-                        'default' => SORT_ASC,
-                        'label' => Yii::t('user', 'Creation Time'),
-                    ],
-                    'updatedAt' => [
-                        'asc' => ['updated_at' => SORT_ASC],
-                        'desc' => ['updated_at' => SORT_DESC],
-                        'default' => SORT_ASC,
-                        'label' => Yii::t('user', 'Last Updated Time'),
-                    ],
-                ],
-            ],
+        return $this->controller->render('index', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'user' => $user,
+            'orgOnly' => $orgOnly == self::ORG_ONLY,
         ]);
-        return $this->controller->render('index', ['dataProvider' => $dataProvider, 'user' => $user, 'orgOnly' => $orgOnly == self::ORG_ONLY]);
     }
 }
