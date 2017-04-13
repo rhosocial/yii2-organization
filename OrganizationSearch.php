@@ -168,13 +168,13 @@ class OrganizationSearch extends Model
                         'default' => SORT_ASC,
                         'label' => Yii::t('user', 'Type'),
                     ],
-                    'createdAt' => [
+                    'created_at' => [
                         'asc' => [$this->organizationAlias . '.created_at' => SORT_ASC],
                         'desc' => [$this->organizationAlias . '.created_at' => SORT_DESC],
                         'default' => SORT_ASC,
                         'label' => Yii::t('user', 'Creation Time'),
                     ],
-                    'updatedAt' => [
+                    'updated_at' => [
                         'asc' => [$this->organizationAlias . '.updated_at' => SORT_ASC],
                         'desc' => [$this->organizationAlias . '.updated_at' => SORT_DESC],
                         'default' => SORT_ASC,

@@ -39,12 +39,6 @@ class Module extends \yii\base\Module
         if ($organization instanceof $class) {
             $organization = $organization->getID();
         }
-        if (is_numeric($organization) || is_int($organization)) {
-            return $class::find()->id($organization)->one();
-        }
-        if (is_string($organization) && strlen($organization) == 16) {
-            return $class::find()->guid($organization)->one();
-        }
-        return null;
+        return $class::find()->guidOrId($organization)->one();
     }
 }

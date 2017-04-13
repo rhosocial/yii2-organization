@@ -81,6 +81,7 @@ return [
     'Organization List' => '组织列表',
     'Are you sure you want to remove this member from the organization / department?' => '您确定要从当前组织/部门中移除此成员吗？',
     'You do not have permission to manage the members of this organization / department.' => '您没有权限管理此组织/部门的成员。',
+    'You do not have permission to manage the profile of this organization / department.' => '您没有权限管理此组织/部门的简介。',
     'Member Removed.' => '成员已移除。',
     'Failed to Remove.' => '未能移除。',
     'If no search criteria are specified, all members are displayed.' => '如果没有指定搜索条件，则显示全部成员。',
@@ -97,4 +98,6 @@ return [
     "The number of departments has reached the maximum." => '部门数量已经达到最大。',
     "The number of organizations has reached the maximum." => '组织数量已经达到最大。',
     'The organizations / departments I have joined in' => '我加入的组织/部门',
+    'Joining Time' => '加入时间',
+    'Update Profile' => '更新简介',
 ];

@@ -40,6 +40,9 @@ class MyController extends Controller
             'set-up-department' => [
                 'class' => 'rhosocial\organization\web\organization\controllers\my\SetUpDepartmentAction',
             ],
+            'update' => [
+                'class' => 'rhosocial\organization\web\organization\controllers\my\UpdateAction',
+            ],
             'revoke' => [
                 'class' => 'rhosocial\organization\web\organization\controllers\my\RevokeAction',
             ],

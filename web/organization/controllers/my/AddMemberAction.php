@@ -40,6 +40,7 @@ class AddMemberAction extends Action
      * @param User $user
      * @return boolean
      * @throws UnauthorizedManageMemberException
+     * @throws NumberOfMembersExceededException
      */
     public static function checkAccess($org, $user)
     {

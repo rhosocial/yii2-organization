@@ -65,7 +65,7 @@ class Profile extends \rhosocial\user\Profile
     {
         $scenarios = parent::scenarios();
         $scenarios[self::SCENARIO_UPDATE] = [
-            $this->contentAttribute, 'gravatar_type', 'gravatar', 'timezone', $this->descriptionAttribute,
+            $this->contentAttribute, 'name', 'gravatar_type', 'gravatar', 'timezone', $this->descriptionAttribute,
         ];
         return $scenarios;
     }

@@ -44,10 +44,13 @@ class RevokeAction extends Action
         $this->initMessages();
         parent::init();
     }
+
     /**
      * Revoke organization or department.
      * @param string|integer $id
      * @throws ServerErrorHttpException
+     * @throws BadRequestHttpException
+     * @return \yii\web\Response
      */
     public function run($id)
     {

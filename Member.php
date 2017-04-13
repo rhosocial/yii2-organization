@@ -328,7 +328,7 @@ class Member extends BaseBlameableModel
             'description' => Yii::t('organization', 'Description'),
             'ip' => Yii::t('user', 'IP Address'),
             'ip_type' => Yii::t('user', 'IP Address Type'),
-            'created_at' => Yii::t('user', 'Creation Time'),
+            'created_at' => Yii::t('organization', 'Joining Time'),
             'updated_at' => Yii::t('user', 'Last Updated Time'),
         ];
     }

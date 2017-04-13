@@ -122,19 +122,17 @@ $columns = [
             return $model->getMemberUsers()->count();
         },
     ],
-    'createdAt' => [
+    'created_at' => [
         'class' => DataColumn::class,
-        'attribute' => 'createdAt',
-        'label' => Yii::t('user', 'Creation Time'),
+        'attribute' => 'created_at',
         'content' => function ($model, $key, $index, $column) {
             /* @var $model Organization */
             return $column->grid->formatter->format($model->getCreatedAt(), 'datetime');
         },
     ],
-    'updatedAt' => [
+    'updated_at' => [
         'class' => DataColumn::class,
-        'attribute' => 'updatedAt',
-        'label' => Yii::t('user', 'Last Updated Time'),
+        'attribute' => 'updated_at',
         'content' => function ($model, $key, $index, $column) {
             /* @var $model Organization */
             return $column->grid->formatter->format($model->getUpdatedAt(), 'datetime');
