@@ -107,6 +107,12 @@ class Organization extends User
     private $noInitMemberLimit;
     public $creatorModel;
     public $profileConfig;
+
+    const EVENT_BEFORE_ADD_MEMBER = 'eventBeforeAddMember';
+    const EVENT_AFTER_ADD_MEMBER = 'eventAfterAddMember';
+    const EVENT_BEFORE_REMOVE_MEMBER = 'eventBeforeRemoveMember';
+    const EVENT_AFTER_REMOVE_MEMBER = 'eventAfterRemoveMember';
+
     /**
      * @return Member
      */
@@ -294,6 +300,7 @@ class Organization extends User
         if ($this->hasReachedMemberLimit()) {
             return false;
         }
+        $this->trigger(self::EVENT_BEFORE_ADD_MEMBER);
         $model = null;
         if ($member instanceof Member) {
             if (!$member->getIsNewRecord()) {
@@ -308,7 +315,9 @@ class Organization extends User
             $model = $this->createMemberModelWithUser($member);
         }
         $member = $model;
-        return ($member instanceof Member) ? $member->save() : false;
+        $result = ($member instanceof Member) ? $member->save() : false;
+        $this->trigger(self::EVENT_AFTER_ADD_MEMBER);
+        return $result;
     }
 
     /**
@@ -356,6 +365,7 @@ class Organization extends User
         if ($this->getIsNewRecord()) {
             return false;
         }
+        $this->trigger(self::EVENT_BEFORE_REMOVE_MEMBER);
         if ($member instanceof $this->memberClass) {
             $member = $member->{$member->memberAttribute};
         }
@@ -363,7 +373,9 @@ class Organization extends User
         if (!$member || $member->isCreator()) {
             return false;
         }
-        return $member->delete() > 0;
+        $result = $member->delete() > 0;
+        $this->trigger(self::EVENT_AFTER_REMOVE_MEMBER);
+        return $result;
     }
 
     /**
@@ -394,6 +406,8 @@ class Organization extends User
     /**
      * 
      * @param Event $event
+     * @throws IntegrityException
+     * @return boolean
      */
     public function onAddProfile($event)
     {
