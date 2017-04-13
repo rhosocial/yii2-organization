@@ -81,6 +81,7 @@ class DepartmentLimitTest extends TestCase
         /* @var $limit SubordinateLimit */
         $this->assertInstanceOf(SubordinateLimit::class, $limit);
         $this->assertEquals($noInit->defaultLimit, $limit->limit);
+        $this->assertEquals($this->organization->subordinateLimit->defaultLimit, $this->organization->subordinateLimit->limit);
         $this->assertFalse($this->organization->hasReachedSubordinateLimit());
 
         $this->assertTrue($this->user->setUpDepartment($this->faker->name, $this->organization));
@@ -102,6 +103,7 @@ class DepartmentLimitTest extends TestCase
             $this->assertTrue($this->user->setUpDepartment($this->faker->name, $this->organization));
         }
         $this->assertEquals(50, SubordinateLimit::getLimit($this->organization));
+        $this->assertEquals($this->organization->subordinateLimit->defaultLimit, $this->organization->subordinateLimit->limit);
         try {
             $this->user->setUpDepartment($this->faker->name, $this->organization);
         } catch (InvalidParamException $ex) {

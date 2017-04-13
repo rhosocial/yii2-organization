@@ -38,6 +38,8 @@ use yii\db\IntegrityException;
  * @property-read User[] $memberUsers Get all members of this organization/department.
  * @property-read User $creator Get creator of this organization/department.
  * @property-read User[] $administrators Get administrators of this organization/department.
+ * @property-read SubordinateLimit subordinateLimit
+ * @property-read MemberLimit memberLimit
  *
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -238,7 +240,7 @@ class Organization extends User
         if (empty($this->subordinateLimitClass)) {
             return null;
         }
-        return $this->hasOne($this->subordinateLimitClass, [$this->guidAttribute => $this->getNoInitSubordinateLimit()->createdByAttribute]);
+        return $this->hasOne($this->subordinateLimitClass, [$this->getNoInitSubordinateLimit()->createdByAttribute => $this->guidAttribute]);
     }
 
     /**
@@ -250,7 +252,7 @@ class Organization extends User
         if (empty($this->memberLimitClass)) {
             return null;
         }
-        return $this->hasOne($this->memberLimitClass, [$this->guidAttribute => $this->getNoInitMemberLimit()->createdByAttribute]);
+        return $this->hasOne($this->memberLimitClass, [$this->getNoInitMemberLimit()->createdByAttribute => $this->guidAttribute]);
     }
 
     /**

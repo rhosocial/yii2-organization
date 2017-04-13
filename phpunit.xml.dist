@@ -19,6 +19,8 @@
             <file>OrganizationLimit.php</file>
             <file>Profile.php</file>
             <file>Member.php</file>
+            <file>MemberLimit.php</file>
+            <file>SubordinateLimit.php</file>
             <directory>console</directory>
             <directory>queries</directory>
             <directory>rbac/permissions</directory>

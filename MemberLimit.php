@@ -12,9 +12,17 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\models\BaseBlameableModel;
-use rhosocial\user\User;
 use Yii;
 
+/**
+ * Class MemberLimit
+ *
+ * @property integer $limit
+ *
+ * @package rhosocial\organization
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class MemberLimit extends BaseBlameableModel
 {
     public $contentAttribute = 'limit';
