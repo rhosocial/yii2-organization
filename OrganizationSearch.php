@@ -127,6 +127,17 @@ class OrganizationSearch extends Model
         if (!empty($memberUserClass)) {
             $query = $query->joinWith(["members.memberUser {$this->memberUserAlias}"]);
         }
+        $query = $query->select($this->organizationAlias . '.guid')->distinct()
+            ->addSelect([
+                $this->organizationAlias . '.id',
+                $this->organizationAlias . '.ip',
+                $this->organizationAlias . '.ip_type',
+                $this->organizationAlias . '.parent_guid',
+                $this->organizationAlias . '.created_at',
+                $this->organizationAlias . '.updated_at',
+                $this->organizationAlias . '.status',
+                $this->organizationAlias . '.type',
+            ]);
         return $query;
     }
 

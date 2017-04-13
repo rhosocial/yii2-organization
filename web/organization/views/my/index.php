@@ -24,7 +24,7 @@ use yii\widgets\Pjax;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 /* @var $searchModel OrganizationSearch */
-$this->title = Yii::t('organization', 'Organization List');
+$this->title = Yii::t('organization', 'The organizations / departments I have joined in');
 $this->params['breadcrumbs'][] = $this->title;
 $formId = 'organization-search-form';
 echo OrganizationSearchWidget::widget([

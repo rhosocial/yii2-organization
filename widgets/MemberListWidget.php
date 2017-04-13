@@ -13,7 +13,7 @@
 
 namespace rhosocial\organization\widgets;
 
-use Yii;
+use rhosocial\organization\Organization;
 use yii\base\Widget;
 use yii\data\ActiveDataProvider;
 use yii\web\ServerErrorHttpException;
@@ -26,6 +26,10 @@ use yii\web\ServerErrorHttpException;
  */
 class MemberListWidget extends Widget
 {
+    /**
+     * @var Organization
+     */
+    public $organization;
     /**
      * @var ActiveDataProvider
      */
@@ -42,6 +46,7 @@ class MemberListWidget extends Widget
     public function run()
     {
         return $this->render('member-list', [
+            'organization' => $this->organization,
             'dataProvider' => $this->dataProvider,
             'tips' => $this->tips,
         ]);

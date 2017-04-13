@@ -68,6 +68,7 @@ class MemberAction extends Action
             'query' => $organization->getMembers(),
             'pagination' => [
                 'pageParam' => 'member-param',
+                'defaultPageSize' => 20,
                 'pageSizeParam' => 'member-per-param',
             ],
             'sort' => [
@@ -78,6 +79,10 @@ class MemberAction extends Action
             ],
         ]);
 
-        return $this->controller->render('member', ['dataProvider' => $dataProvider, 'organization' => $organization, 'user' => Yii::$app->user->identity]);
+        return $this->controller->render('member', [
+            'dataProvider' => $dataProvider,
+            'organization' => $organization,
+            'user' => Yii::$app->user->identity
+        ]);
     }
 }

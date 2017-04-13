@@ -11,6 +11,7 @@
  */
 
 use rhosocial\organization\Member;
+use rhosocial\organization\Organization;
 use rhosocial\organization\grid\MemberListActionColumn;
 use yii\data\ActiveDataProvider;
 use yii\grid\DataColumn;
@@ -18,12 +19,15 @@ use yii\grid\GridView;
 use yii\grid\SerialColumn;
 use yii\web\View;
 
+/* @var $organization Organization */
 /* @var $dataProvider ActiveDataProvider */
 /* @var $this View */
 /* @var $tips boolean|array */
 echo GridView::widget([
     'dataProvider' => $dataProvider,
-    'caption' => 'Here are all members of the organization / department:',
+    'caption' => Yii::t('organization', 'Here are all members of the {organization}:', [
+        'organization' => $organization->profile->name . (empty($organization->profile->nickname) ? '' : (' (' . $organization->profile->nickname . ')')),
+    ]),
     'columns' => [
         ['class' => SerialColumn::class],
         'user_id' => [

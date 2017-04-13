@@ -71,7 +71,7 @@ return [
     'When the creator column is green, it indicates that the user is the current logged-in user.' => '创建人一栏为绿色时，表示此用户为当前登录用户。',
     'If you can not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.' => '如果您看不到“开设新组织”按钮，则表示当前登录用户没有权限开设新组织，或组织数量已达上限。',
     'You are not a member of the organization.' => '您不是该组织的成员。',
-    'Here are all members of the organization / department:' => '以下为该组织/部门的成员：',
+    'Here are all members of the {organization}:' => '以下为 {organization} 的所有成员：',
     'Are you sure to add this user to the organization / department?' => '您确定要将此用户添加到该组织/部门吗？',
     'Are you sure you want to revoke this organization / department?' => '您确定要撤销此组织/部门吗？',
     'Department Administrator' => '部门管理员',
@@ -96,4 +96,5 @@ return [
     "The number of members has reached the maximum." => '成员数量已经达到最大。',
     "The number of departments has reached the maximum." => '部门数量已经达到最大。',
     "The number of organizations has reached the maximum." => '组织数量已经达到最大。',
+    'The organizations / departments I have joined in' => '我加入的组织/部门',
 ];

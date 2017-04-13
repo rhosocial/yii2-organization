@@ -28,6 +28,7 @@ Pjax::begin([
     'id' => 'member-pjax',
 ]);
 echo MemberListWidget::widget([
+    'organization' => $organization,
     'dataProvider' => $dataProvider,
 ]);
 Pjax::end();
