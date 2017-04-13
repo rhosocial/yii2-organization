@@ -100,4 +100,6 @@ return [
     'The organizations / departments I have joined in' => '我加入的组织/部门',
     'Joining Time' => '加入时间',
     'Update Profile' => '更新简介',
+    'Update Member' => '更新成员',
+    'Please fill out the following fields to update member:' => '请填写以下字段后更新成员：',
 ];

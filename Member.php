@@ -318,18 +318,18 @@ class Member extends BaseBlameableModel
     public function attributeLabels()
     {
         return [
-            'guid' => Yii::t('user', 'GUID'),
-            'id' => Yii::t('user', 'ID'),
-            'organization_guid' => Yii::t('organization', 'Organization GUID'),
-            'user_guid' => Yii::t('organization', 'User GUID'),
-            'nickname' => Yii::t('user', 'Nickname'),
+            $this->guidAttribute => Yii::t('user', 'GUID'),
+            $this->idAttribute => Yii::t('user', 'ID'),
+            $this->createdByAttribute => Yii::t('organization', 'Organization GUID'),
+            $this->memberAttribute => Yii::t('organization', 'User GUID'),
+            $this->contentAttribute => Yii::t('user', 'Nickname'),
             'role' => Yii::t('organization', 'Role'),
             'position' => Yii::t('organization', 'Member Position'),
-            'description' => Yii::t('organization', 'Description'),
-            'ip' => Yii::t('user', 'IP Address'),
-            'ip_type' => Yii::t('user', 'IP Address Type'),
-            'created_at' => Yii::t('organization', 'Joining Time'),
-            'updated_at' => Yii::t('user', 'Last Updated Time'),
+            $this->descriptionAttribute => Yii::t('organization', 'Description'),
+            $this->ipAttribute => Yii::t('user', 'IP Address'),
+            $this->ipTypeAttribute => Yii::t('user', 'IP Address Type'),
+            $this->createdAtAttribute => Yii::t('organization', 'Joining Time'),
+            $this->updatedAtAttribute => Yii::t('user', 'Last Updated Time'),
         ];
     }
 
@@ -378,5 +378,17 @@ class Member extends BaseBlameableModel
     public function isOnlyMember()
     {
         return empty($this->role);
+    }
+
+    const SCENARIO_UPDATE = 'update';
+    const SCENARIO_ADMIN_UPDATE = 'admin_update';
+
+    public function scenarios()
+    {
+        return array_merge(parent::scenarios(), [
+            self::SCENARIO_UPDATE => [$this->contentAttribute,],
+        ], [
+            self::SCENARIO_ADMIN_UPDATE => [$this->contentAttribute, 'position', $this->descriptionAttribute],
+        ]);
     }
 }

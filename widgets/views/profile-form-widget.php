@@ -11,8 +11,8 @@
  */
 
 use rhosocial\organization\Profile;
-use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\helpers\Html;
 
 /* @var $model Profile */
 ?>

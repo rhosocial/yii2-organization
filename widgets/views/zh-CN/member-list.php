@@ -72,7 +72,6 @@ echo GridView::widget([
         'created_at' => [
             'class' => DataColumn::class,
             'attribute' => 'created_at',
-            //'label' => Yii::t('user', 'Creation Time'),
             'content' => function ($model, $key, $index, $column) {
                 /* @var $model Member */
                 return $column->grid->formatter->format($model->getCreatedAt(), 'datetime');
@@ -81,7 +80,6 @@ echo GridView::widget([
         'updated_at' => [
             'class' => DataColumn::class,
             'attribute' => 'updated_at',
-            //label' => Yii::t('user', 'Last Updated Time'),
             'content' => function ($model, $key, $index, $column) {
                 /* @var $model Member */
                 return $column->grid->formatter->format($model->getUpdatedAt(), 'datetime');
