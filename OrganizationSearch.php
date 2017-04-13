@@ -27,10 +27,9 @@ class OrganizationSearch extends Model
 {
     public $organizationClass = Organization::class;
     public $memberClass = Member::class;
-    public static function find()
+    public function getQuery()
     {
-        $noInit = new static;
-        $class = $noInit->organizationClass;
+        $class = $this->organizationClass;
         if (empty($class)) {
             return null;
         }
@@ -38,6 +37,7 @@ class OrganizationSearch extends Model
     }
     public $organizationAlias = 'o_alias';
     public $memberAlias = 'm_alias';
+    public $memberUserAlias = 'u_alias';
     public $profileAlias = 'op_alias';
     public $id;
     public $name;
@@ -55,6 +55,17 @@ class OrganizationSearch extends Model
      */
     public $createdTo;
     protected $createdToInUtc;
+    /**
+     * @var OrganizationQuery;
+     */
+    public $query;
+
+    public function init()
+    {
+        if (!isset($this->query)) {
+            $this->query = $this->prepareQuery();
+        }
+    }
 
     public static function getTypesWithEmpty()
     {
@@ -90,9 +101,15 @@ class OrganizationSearch extends Model
         }
     }
 
-    public function search($params)
+    /**
+     * @param OrganizationQuery $query
+     * @return null|OrganizationQuery
+     */
+    protected function prepareQuery($query = null)
     {
-        $query = static::find();
+        if (!$query) {
+            $query = $this->getQuery();
+        }
         /* @var $query OrganizationQuery */
         $class = $this->organizationClass;
         $query = $query->from("{$class::tableName()} {$this->organizationAlias}");
@@ -102,6 +119,20 @@ class OrganizationSearch extends Model
         if (!empty($profileClass)) {
             $query = $query->joinWith(["profile {$this->profileAlias}"]);
         }
+        $memberClass = $noInitOrg->memberClass;
+        if (!empty($memberClass)) {
+            $query = $query->joinWith(["members {$this->memberAlias}"]);
+        }
+        $memberUserClass = $noInitOrg->getNoInitMember()->memberUserClass;
+        if (!empty($memberUserClass)) {
+            $query = $query->joinWith(["members.memberUser {$this->memberUserAlias}"]);
+        }
+        return $query;
+    }
+
+    public function search($params)
+    {
+        $query = $this->query;
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
@@ -113,8 +144,19 @@ class OrganizationSearch extends Model
                 'sortParam' => 'organization-sort',
                 'attributes' => [
                     'id',
-                    'nickname',
+                    'nickname' => [
+                        'asc' => [$this->profileAlias . '.nickname' => SORT_ASC],
+                        'desc' => [$this->profileAlias . '.nickname' => SORT_DESC],
+                        'default' => SORT_ASC,
+                        'label' => Yii::t('user', 'Nickname'),
+                    ],
                     'name',
+                    'type' => [
+                        'asc' => [$this->organizationAlias . '.type' => SORT_ASC],
+                        'desc' => [$this->organizationAlias . '.type' => SORT_DESC],
+                        'default' => SORT_ASC,
+                        'label' => Yii::t('user', 'Type'),
+                    ],
                     'createdAt' => [
                         'asc' => [$this->organizationAlias . '.created_at' => SORT_ASC],
                         'desc' => [$this->organizationAlias . '.created_at' => SORT_DESC],
@@ -146,7 +188,7 @@ class OrganizationSearch extends Model
         ])->andFilterWhere([
             'LIKE', $this->profileAlias . '.name', $this->name,
         ])->andFilterWhere([
-            'type' => $this->type,
+            $this->organizationAlias . '.type' => $this->type,
         ]);
         $dataProvider->query = $query;
         return $dataProvider;

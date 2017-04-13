@@ -24,7 +24,6 @@ use yii\widgets\Pjax;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 /* @var $searchModel OrganizationSearch */
-/* @var $orgOnly boolean*/
 $this->title = Yii::t('organization', 'Organization List');
 $this->params['breadcrumbs'][] = $this->title;
 $formId = 'organization-search-form';
@@ -38,7 +37,7 @@ Pjax::begin([
 ]);
 echo OrganizationListWidget::widget([
     'dataProvider' => $dataProvider,
-    'orgOnly' => $orgOnly,
+    'showType' => empty($searchModel->type),
     'actionColumn' => OrganizationListWidget::ACTION_COLUMN_DEFAULT,
 ]);
 Pjax::end();

@@ -13,7 +13,6 @@
 namespace rhosocial\organization\tests\data\ar\user;
 
 use rhosocial\organization\UserOrganizationTrait;
-use rhosocial\organization\tests\data\ar\member\Member;
 use rhosocial\organization\tests\data\ar\org\Organization;
 
 /**
@@ -27,7 +26,6 @@ class User extends \rhosocial\user\User
 
     public function init()
     {
-        $this->memberClass = Member::class;
         $this->organizationClass = Organization::class;
         $this->organizationLimitClass = OrganizationLimit::class;
         $this->initOrganizationEvents();

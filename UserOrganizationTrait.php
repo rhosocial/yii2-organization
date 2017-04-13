@@ -32,11 +32,15 @@ use yii\base\InvalidParamException;
 /**
  * @property string $guidAttribute GUID Attribute.
  * @property-read Member[] $ofMembers
+ * @property-read Member[] $ofCreators
+ * @property-read Member[] $ofAdministrators
  * @property-read Organization[] $atOrganizations
  * @property-read Organization[] $atOrganizationsOnly
  * @property-read Organization[] $atDepartmentsOnly
  * @property-read Organization[] $creatorsAtOrganizations
+ * @property-read Organization[] $creatorsAtOrganizationsOnly
  * @property-read Organization[] $administratorsAtOrganizations
+ * @property-read Organization[] $administratorsAtOrganizationsOnly
  * @property-read OrganizationLimit $organizationLimit
  *
  * @version 1.0
@@ -55,15 +59,8 @@ trait UserOrganizationTrait
      * Note: Please assign it with your own OrganizationLimit class.
      */
     public $organizationLimitClass = OrganizationLimit::class;
-
-    /**
-     * @var string The member class.
-     * Note: Please assign it with your own Member class.
-     */
-    public $memberClass = Member::class;
     private $noInitOrganizationLimit;
     private $noInitOrganization;
-    private $noInitMember;
     public $lastSetUpOrganization;
 
     /**
@@ -93,11 +90,7 @@ trait UserOrganizationTrait
      */
     public function getNoInitMember()
     {
-        if (!$this->noInitMember) {
-            $class = $this->memberClass;
-            $this->noInitMember = $class::buildNoInitModel();
-        }
-        return $this->noInitMember;
+        return $this->getNoInitOrganization()->getNoInitMember();
     }
 
     /**
@@ -106,7 +99,7 @@ trait UserOrganizationTrait
      */
     public function getOfMembers()
     {
-        return $this->hasMany($this->memberClass, [$this->getNoInitMember()->memberAttribute => $this->guidAttribute])->inverseOf('memberUser');
+        return $this->hasMany(get_class($this->getNoInitMember()), [$this->getNoInitMember()->memberAttribute => $this->guidAttribute])->inverseOf('memberUser');
     }
 
     /**
@@ -181,6 +174,14 @@ trait UserOrganizationTrait
     public function getAdministratorsAtOrganizations()
     {
         return $this->hasMany($this->organizationClass, [$this->guidAttribute => $this->getNoInitMember()->createdByAttribute])->via('ofAdministrators');
+    }
+
+    /**
+     * @return OrganizationQuery
+     */
+    public function getAdministratorsAtOrganizationsOnly()
+    {
+        return $this->getAdministratorsAtOrganizations()->andWhere(['type' => Organization::TYPE_ORGANIZATION]);
     }
 
     /**

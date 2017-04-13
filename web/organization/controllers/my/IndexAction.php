@@ -23,27 +23,24 @@ use yii\base\Action;
  */
 class IndexAction extends Action
 {
-    const ORG_ONLY = '1';
-    const ORG_ALL = '0';
     /**
      * 
      * @param string $orgOnly
      * @return string rendering result.
      */
-    public function run($orgOnly = self::ORG_ALL)
+    public function run()
     {
         $user = Yii::$app->user->identity;
         /* @var $user User */
         $noInitOrg = $user->getNoInitOrganization();
         /* @var $noInitOrg Organization */
         $searchModel = $noInitOrg->getSearchModel();
+        $searchModel->query = $searchModel->query->andWhere([$searchModel->memberUserAlias . '.guid' => $user->getGUID()]);
         $dataProvider = $searchModel->search(Yii::$app->request->post());
-        $query = ($orgOnly == self::ORG_ONLY) ? $user->getAtOrganizationsOnly() : $user->getAtOrganizations();
         return $this->controller->render('index', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
             'user' => $user,
-            'orgOnly' => $orgOnly == self::ORG_ONLY,
         ]);
     }
 }

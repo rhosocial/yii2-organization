@@ -110,7 +110,7 @@ class Organization extends User
     /**
      * @return Member
      */
-    protected function getNoInitMember()
+    public function getNoInitMember()
     {
         if (!$this->noInitMember) {
             $class = $this->memberClass;
@@ -122,7 +122,7 @@ class Organization extends User
     /**
      * @return SubordinateLimit
      */
-    protected function getNoInitSubordinateLimit()
+    public function getNoInitSubordinateLimit()
     {
         if (!$this->noInitSubordinateLimit) {
             $class = $this->subordinateLimitClass;
@@ -134,7 +134,7 @@ class Organization extends User
     /**
      * @return MemberLimit
      */
-    protected function getNoInitMemberLimit()
+    public function getNoInitMemberLimit()
     {
         if (!$this->noInitMemberLimit) {
             $class = $this->memberLimitClass;

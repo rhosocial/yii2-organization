@@ -21,8 +21,8 @@ use yii\web\View;
 
 /* @var $dataProvider ActiveDataProvider */
 /* @var $this View */
-/* @var $orgOnly boolean */
 /* @var $showGUID boolean */
+/* @var $showType boolean */
 /* @var $additionalColumns array */
 /* @var $actionColumn array */
 /* @var $tips boolean|array */
@@ -38,22 +38,34 @@ $columns = [
     ],
     'type' => [
         'class' => DataColumn::class,
+        'attribute' => 'type',
         'label' => Yii::t('user', 'Type'),
         'content' => function ($model, $key, $index, $column) {
             return Yii::t('organization', $model->isOrganization() ? 'Organization' : 'Department');
         },
-        'visible' => !$orgOnly,
+        'visible' => $showType,
     ],
     'id',
     'name' => [
         'class' => DataColumn::class,
         'attribute' => 'name',
         'label' => Yii::t('organization', 'Name'),
-        'content' => function ($model, $Key, $index, $column) {
+        'content' => function ($model, $key, $index, $column) {
             if (!$model->profile) {
                 return null;
             }
             return $model->profile->name;
+        },
+    ],
+    'nickname' => [
+        'class' => DataColumn::class,
+        'attribute' => 'nickname',
+        'label' => Yii::t('user', 'Nickname'),
+        'content' => function ($model, $key, $index, $column) {
+            if (!$model->profile) {
+                return null;
+            }
+            return $model->profile->nickname;
         },
     ],
     'parent' => [
@@ -136,7 +148,7 @@ if (!empty($actionColumn)) {
     $columns[] = $actionColumn;
 }
 echo GridView::widget([
-    'caption' => Yii::t('organization', $orgOnly ? "Here are all the organizations you have joined:" : "Here are all the organizations / departments you have joined:"),
+    'caption' => Yii::t('organization', "Here are all the organizations / departments you have joined:"),
     'dataProvider' => $dataProvider,
     'layout' => "{summary}\n<div class=\"table-responsive\">{items}</div>\n{pager}",
     'columns' => $columns,

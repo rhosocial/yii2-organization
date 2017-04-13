@@ -47,8 +47,8 @@ class OrganizationListWidget extends Widget
      */
     public $additionalColumns;
 
-    public $orgOnly = false;
     public $showGUID = false;
+    public $showType = true;
 
     /**
      * @var boolean|array Tips.
@@ -75,8 +75,8 @@ class OrganizationListWidget extends Widget
         return $this->render('organization-list', [
             'id' => 'organization-grid-view',
             'dataProvider' => $this->dataProvider,
-            'orgOnly' => $this->orgOnly,
             'showGUID' => $this->showGUID,
+            'showType' => $this->showType,
             'additionalColumns' => $this->additionalColumns,
             'actionColumn' => $this->actionColumn,
             'tips' => $this->tips,
