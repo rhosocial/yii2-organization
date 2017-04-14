@@ -51,6 +51,7 @@ class OrganizationController extends Controller
     /**
      * Get user from database.
      * @param User|string|integer $user User ID.
+     * @throws Exception
      * @return User
      */
     protected function getUser($user)
@@ -87,6 +88,7 @@ class OrganizationController extends Controller
     /**
      * Get organization.
      * @param Organization|string|integer $organization
+     * @throws Exception
      * @return Organization
      */
     protected function getOrganization($organization)
@@ -117,14 +119,14 @@ class OrganizationController extends Controller
         } catch (\yii\db\IntegrityException $ex) {
             echo "Failed to assign `" . $permission->name . "`.\n";
             echo "Maybe the permission has been assigned.\n";
-            return false;
+            return static::EXIT_CODE_ERROR;
         }
         if ($assignment) {
             echo "`$permission->name`" . " assigned to User (" . $user->getID() . ") successfully.\n";
         } else {
             echo "Failed to assign `" . $permission->name . "`.\n";
         }
-        return true;
+        return static::EXIT_CODE_NORMAL;
     }
 
     /**
@@ -143,23 +145,27 @@ class OrganizationController extends Controller
             echo "Failed to revoke `" . $permission->name . "`.\n";
             echo "Maybe the role has not been assigned yet.\n";
         }
-        return true;
+        return static::EXIT_CODE_NORMAL;
     }
 
     /**
      * Show Organization Information.
      * @param Organization|string|integer $organization Organization's or department's ID.
+     * @return integer
      */
     public function actionShow($organization)
     {
         $organization = $this->getOrganization($organization);
         echo $organization->getID() . "\n";
+        return static::EXIT_CODE_NORMAL;
     }
 
     /**
      * Set up organization.
      * @param User|string|integer $user Organization creator.
      * @param string $name
+     * @throws Exception
+     * @return integer
      */
     public function actionSetUpOrganization($user, $name)
     {
@@ -181,6 +187,8 @@ class OrganizationController extends Controller
      * @param User|string|integer $user Department creator.
      * @param string $name
      * @param Organization|string|integer $parent
+     * @throws Exception
+     * @return integer
      */
     public function actionSetUpDepartment($user, $name, $parent)
     {
@@ -211,12 +219,15 @@ class OrganizationController extends Controller
             throw new Exception('Failed to revoke: ' . $organization->getID);
         }
         echo "Organization ({$organization->getID()}) revoked.\n";
+        return static::EXIT_CODE_NORMAL;
     }
 
     /**
      * Add administrator.
      * @param Organization|string|integer $organization
      * @param User|string|integer $user
+     * @throws Exception
+     * @return integer
      */
     public function actionAddAdministrator($organization, $user)
     {
@@ -226,6 +237,7 @@ class OrganizationController extends Controller
             throw new Exception('Failed to add administrator.');
         }
         echo "User ({$user->getID()}) assigned administrator.\n";
+        return static::EXIT_CODE_NORMAL;
     }
 
     /**
@@ -233,6 +245,8 @@ class OrganizationController extends Controller
      * @param Organization|string|integer $organization
      * @param User|string|integer $user
      * @param boolean $keepMember
+     * @throws Exception
+     * @return integer
      */
     public function actionRemoveAdministrator($organization, $user, $keepMember = "yes")
     {
@@ -245,12 +259,15 @@ class OrganizationController extends Controller
         }
         echo "Administrator ($id) removed.\n";
         echo ($keepMember) ? ("But he is still a member of it.\n") : ("At the same time, he was also removed from the organization.\n");
+        return static::EXIT_CODE_NORMAL;
     }
 
     /**
      * Add member.
      * @param Organization|string|intger $organization
      * @param User|string|integer $user
+     * @throws Exception
+     * @return integer
      */
     public function actionAddMember($organization, $user)
     {
@@ -267,6 +284,8 @@ class OrganizationController extends Controller
      * Remove member.
      * @param Organization|string|intger $organization
      * @param User|string|integer $user
+     * @throws Exception
+     * @return integer
      */
     public function actionRemoveMember($organization, $user)
     {
@@ -277,5 +296,6 @@ class OrganizationController extends Controller
             throw new Exception('Failed to remove member.');
         }
         echo "Member ($id) removed.\n";
+        return static::EXIT_CODE_NORMAL;
     }
 }
