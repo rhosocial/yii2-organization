@@ -380,12 +380,12 @@ class Organization extends User
 
     /**
      * Remove administrator.
-     * @param Member|User $member
-     * @param boolean $keepMember Keep member after administrator being revoked.
+     * @param Member|User|integer|string $member Member instance, or User instance or its GUID or ID.
+     * @param boolean $keep Keep member after administrator being revoked.
      * @return boolean
      * @throws IntegrityException
      */
-    public function removeAdministrator(&$member, $keepMember = true)
+    public function removeAdministrator(&$member, $keep = true)
     {
         if ($this->getIsNewRecord()) {
             return false;
@@ -395,7 +395,7 @@ class Organization extends User
         }
         $member = $this->getMember($member);
         if ($member && $member->isAdministrator()) {
-            if ($keepMember) {
+            if ($keep) {
                 return $member->revokeAdministrator();
             }
             return $this->removeMember($member);
@@ -572,8 +572,8 @@ class Organization extends User
     }
 
     /**
-     * 
-     * @param User $user
+     * Add administrator.
+     * @param User|integer|string $user User instance, or its GUID or ID.
      * @return boolean
      * @throws \Exception
      * @throws IntegrityException
@@ -583,7 +583,7 @@ class Organization extends User
         $transaction = Yii::$app->db->beginTransaction();
         try {
             if (!$this->hasMember($user) && !$this->addMember($user)) {
-                throw new IntegrityException('Failed to add member.');
+                throw new IntegrityException(Yii::t('organization', 'Failed to add member.'));
             }
             $member = $this->getMember($user);
             $member->assignAdministrator();
@@ -597,8 +597,8 @@ class Organization extends User
     }
 
     /**
-     * 
-     * @param type $user
+     * Check whether the current organization has administrator.
+     * @param User|integer|string $user
      * @return boolean
      */
     public function hasAdministrator($user)

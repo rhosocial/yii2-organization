@@ -23,6 +23,7 @@ use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\OrganizationQuery;
 use rhosocial\organization\queries\MemberQuery;
 use Yii;
+use yii\base\InvalidCallException;
 use yii\base\InvalidParamException;
 use yii\base\InvalidValueException;
 use yii\db\IntegrityException;
@@ -181,6 +182,12 @@ class Member extends BaseBlameableModel
     {
         $host = $this->organization;
         /* @var $host Organization */
+        if ($this->isCreator()) {
+            throw new InvalidCallException(Yii::t('organization', 'The user is already a creator.'));
+        }
+        if ($this->isAdministrator()) {
+            throw new InvalidCallException(Yii::t('organization', 'The user is already an administrator.'));
+        }
         $role = null;
         if ($host->type == Organization::TYPE_ORGANIZATION) {
             $role = new OrganizationAdmin();
@@ -191,7 +198,7 @@ class Member extends BaseBlameableModel
         try {
             $this->assignRole($role);
             if (!$this->save()) {
-                throw new IntegrityException("Failed to assign administrator.");
+                throw new IntegrityException(Yii::t('organization', 'Failed to assign administrator.'));
             }
             $transaction->commit();
         } catch (\Exception $ex) {
@@ -268,6 +275,12 @@ class Member extends BaseBlameableModel
     {
         $host = $this->organization;
         /* @var $host Organization */
+        if ($this->isCreator()) {
+            throw new InvalidCallException(Yii::t('organization', 'The user is already a creator.'));
+        }
+        if (!$this->isAdministrator()) {
+            throw new InvalidCallException(Yii::t('organization', 'The user is not administrator yet.'));
+        }
         $role = null;
         if ($host->type == Organization::TYPE_ORGANIZATION) {
             $role = new OrganizationAdmin();

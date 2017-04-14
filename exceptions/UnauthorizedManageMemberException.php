@@ -25,7 +25,6 @@ class UnauthorizedManageMemberException extends UnauthorizedHttpException
 {
     /**
      * Constructor.
-     * @param string $message error message
      * @param int $code error code
      * @param \Exception $previous The previous exception used for the exception chaining.
      */

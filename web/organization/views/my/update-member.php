@@ -19,8 +19,65 @@ use yii\web\View;
 /* @var $model Member */
 $this->title = Yii::t('organization', 'Update Member');
 $this->params['breadcrumbs'][] = $this->title;
-echo MemberFormWidget::widget(['member' => $model]);
 ?>
+<div class="row">
+    <div class="col-lg-6">
+        <?= MemberFormWidget::widget(['member' => $model]); ?>
+    </div>
+    <div class="col-lg-6">
+        <div class="thumbnail">
+            <div class="caption">
+                <h3><?= Yii::t('organization', 'Administrator') ?></h3>
+                <?php if ($model->organization->getMember(Yii::$app->user->identity)->isCreator()) : ?>
+                    <?php if ($model->isCreator()): ?>
+                        <p><?= Yii::t('organization', 'The user is already a creator.') ?></p>
+                    <?php elseif ($model->isAdministrator()): ?>
+                        <p><?= Yii::t('organization', 'Revoke the current user administrator role:') ?></p>
+                        <p>
+                            <?=
+                            Html::beginForm([
+                                'assign-admin',
+                                'org' => $model->organization->getID(),
+                                'user' => $model->memberUser->getID(),
+                                'revoke' => '1',
+                            ], 'post')
+                            . Html::submitButton(
+                                Yii::t('organization', 'Revoke Administrator'),
+                                ['class' => 'btn btn-primary', 'role' => 'button']
+                            )
+                            . Html::endForm()
+                            ?>
+                        </p>
+                    <?php else: ?>
+                        <p><?= Yii::t('organization', 'Give the current user an administrator role:') ?></p>
+                        <p>
+                            <?=
+                            Html::beginForm([
+                                'assign-admin',
+                                'org' => $model->organization->getID(),
+                                'user' => $model->memberUser->getID(),
+                            ], 'post')
+                            . Html::submitButton(
+                                Yii::t('organization', 'Assign Administrator'),
+                                ['class' => 'btn btn-primary', 'role' => 'button']
+                            )
+                            . Html::endForm()
+                            ?>
+                        </p>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <?php if ($model->isCreator()) : ?>
+                        <p><?= Yii::t('organization', 'The user is already a creator.') ?></p>
+                    <?php elseif ($model->isAdministrator()) : ?>
+                        <p><?= Yii::t('organization', 'The user is already an administrator.') ?></p>
+                    <?php else: ?>
+                        <p><?= Yii::t('organization', 'The user is not administrator yet.') ?></p>
+                    <?php endif; ?>
+                <?php endif ;?>
+            </div>
+        </div>
+    </div>
+</div>
 <h3><?= Yii::t('user', 'Other operations') ?></h3>
 <hr>
 <div class="row">
@@ -28,6 +85,6 @@ echo MemberFormWidget::widget(['member' => $model]);
         <?= Html::a(Yii::t('user', 'Back to List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('organization', 'Member'), ['member', 'org' => $model->organization->getID()], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('organization', 'Member List'), ['member', 'org' => $model->organization->getID()], ['class' => 'btn btn-primary']) ?>
     </div>
 </div>

@@ -12,6 +12,7 @@
 
 namespace rhosocial\organization\web\organization\controllers\my;
 
+use rhosocial\organization\exceptions\UnauthorizedManageMemberException;
 use rhosocial\organization\Member;
 use rhosocial\organization\rbac\permissions\ManageMember;
 use rhosocial\organization\web\organization\Module;
@@ -46,6 +47,13 @@ class UpdateMemberAction extends Action
         parent::init();
     }
 
+    /**
+     * Check access.
+     * @param $org
+     * @param $user
+     * @return bool
+     * @throws UnauthorizedManageMemberException
+     */
     public static function checkAccess($org, $user)
     {
         MemberAction::checkAccess($org, $user);

@@ -54,6 +54,6 @@ Pjax::end();
 <div class="row">
     <div class="col-md-12">
         <?= Html::a(Yii::t('organization', 'Back to List'), ['index'], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('organization', 'Member'), ['member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('organization', 'Member List'), ['member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
     </div>
 </div>

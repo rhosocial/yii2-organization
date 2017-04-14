@@ -25,8 +25,8 @@ use yii\web\View;
         'id' => '-form',
         'layout' => 'horizontal',
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 control-label'],
+            'template' => "{label}\n<div class=\"col-md-6\">{input}</div>\n<div class=\"col-md-4\">{error}</div>",
+            'labelOptions' => ['class' => 'col-md-2 control-label'],
         ],
     ]); ?>
 
@@ -37,7 +37,7 @@ use yii\web\View;
     <?= $form->field($model, $model->descriptionAttribute)->textarea() ?>
 
     <div class="form-group">
-        <div class="col-lg-offset-1 col-lg-11">
+        <div class="col-md-offset-2 col-md-10">
             <?= Html::submitButton(Yii::t('user', 'Update'), ['class' => 'btn btn-primary', 'name' => 'update-button']) ?>
             <?= Html::resetButton(Yii::t('user', 'Reset'), ['class' => 'btn btn-default', 'name' => 'reset-button']) ?>
         </div>

@@ -16,12 +16,12 @@ use Yii;
 use yii\web\UnauthorizedHttpException;
 
 /**
- * Class UnauthorizedManageProfileException
+ * Class UnauthorizedCreatorException
  * @package rhosocial\organization\exceptions
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
-class UnauthorizedManageProfileException extends UnauthorizedHttpException
+class UnauthorizedCreatorException extends UnauthorizedHttpException
 {
     /**
      * Constructor.
@@ -30,11 +30,11 @@ class UnauthorizedManageProfileException extends UnauthorizedHttpException
      */
     public function __construct($code = 0, \Exception $previous = null)
     {
-        parent::__construct(Yii::t('organization', 'You do not have permission to manage the profile of this organization / department.'), $code, $previous);
+        parent::__construct(Yii::t('organization', 'You are not creator.'), $code, $previous);
     }
 
     public function getName()
     {
-        return 'UnauthorizedManageProfileException';
+        return 'UnauthorizedCreatorException';
     }
 }

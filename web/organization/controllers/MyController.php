@@ -58,6 +58,9 @@ class MyController extends Controller
             'remove-member' => [
                 'class' => 'rhosocial\organization\web\organization\controllers\my\RemoveMemberAction',
             ],
+            'assign-admin' => [
+                'class' => 'rhosocial\organization\web\organization\controllers\my\AssignAdminAction',
+            ],
         ];
     }
 
@@ -95,6 +98,7 @@ class MyController extends Controller
                 'actions' => [
                     'revoke' => ['post'],
                     'remove-member' => ['post'],
+                    'assign-admin' => ['post'],
                 ]
             ],
         ];

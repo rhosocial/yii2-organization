@@ -30,6 +30,6 @@ echo ProfileFormWidget::widget(['model' => $model]);
         <?= Html::a(Yii::t('user', 'Back to List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('organization', 'Member'), ['member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('organization', 'Member List'), ['member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
     </div>
 </div>
