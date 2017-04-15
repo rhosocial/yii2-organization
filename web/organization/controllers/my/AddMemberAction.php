@@ -84,7 +84,7 @@ class AddMemberAction extends Action
             return $this->controller->redirect(['add-member','org' => $org]);
         }
         $searchModel = Yii::$app->user->identity->getSearchModel();
-        $dataProvider = $searchModel->search(Yii::$app->request->post());
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
         return $this->controller->render('add-member', [
             'organization' => $organization,
             'dataProvider' => $dataProvider,

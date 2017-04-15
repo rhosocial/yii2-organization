@@ -46,7 +46,7 @@ class OrganizationSearchWidget extends Widget
             $this->formConfig = [
                 'id' => !empty($this->formId) ? $this->formId : 'organization-search-form',
                 'action' => ['index'],
-                'method' => 'post',
+                'method' => 'get',
             ];
         }
     }

@@ -12,10 +12,10 @@
 
 namespace rhosocial\organization\grid;
 
+use rhosocial\user\grid\ActionColumn;
 use rhosocial\organization\rbac\permissions\ManageMember;
 use rhosocial\organization\Member;
 use Yii;
-use yii\grid\ActionColumn;
 use yii\helpers\Url;
 
 class MemberListActionColumn extends ActionColumn
@@ -73,8 +73,8 @@ class MemberListActionColumn extends ActionColumn
      */
     protected function initDefaultButtons()
     {
-        $this->initDefaultButton('update', 'pencil');
-        $this->initDefaultButton('delete', 'trash', [
+        $this->initDefaultButton('update', false);
+        $this->initDefaultButton('delete', false, [
             'data-confirm' => Yii::t('organization', 'Are you sure you want to remove this member from the organization / department?'),
             'data-method' => 'post',
             'title' => Yii::t('organization', 'Remove'),

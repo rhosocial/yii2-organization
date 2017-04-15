@@ -80,7 +80,7 @@ class MemberAction extends Action
                 ],
             ],
         ]);
-        $dataProvider = $searchModel->search(Yii::$app->request->post());
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
         return $this->controller->render('member', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,

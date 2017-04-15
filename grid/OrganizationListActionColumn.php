@@ -12,13 +12,13 @@
 
 namespace rhosocial\organization\grid;
 
+use rhosocial\user\grid\ActionColumn;
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\rbac\permissions\SetUpDepartment;
 use rhosocial\organization\rbac\permissions\RevokeDepartment;
 use rhosocial\organization\rbac\permissions\RevokeOrganization;
 use rhosocial\organization\Organization;
 use Yii;
-use yii\grid\ActionColumn;
 use yii\helpers\Url;
 
 /**
@@ -89,17 +89,17 @@ class OrganizationListActionColumn extends ActionColumn
      */
     protected function initDefaultButtons()
     {
-        $this->initDefaultButton('view', 'eye-open');
-        $this->initDefaultButton('member', 'user', [
+        $this->initDefaultButton('view', false);
+        $this->initDefaultButton('member', false, [
             'title' => Yii::t('organization', 'Member'),
             'aria-label' => Yii::t('organization', 'Member'),
         ]);
-        $this->initDefaultButton('add', 'plus', [
+        $this->initDefaultButton('add', false, [
             'title' => Yii::t('organization', 'Set Up New Department'),
             'aria-label' => Yii::t('organization', 'Set Up New Department'),
         ]);
-        $this->initDefaultButton('update', 'pencil');
-        $this->initDefaultButton('delete', 'trash', [
+        $this->initDefaultButton('update', false);
+        $this->initDefaultButton('delete', false, [
             'data-confirm' => Yii::t('organization', 'Are you sure you want to revoke this organization / department?'),
             'data-method' => 'post',
             'title' => Yii::t('organization', 'Remove'),

@@ -28,6 +28,7 @@ echo GridView::widget([
     'caption' => Yii::t('organization', 'Here are all members of the {organization}:', [
         'organization' => $organization->profile->name . (empty($organization->profile->nickname) ? '' : (' (' . $organization->profile->nickname . ')')),
     ]),
+    'layout' => "{summary}\n<div class=\"table-responsive\">{items}</div>\n{pager}",
     'columns' => [
         ['class' => SerialColumn::class],
         'user_id' => [

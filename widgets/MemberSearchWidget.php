@@ -53,7 +53,7 @@ class MemberSearchWidget extends Widget
             $this->formConfig = [
                 'id' => !empty($this->formId) ? $this->formId : 'member-search-form',
                 'action' => $action,
-                'method' => 'post',
+                'method' => 'get',
             ];
         }
     }

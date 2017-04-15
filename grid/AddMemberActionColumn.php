@@ -13,9 +13,9 @@
 namespace rhosocial\organization\grid;
 
 use rhosocial\user\User;
+use rhosocial\user\grid\ActionColumn;
 use rhosocial\organization\Organization;
 use Yii;
-use yii\grid\ActionColumn;
 use yii\helpers\Url;
 
 /**
@@ -51,7 +51,7 @@ class AddMemberActionColumn extends ActionColumn
         if ($this->addConfirm) {
             $buttonAddOptions['data-confirm'] = Yii::t('organization', 'Are you sure to add this user to the organization / department?');
         }
-        $this->initDefaultButton('add', 'plus', $buttonAddOptions);
+        $this->initDefaultButton('add', false, $buttonAddOptions);
     }
 
     public function init()

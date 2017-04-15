@@ -26,6 +26,7 @@ use yii\web\View;
 /* @var $additionalColumns array */
 /* @var $actionColumn array */
 /* @var $tips boolean|array */
+/* @var $showUpdatedAt boolean */
 $columns = [
     ['class' => SerialColumn::class],
     'guid' => [
@@ -130,21 +131,24 @@ $columns = [
             return $column->grid->formatter->format($model->getCreatedAt(), 'datetime');
         },
     ],
-    'updated_at' => [
+];
+if ($showUpdatedAt) {
+    $columns['updated_at'] = [
         'class' => DataColumn::class,
         'attribute' => 'updated_at',
         'content' => function ($model, $key, $index, $column) {
             /* @var $model Organization */
             return $column->grid->formatter->format($model->getUpdatedAt(), 'datetime');
         },
-    ],
-];
+    ];
+}
 if (!empty($additionalColumns) && is_array($additionalColumns)) {
     $columns = array_merge($columns, $additionalColumns);
 }
 if (!empty($actionColumn)) {
     $columns[] = $actionColumn;
 }
+
 echo GridView::widget([
     'caption' => Yii::t('organization', "Here are all the organizations / departments you have joined:"),
     'dataProvider' => $dataProvider,

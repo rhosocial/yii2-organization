@@ -32,7 +32,7 @@ echo UserProfileSearchWidget::widget([
     'formConfig' => [
         'id' => $formId,
         'action' => ['add-member', 'org' => $organization->getID()],
-        'method' => 'post',
+        'method' => 'get',
     ],
 ]);
 Pjax::begin([

@@ -36,7 +36,7 @@ class IndexAction extends Action
         /* @var $noInitOrg Organization */
         $searchModel = $noInitOrg->getSearchModel();
         $searchModel->query = $searchModel->query->andWhere([$searchModel->memberUserAlias . '.guid' => $user->getGUID()]);
-        $dataProvider = $searchModel->search(Yii::$app->request->post());
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
         return $this->controller->render('index', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,

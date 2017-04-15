@@ -57,6 +57,7 @@ class OrganizationListWidget extends Widget
      * If you want to show tips including default ones and your owns, please set an array contains all tip text.
      */
     public $tips = true;
+    public $showUpdatedAt = false;
 
     public function init()
     {
@@ -80,6 +81,7 @@ class OrganizationListWidget extends Widget
             'additionalColumns' => $this->additionalColumns,
             'actionColumn' => $this->actionColumn,
             'tips' => $this->tips,
+            'showUpdatedAt' => $this->showUpdatedAt,
         ]);
     }
 }
