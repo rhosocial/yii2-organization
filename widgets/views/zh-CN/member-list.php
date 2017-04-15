@@ -32,6 +32,7 @@ echo GridView::widget([
         ['class' => SerialColumn::class],
         'user_id' => [
             'class' => DataColumn::class,
+            'attribute' => 'id',
             'label' => Yii::t('user', 'User ID'),
             'content' => function ($model, $key, $index, $column) {
                 return $model->memberUser->getID();
@@ -46,6 +47,7 @@ echo GridView::widget([
         ],
         'name' => [
             'class' => DataColumn::class,
+            'attribute' => 'name',
             'label' => Yii::t('user', 'Name'),
             'content' => function ($model, $key, $index, $column) {
                 if (!$model->memberUser || !$model->memberUser->profile) {
@@ -57,6 +59,7 @@ echo GridView::widget([
         'position',
         'role' => [
             'class' => DataColumn::class,
+            'attribute' => 'role',
             'label' => Yii::t('organization', 'Role'),
             'content' => function ($model, $key, $index, $column) {
                 if (empty($model->role)) {

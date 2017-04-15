@@ -12,6 +12,8 @@
 
 use rhosocial\organization\rbac\permissions\ManageMember;
 use rhosocial\organization\widgets\MemberListWidget;
+use rhosocial\organization\widgets\MemberSearchWidget;
+use rhosocial\organization\MemberSearch;
 use rhosocial\organization\Organization;
 use rhosocial\user\User;
 use yii\data\ActiveDataProvider;
@@ -21,11 +23,19 @@ use yii\widgets\Pjax;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 /* @var $organization Organization */
+/* @var $searchModel MemberSearch */
 /* @var $user User */
 $this->title = Yii::t('organization', 'Member');
 $this->params['breadcrumbs'][] = $this->title;
+$formId = 'member-search-form';
+echo MemberSearchWidget::widget([
+    'formId' => $formId,
+    'organization' => $organization,
+    'model' => $searchModel,
+]);
 Pjax::begin([
     'id' => 'member-pjax',
+    'formSelector' => "#$formId",
 ]);
 echo MemberListWidget::widget([
     'organization' => $organization,

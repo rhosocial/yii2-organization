@@ -64,6 +64,8 @@ class MemberAction extends Action
         $organization = Module::getOrganization($org);
         $user = Yii::$app->user->identity;
         static::checkAccess($organization, $user);
+        $searchModel = $organization->getNoInitMember()->getSearchModel();
+        $searchModel->query = $searchModel->query->organization($organization);
         $dataProvider = new ActiveDataProvider([
             'query' => $organization->getMembers(),
             'pagination' => [
@@ -78,9 +80,10 @@ class MemberAction extends Action
                 ],
             ],
         ]);
-
+        $dataProvider = $searchModel->search(Yii::$app->request->post());
         return $this->controller->render('member', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
             'organization' => $organization,
             'user' => Yii::$app->user->identity
         ]);

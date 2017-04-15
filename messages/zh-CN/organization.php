@@ -113,5 +113,6 @@ return [
     'Assign Administrator' => '赋予管理员',
     'Revoke Administrator' => '撤销管理员',
     'Administrator assigned.' => '已授予管理员。',
-    'Administrator revoked.' => '已撤销管理员。'
+    'Administrator revoked.' => '已撤销管理员。',
+    'My Organizations' => '我的组织',
 ];

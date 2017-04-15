@@ -55,17 +55,30 @@ class Member extends BaseBlameableModel
     public $memberAttribute = 'user_guid';
     public $memberUserClass = User::class;
     public $contentAttribute = 'nickname';
+    public $searchClass = MemberSearch::class;
     private $noInitMemberUser;
     /**
      * @return User
      */
-    protected function getNoInitMemberUser()
+    public function getNoInitMemberUser()
     {
         if (!$this->noInitMemberUser) {
             $class = $this->memberUserClass;
             $this->noInitMemberUser = $class::buildNoInitModel();
         }
         return $this->noInitMemberUser;
+    }
+
+    /**
+     * @return null|MemberSearch
+     */
+    public function getSearchModel()
+    {
+        $class = $this->searchClass;
+        if (empty($class) || !class_exists($class)) {
+            return null;
+        }
+        return new $class;
     }
 
     /**
