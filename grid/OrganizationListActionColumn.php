@@ -13,6 +13,7 @@
 namespace rhosocial\organization\grid;
 
 use rhosocial\user\grid\ActionColumn;
+use rhosocial\user\User;
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\rbac\permissions\SetUpDepartment;
 use rhosocial\organization\rbac\permissions\RevokeDepartment;
@@ -31,8 +32,16 @@ class OrganizationListActionColumn extends ActionColumn
 {
     public $template = '{view} {member} {add} {update} {delete}';
 
+    /**
+     * @var User
+     */
+    public $operator;
+
     public function init()
     {
+        if (!isset($this->operator)) {
+            $this->operator = Yii::$app->user->identity;
+        }
         parent::init();
         if (!isset($this->header)) {
             $this->header = Yii::t('user', 'Action');
@@ -72,14 +81,14 @@ class OrganizationListActionColumn extends ActionColumn
             'view' => true,
             'member' => true,
             'add' => function ($model, $key, $index) {
-                return Yii::$app->user->can((new SetUpDepartment)->name, ['organization' => $model]);
+                return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new SetUpDepartment)->name, ['organization' => $model]);
             },
             'update' => function ($model, $key, $index) {
-                return Yii::$app->user->can((new ManageProfile)->name, ['organization' => $model]);
+                return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new ManageProfile)->name, ['organization' => $model]);
             },
             'delete' => function ($model, $key, $index) {
                 $permission = ($model->isOrganization()) ? (new RevokeOrganization)->name : (new RevokeDepartment)->name;
-                return Yii::$app->user->can($permission, ['organization' => $model]);
+                return Yii::$app->authManager->checkAccess($this->operator->getGUID(), $permission, ['organization' => $model]);
             },
         ];
     }

@@ -115,4 +115,5 @@ return [
     'Administrator assigned.' => '已授予管理员。',
     'Administrator revoked.' => '已撤销管理员。',
     'My Organizations' => '我的组织',
+    'Administrator can not remove other administrators.' => '管理员不能移除其他管理员。',
 ];

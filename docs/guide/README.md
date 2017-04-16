@@ -1,13 +1,21 @@
 # Common Organization & Department Models for Yii 2
 
-This extension provides four common models:
+This extension provides several common models:
 - Organization
-- Department
+- OrganizationLimit
+- OrganizationSearch
+- SubordinateLimit
 - Member
+- MemberLimit
+- MemberSearch
 - Profile
 
 and a trait for `User` model:
 - UserOrganizationTrait
+
+## Principles
+
+- [Principles](principles.md)
 
 ## Getting Started
 

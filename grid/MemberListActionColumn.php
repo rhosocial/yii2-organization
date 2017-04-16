@@ -21,9 +21,16 @@ use yii\helpers\Url;
 class MemberListActionColumn extends ActionColumn
 {
     public $template = '{update} {delete}';
+    /**
+     * @var User
+     */
+    public $operator;
 
     public function init()
     {
+        if (!isset($this->operator)) {
+            $this->operator = Yii::$app->user->identity;
+        }
         parent::init();
         if (!isset($this->header)) {
             $this->header = Yii::t('user', 'Action');
@@ -56,14 +63,17 @@ class MemberListActionColumn extends ActionColumn
         $this->visibleButtons = [
             'update' => function ($model, $key, $index) {
                 /* @var $model Member */
-                return Yii::$app->user->can((new ManageMember)->name, ['organization' => $model->organization]);
+                return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new ManageMember)->name, ['organization' => $model->organization]);
             },
             'delete' => function ($model, $key, $index) {
                 /* @var $model Member */
                 if ($model->isCreator()) {
                     return false;
                 }
-                return Yii::$app->user->can((new ManageMember)->name, ['organization' => $model->organization]);
+                if ($model->isAdministrator() && $this->operator->isOrganizationAdministrator($model->organization)) {
+                    return false;
+                }
+                return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new ManageMember)->name, ['organization' => $model->organization]);
             },
         ];
     }

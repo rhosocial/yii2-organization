@@ -31,6 +31,7 @@ class ManageMemberRule extends Rule
      * @param User $user
      * @param Item $item
      * @param array $params
+     * @return boolean
      */
     public function execute($user, $item, $params)
     {

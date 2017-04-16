@@ -13,6 +13,7 @@
 namespace rhosocial\organization\web\organization\controllers\my;
 
 use rhosocial\organization\exceptions\NotMemberOfOrganizationException;
+use rhosocial\organization\exceptions\RemovePreventedException;
 use rhosocial\organization\Member;
 use rhosocial\organization\web\organization\Module;
 use rhosocial\user\User;
@@ -61,6 +62,9 @@ class RemoveMemberAction extends Action
         /* @var $member Member */
         if (!$member) {
             throw new NotMemberOfOrganizationException();
+        }
+        if ($user->isOrganizationAdministrator($org) && $member->isAdministrator()) {
+            throw new RemovePreventedException(Yii::t('organization', 'Administrator can not remove other administrators.'));
         }
         $id = $member->memberUser;
         return true;
