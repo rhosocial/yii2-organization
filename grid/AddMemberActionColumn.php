@@ -20,6 +20,24 @@ use yii\helpers\Url;
 
 /**
  * Class AddMemberActionColumn
+ * This class is used for GridView, and insert action column in it.
+ * This class contains only one action: Add Member.
+ * By default, if the user in the list are already member, the "Add" button will not be displayed.
+ *
+ * Typical usage:
+ * ```php
+ * echo GridView::widget([
+ *     'columns' => [
+ *         ...
+ *         [
+ *             'class' => AddMemberActionColumn::class,
+ *             'organization' => <Organization Instance>, // You must specify organization.
+ *         ],
+ *     ],
+ * ]);
+ * ```
+ *
+ * @package rhosocial\organization\grid
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
@@ -29,12 +47,27 @@ class AddMemberActionColumn extends ActionColumn
      * @var string
      */
     public $template = '{add}';
+
     /**
-     * @var bool
+     * @var array This array should contain two elements:
+     * - iconName
+     * - buttonAddOptions
+     * @see initDefaultButton()
+     */
+    public $addButtonConfig;
+
+    /**
+     * @var bool If you want to confirm before adding, you should set true.
      */
     public $addConfirm = false;
+
     /**
-     * @var Organization
+     * @var string If you want to modify confirmation text, please set it with your own.
+     */
+    public $addConfirmText;
+
+    /**
+     * @var Organization The organization which the user tend to join in.
      */
     public $organization;
 
@@ -49,9 +82,18 @@ class AddMemberActionColumn extends ActionColumn
             'aria-label' => Yii::t('organization', 'Add'),
         ];
         if ($this->addConfirm) {
-            $buttonAddOptions['data-confirm'] = Yii::t('organization', 'Are you sure to add this user to the organization / department?');
+            if (!isset($this->addConfirmText)) {
+                $this->addConfirmText = Yii::t('organization', 'Are you sure to add this user to the organization / department?');
+            }
+            $buttonAddOptions['data-confirm'] = $this->addConfirmText;
         }
-        $this->initDefaultButton('add', false, $buttonAddOptions);
+        if (!isset($this->addButtonConfig['iconName'])) {
+            $this->addButtonConfig['iconName'] = false;
+        }
+        if (!isset($this->addButtonConfig['buttonAddOptions'])) {
+            $this->addButtonConfig['buttonAddOptions'] = $buttonAddOptions;
+        }
+        $this->initDefaultButton('add', $this->addButtonConfig['iconName'], $this->addButtonConfig['buttonAddOptions']);
     }
 
     public function init()

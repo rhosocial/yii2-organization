@@ -18,6 +18,13 @@ use rhosocial\organization\Member;
 use Yii;
 use yii\helpers\Url;
 
+/**
+ * Class MemberListActionColumn
+ * This class is used for operating members of organization or department.
+ * @package rhosocial\organization\grid
+ * @version 1.0
+ * @author vistart <i@vistart.me>
+ */
 class MemberListActionColumn extends ActionColumn
 {
     public $template = '{update} {delete}';

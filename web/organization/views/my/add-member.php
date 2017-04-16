@@ -44,6 +44,7 @@ echo UserListWidget::widget([
     'actionColumn' => [
         'class' => AddMemberActionColumn::class,
         'organization' => $organization,
+        'addConfirm' => true,
     ],
     'tips' => [
         Yii::t('organization', 'If you can not see the "Add" button, it means that the user is already a member of the current organization / department.')
