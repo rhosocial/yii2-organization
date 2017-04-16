@@ -38,3 +38,41 @@ Creator and administrator can add and remove members, but the
 administrator can not remove other administrators from the
 organization or department.
 
+## Permissions
+
+By default, the user does not have permission to set up
+organization.
+As a result, the webmaster needs to use the console command
+to give the user an "set up organization" permission.
+
+The user who has the permission "set up organization" will
+become the creator of the organization after opening it.
+At the same time, he can also open the subordinate
+departments, and the site user can also be added as a member
+of the organization.
+
+If the creator of the organization is not the creator or 
+administrator of a department of its organization, the
+organization's creator can not manipulate the department.
+
+Further, if the creator or administrator of the parent is not
+the creator or administrator of the subordinate department,
+he can not directly manipulate the subordinate department.
+
+If a user wants to view other organizations, they should be
+given their `viewOrganization` permission.
+
+## Limitation
+
+The number of organizations or departments set up by the user
+is limited.
+Likewise, the number of members of an organization or
+department has a ceiling.
+
+By default, the user who has the permission "set up organization"
+can open up to 10 organizations.
+Each organization or department can have up to 50 subordinate
+departments, and have up to 100 members, including the creator
+and the administrators.
+
+The above limitation can be individually modified.
