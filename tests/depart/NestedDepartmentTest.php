@@ -23,7 +23,7 @@ use yii\base\InvalidParamException;
 class NestedDepartmentTest extends TestCase
 {
     /**
-     * @var User
+     * @var User[]
      */
     protected $users;
 

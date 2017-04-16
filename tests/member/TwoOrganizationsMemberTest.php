@@ -13,8 +13,6 @@
 namespace rhosocial\organization\tests\member;
 
 use rhosocial\organization\tests\data\ar\org\Organization;
-use rhosocial\organization\tests\data\ar\member\Member;
-use rhosocial\organization\tests\data\ar\profile\Profile;
 use rhosocial\organization\tests\data\ar\user\User;
 use rhosocial\organization\tests\TestCase;
 use rhosocial\organization\rbac\roles\OrganizationCreator;

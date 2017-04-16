@@ -33,8 +33,22 @@ use yii\db\IntegrityException;
  * You can use [[Organization]] or [[Department]] instead.
  *
  * @method Member createMember(array $config) Create member who is subordinate to this.
- * @property integer $type Whether indicate this instance is an organization or a department.
+ * @property int $type Whether indicate this instance is an organization or a department.
+ * @property int $eom Fit for [[$isExcludeOtherMembers]]. Do not modify it directly.
+ * @property int $djo Fit for [[$isDisallowMemberJoinInOther]]. Do not modify it directly.
+ * @property int $oacm Fit for [[$isOnlyAcceptCurrentOrgMember]]. Do not modify it directly.
+ * @property int $oasm Fit for [[$isOnlyAcceptSuperiorOrgMember]]. Do not modify it directly.
  *
+ * @property bool $isExcludeOtherMembers Determine whether the other organization and its subordinate departments
+ * members could join in the current organization and its subordinate departments. (Only fit for Organization)
+ * @property bool $isDisallowMemberJoinInOther Determine whether the current organization and its subordinate
+ * departments members could join in the other organization and its subordinate departments. (Only fit for Organization)
+ * @property bool $isOnlyAcceptCurrentOrgMember Determine whether the current department only accept the member of
+ * the top level organization. (Only fit for Department)
+ * @property bool $isOnlyAcceptSuperiorOrgMember Determine whether the current department only accept the member of
+ * the superior organization or department. (Only fit for Department)
+ *
+ * @property-read Member[] $members Get all member models of this organization/department.
  * @property-read User[] $memberUsers Get all members of this organization/department.
  * @property-read User $creator Get creator of this organization/department.
  * @property-read User[] $administrators Get administrators of this organization/department.
@@ -194,6 +208,10 @@ class Organization extends User
             'updated_at' => Yii::t('user', 'Last Updated Time'),
             'status' => Yii::t('user', 'Status'),
             'type' => Yii::t('user', 'Type'),
+            'isExcludeOtherMembers' => Yii::t('organization', 'Exclude Other Members'),
+            'isDisallowMemberJoinOther' => Yii::t('organization', 'Disallow Member to Join in Other Organizations'),
+            'isOnlyAcceptCurrentOrgMember' => Yii::t('organization', 'Only Accept Current Organization Members'),
+            'isOnlyAcceptSuperiorOrgMember' => Yii::t('organization', 'Only Accept Superior Organization Members'),
         ];
     }
 
@@ -644,5 +662,71 @@ class Organization extends User
         }
         $count = (int)$this->getMembers()->count();
         return $count >= $limit;
+    }
+
+    public function getIsExcludeOtherMembers()
+    {
+        return $this->eom > 0;
+    }
+    public function setIsExcludeOtherMembers($value = true)
+    {
+        $this->eom = ($value) ? 1 : 0;
+    }
+    public function getIsDisallowMemberJoinOther()
+    {
+        return $this->djo > 0;
+    }
+    public function setIsDisallowMemberJoinOther($value = true)
+    {
+        $this->djo = ($value) ? 1 : 0;
+    }
+    public function getIsOnlyAcceptOrgMember()
+    {
+        return $this->oaom > 0;
+    }
+    public function setIsOnlyAcceptOrgMember($value = true)
+    {
+        $this->oaom = ($value) ? 1 : 0;
+    }
+    public function getIsOnlyAcceptSuperiorOrgMember()
+    {
+        return $this->oasm > 0;
+    }
+    public function setIsOnlyAcceptSuperiorOrgMember($value = true)
+    {
+        $this->oasm = ($value) ? 1 : 0;
+    }
+
+    /**
+     * @return $this|null|static
+     */
+    public function getTopOrganization()
+    {
+        if ($this->isOrganization()) {
+            return $this;
+        }
+        return static::findOne(end($this->getAncestorChain()));
+    }
+
+    /**
+     * Check whether the subordinates have the [[$user]]
+     * Note, this operation may consume the quantity of database selection.
+     * @param User $user
+     * @return bool
+     */
+    public function hasMemberInSubordinates($user)
+    {
+        if ($this->getChildren()->joinWith(['memberUsers mu_alias'])
+            ->andWhere(['mu_alias.' . $user->guidAttribute => $user->getGUID()])->exists()) {
+            return true;
+        }
+        $children = $this->children;
+        /* @var $children static[] */
+        foreach ($children as $child) {
+            if ($child->hasMemberInSubordinates($user)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
