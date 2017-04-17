@@ -15,6 +15,10 @@ namespace rhosocial\organization;
 use rhosocial\base\models\traits\SelfBlameableTrait;
 use rhosocial\base\models\queries\BaseBlameableQuery;
 use rhosocial\base\models\queries\BaseUserQuery;
+use rhosocial\organization\exceptions\DisallowMemberJoinOtherException;
+use rhosocial\organization\exceptions\ExcludeOtherMembersException;
+use rhosocial\organization\exceptions\OnlyAcceptCurrentOrgMemberException;
+use rhosocial\organization\exceptions\OnlyAcceptSuperiorOrgMemberException;
 use rhosocial\user\User;
 use rhosocial\organization\rbac\roles\DepartmentAdmin;
 use rhosocial\organization\rbac\roles\DepartmentCreator;
@@ -35,13 +39,13 @@ use yii\db\IntegrityException;
  * @method Member createMember(array $config) Create member who is subordinate to this.
  * @property int $type Whether indicate this instance is an organization or a department.
  * @property int $eom Fit for [[$isExcludeOtherMembers]]. Do not modify it directly.
- * @property int $djo Fit for [[$isDisallowMemberJoinInOther]]. Do not modify it directly.
+ * @property int $djo Fit for [[$isDisallowMemberJoinOther]]. Do not modify it directly.
  * @property int $oacm Fit for [[$isOnlyAcceptCurrentOrgMember]]. Do not modify it directly.
  * @property int $oasm Fit for [[$isOnlyAcceptSuperiorOrgMember]]. Do not modify it directly.
  *
  * @property bool $isExcludeOtherMembers Determine whether the other organization and its subordinate departments
  * members could join in the current organization and its subordinate departments. (Only fit for Organization)
- * @property bool $isDisallowMemberJoinInOther Determine whether the current organization and its subordinate
+ * @property bool $isDisallowMemberJoinOther Determine whether the current organization and its subordinate
  * departments members could join in the other organization and its subordinate departments. (Only fit for Organization)
  * @property bool $isOnlyAcceptCurrentOrgMember Determine whether the current department only accept the member of
  * the top level organization. (Only fit for Department)
@@ -319,6 +323,10 @@ class Organization extends User
      * @see createMemberModel
      * @see createMemberModelWithUser
      * @return boolean
+     * @throws DisallowMemberJoinOtherException
+     * @throws ExcludeOtherMembersException
+     * @throws OnlyAcceptCurrentOrgMemberException
+     * @throws OnlyAcceptSuperiorOrgMemberException
      */
     public function addMember(&$member)
     {
@@ -348,18 +356,18 @@ class Organization extends User
         $orgs = $user->getAtOrganizations()->all();
         /* @var $orgs Organization[] */
         foreach ($orgs as $org) {
-            if ($org->topOrganization->isDisallowMemberJoinInOther && !$org->topOrganization->equals($this->topOrganization)) {
-                return false;
+            if ($org->topOrganization->isDisallowMemberJoinOther && !$org->topOrganization->equals($this->topOrganization)) {
+                throw new DisallowMemberJoinOtherException(Yii::t('organization', "An organization in which the user is located does not allow its members to join other organizations."));
             }
             if ($this->topOrganization->isExcludeOtherMembers && !$org->topOrganization->equals($this->topOrganization)) {
-                return false;
+                throw new ExcludeOtherMembersException(Yii::t('organization', "The organization does not allow users who have joined other organizations to join."));
             }
         }
         if ($this->isDepartment() && $this->isOnlyAcceptCurrentOrgMember && !$this->topOrganization->hasMember($user)) {
-            return false;
+            throw new OnlyAcceptCurrentOrgMemberException(Yii::t('organization' ,'This department is only accepted by members of the organization.'));
         }
         if ($this->isDepartment() && $this->isOnlyAcceptSuperiorOrgMember && !$this->parent->hasMember($user)) {
-            return false;
+            throw new OnlyAcceptSuperiorOrgMemberException(Yii::t('organization', 'This department only accepts members of the parent organization or department.'));
         }
 
         $this->trigger(self::EVENT_BEFORE_ADD_MEMBER);
@@ -713,11 +721,11 @@ class Organization extends User
     {
         $this->eom = ($value) ? 1 : 0;
     }
-    public function getIsDisallowMemberJoinInOther()
+    public function getisDisallowMemberJoinOther()
     {
         return $this->djo > 0;
     }
-    public function setIsDisallowMemberJoinInOther($value = true)
+    public function setisDisallowMemberJoinOther($value = true)
     {
         $this->djo = ($value) ? 1 : 0;
     }

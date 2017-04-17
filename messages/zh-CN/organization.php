@@ -116,4 +116,8 @@ return [
     'Administrator revoked.' => '已撤销管理员。',
     'My Organizations' => '我的组织',
     'Administrator can not remove other administrators.' => '管理员不能移除其他管理员。',
+    'An organization in which the user is located does not allow its members to join other organizations.' => '该用户所在的某个组织不允许其成员加入其它组织。',
+    'The organization does not allow users who have joined other organizations to join.' => '本组织不允许已经加入其他组织的用户加入。',
+    'This department is only accepted by members of the organization.' => '此部门只接受所在组织成员加入。',
+    'This department only accepts members of the parent organization or department.' => '此部门只接受上级组织或部门成员加入。',
 ];

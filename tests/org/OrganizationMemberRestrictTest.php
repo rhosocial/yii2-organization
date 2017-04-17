@@ -12,6 +12,10 @@
 
 namespace rhosocial\organization\tests\org;
 
+use rhosocial\organization\exceptions\DisallowMemberJoinOtherException;
+use rhosocial\organization\exceptions\ExcludeOtherMembersException;
+use rhosocial\organization\exceptions\OnlyAcceptCurrentOrgMemberException;
+use rhosocial\organization\exceptions\OnlyAcceptSuperiorOrgMemberException;
 use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use rhosocial\organization\tests\data\ar\org\Organization;
 use rhosocial\organization\tests\data\ar\user\User;
@@ -46,6 +50,9 @@ class OrganizationMemberRestrictTest extends TestCase
      */
     protected $organizations;
 
+    /**
+     * @var int the total of users. It should be greater than 5.
+     */
     public $userCount = 5;
 
     protected function setUp()
@@ -87,12 +94,13 @@ class OrganizationMemberRestrictTest extends TestCase
 
     /**
      * @group organization
+     * @group department
      * @group member
      */
     public function testNormal()
     {
         $this->assertFalse($this->organization->isExcludeOtherMembers);
-        $this->assertFalse($this->organization->isDisallowMemberJoinInOther);
+        $this->assertFalse($this->organization->isDisallowMemberJoinOther);
         $this->assertFalse($this->organization->isOnlyAcceptCurrentOrgMember);
         $this->assertFalse($this->organization->isOnlyAcceptSuperiorOrgMember);
 
@@ -105,6 +113,7 @@ class OrganizationMemberRestrictTest extends TestCase
 
     /**
      * @group organization
+     * @group department
      * @group member
      */
     public function testModify()
@@ -113,9 +122,9 @@ class OrganizationMemberRestrictTest extends TestCase
         $this->assertTrue($this->organization->save());
         $this->assertTrue($this->organization->isExcludeOtherMembers);
 
-        $this->organization->isDisallowMemberJoinInOther = true;
+        $this->organization->isDisallowMemberJoinOther = true;
         $this->assertTrue($this->organization->save());
-        $this->assertTrue($this->organization->isDisallowMemberJoinInOther);
+        $this->assertTrue($this->organization->isDisallowMemberJoinOther);
 
         $this->organization->isOnlyAcceptCurrentOrgMember = true;
         $this->assertTrue($this->organization->save());
@@ -128,6 +137,7 @@ class OrganizationMemberRestrictTest extends TestCase
 
     /**
      * @group organization
+     * @group department
      * @group member
      */
     public function testExcludeOtherMember()
@@ -141,12 +151,17 @@ class OrganizationMemberRestrictTest extends TestCase
                 $this->assertNotEquals($o->topOrganization->getGUID(), $org->topOrganization->getGUID());
             }
             $member = $this->user;
-            $this->assertFalse($org->addMember($member));
+            try {
+                $org->addMember($member);
+                $this->fail();
+            } catch (ExcludeOtherMembersException $ex) {
+                $this->assertTrue(true);
+            }
             try {
                 $org->addAdministrator($member);
                 $this->fail();
-            } catch (IntegrityException $ex) {
-
+            } catch (ExcludeOtherMembersException $ex) {
+                $this->assertTrue(true);
             }
         }
 
@@ -158,35 +173,43 @@ class OrganizationMemberRestrictTest extends TestCase
 
     /**
      * @group organization
+     * @group department
      * @group member
      */
     public function testDisallowJoinInOther()
     {
-        $this->organizations[0]->isDisallowMemberJoinInOther = true;
+        $this->organizations[0]->isDisallowMemberJoinOther = true;
         $this->assertTrue($this->organizations[0]->save());
 
         for ($i = 0; $i < $this->userCount; $i++) {
-            $this->assertTrue($this->organizations[$i]->topOrganization->isDisallowMemberJoinInOther);
+            $this->assertTrue($this->organizations[$i]->topOrganization->isDisallowMemberJoinOther);
 
             $member = $this->users[$i];
-            $this->assertFalse($this->organization->addMember($member));
+            try {
+                $this->organization->addMember($member);
+                $this->fail();
+            } catch (DisallowMemberJoinOtherException $ex) {
+                $this->assertTrue(true);
+            }
             if ($i < $this->userCount - 1) {
                 $member = $this->users[$i];
                 $this->assertTrue($this->organizations[$i + 1]->addMember($member));
                 $this->assertTrue($this->organizations[$i + 1]->removeMember($member));
             }
 
+            $member = $this->users[$i];
             try {
                 $this->organization->addAdministrator($member);
-            } catch (IntegrityException $ex) {
-
+                $this->fail();
+            } catch (DisallowMemberJoinOtherException $ex) {
+                $this->assertTrue(true);
             }
         }
 
         $orgs = $this->user->getAtOrganizations()->all();
         $this->assertCount(1, $orgs);
         $this->assertEquals($this->organization->getGUID(), $orgs[0]->getGUID());
-        $this->assertFalse($orgs[0]->topOrganization->isDisallowMemberJoinInOther);
+        $this->assertFalse($orgs[0]->topOrganization->isDisallowMemberJoinOther);
         foreach ($this->organizations as $org) {
             $member = $this->user;
             $this->assertFalse($org->topOrganization->isExcludeOtherMembers);
@@ -195,6 +218,84 @@ class OrganizationMemberRestrictTest extends TestCase
             $this->assertFalse($org->hasMemberInSubordinates($member));
             $this->assertTrue($org->addMember($member));
             $this->assertTrue($org->removeMember($member));
+        }
+    }
+
+    /**
+     * @group organization
+     * @group department
+     * @group member
+     */
+    public function testOnlyAcceptCurrentOrgMember()
+    {
+        $this->organizations[2]->isOnlyAcceptCurrentOrgMember = true;
+        $this->assertTrue($this->organizations[2]->save());
+
+        for ($i = 0; $i < $this->userCount; $i++) {
+            if ($i != 2) {
+                $member = $this->user;
+                $this->assertTrue($this->organizations[$i]->addMember($member));
+                $this->assertTrue($this->organizations[$i]->removeMember($member));
+            }
+        }
+        try {
+            $member = $this->user;
+            $this->organizations[2]->addMember($member);
+            $this->fail();
+        } catch (OnlyAcceptCurrentOrgMemberException $ex) {
+            $this->assertTrue(true);
+        }
+        $member = $this->users[0];
+        $this->assertTrue($this->organizations[2]->addMember($member));
+        $this->assertTrue($this->organizations[2]->removeMember($member));
+
+        $member = $this->users[4];
+        try {
+            $this->organizations[2]->addMember($member);
+            $this->fail();
+        } catch (OnlyAcceptCurrentOrgMemberException $ex) {
+            $this->assertTrue(true);
+        }
+    }
+
+    /**
+     * @group organization
+     * @group department
+     * @group member
+     */
+    public function testOnlyAcceptSuperiorOrgMember()
+    {
+        $this->organizations[2]->isOnlyAcceptSuperiorOrgMember = true;
+        $this->assertTrue($this->organizations[2]->save());
+
+        for ($i = 0; $i < $this->userCount; $i++) {
+            if ($i != 2) {
+                $member = $this->user;
+                $this->assertTrue($this->organizations[$i]->addMember($member));
+                $this->assertTrue($this->organizations[$i]->removeMember($member));
+            }
+        }
+        try {
+            $member = $this->user;
+            $this->organizations[2]->addMember($member);
+            $this->fail();
+        } catch (OnlyAcceptSuperiorOrgMemberException $ex) {
+            $this->assertTrue(true);
+        }
+
+        $member = $this->users[1];
+        $this->assertTrue($this->organizations[2]->addMember($member));
+        $this->assertTrue($this->organizations[2]->removeMember($member));
+
+        $member = $this->users[4];
+        try {
+            $this->assertTrue($this->organizations[2]->isDepartment());
+            $this->assertTrue($this->organizations[2]->isOnlyAcceptSuperiorOrgMember);
+            $this->assertFalse($this->organizations[2]->parent->hasMember($member));
+            $this->organizations[2]->addMember($member);
+            $this->fail();
+        } catch (OnlyAcceptSuperiorOrgMemberException $ex) {
+            $this->assertTrue(true);
         }
     }
 }

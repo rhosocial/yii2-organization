@@ -12,7 +12,11 @@
 
 namespace rhosocial\organization\web\organization\controllers\my;
 
+use rhosocial\organization\exceptions\DisallowMemberJoinOtherException;
+use rhosocial\organization\exceptions\ExcludeOtherMembersException;
 use rhosocial\organization\exceptions\NumberOfMembersExceededException;
+use rhosocial\organization\exceptions\OnlyAcceptCurrentOrgMemberException;
+use rhosocial\organization\exceptions\OnlyAcceptSuperiorOrgMemberException;
 use rhosocial\organization\exceptions\UnauthorizedManageMemberException;
 use rhosocial\organization\Organization;
 use rhosocial\organization\rbac\permissions\ManageMember;
@@ -20,7 +24,7 @@ use rhosocial\organization\web\organization\Module;
 use rhosocial\user\User;
 use Yii;
 use yii\base\Action;
-use yii\web\ServerErrorHttpException;
+use yii\web\ConflictHttpException;
 
 /**
  *
@@ -59,10 +63,21 @@ class AddMemberAction extends Action
      * @param Organization $org
      * @param User|string|integer $user
      * @return boolean
+     * @throws ConflictHttpException
      */
     protected function addMember($org, &$user)
     {
-        return $org->addMember($user);
+        try {
+            return $org->addMember($user);
+        } catch (DisallowMemberJoinOtherException $ex) {
+            throw new ConflictHttpException($ex->getMessage());
+        } catch (ExcludeOtherMembersException $ex) {
+            throw new ConflictHttpException($ex->getMessage());
+        } catch (OnlyAcceptCurrentOrgMemberException $ex) {
+            throw new ConflictHttpException($ex->getMessage());
+        } catch (OnlyAcceptSuperiorOrgMemberException $ex) {
+            throw new ConflictHttpException($ex->getMessage());
+        }
     }
 
     public function run($org, $u = null)
