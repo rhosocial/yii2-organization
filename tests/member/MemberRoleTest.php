@@ -84,6 +84,7 @@ class MemberRoleTest extends TestCase
     {
         $this->assertEquals($this->user->getGUID(), $this->organization->creator->getGUID());
 
+        unset($this->user->atOrganizations);
         $orgs = $this->user->atOrganizations;
         $this->assertCount(1, $orgs);
         $this->assertEquals($this->organization->getGUID(), $orgs[0]->getGUID());
@@ -131,6 +132,7 @@ class MemberRoleTest extends TestCase
 
         $this->assertNotEquals($this->users[0]->getGUID(), $this->organization->creator->getGUID());
 
+        unset($this->users[0]->atOrganizations);
         $orgs = $this->users[0]->atOrganizations;
         $this->assertCount(1, $orgs);
         $this->assertEquals($this->organization->getGUID(), $orgs[0]->getGUID());

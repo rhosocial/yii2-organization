@@ -54,6 +54,7 @@ use yii\db\IntegrityException;
  * @property-read User[] $administrators Get administrators of this organization/department.
  * @property-read SubordinateLimit subordinateLimit
  * @property-read MemberLimit memberLimit
+ * @property-read static|null $topOrganization The top level organization of current organization or departments.
  *
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -239,6 +240,7 @@ class Organization extends User
             ['type', 'default', 'value' => static::TYPE_ORGANIZATION],
             ['type', 'required'],
             ['type', 'in', 'range' => [static::TYPE_ORGANIZATION, static::TYPE_DEPARTMENT]],
+            [['eom', 'djo', 'oacm', 'oasm'], 'default', 'value' => 0],
         ];
     }
 
@@ -253,7 +255,9 @@ class Organization extends User
      */
     public function getMembers()
     {
-        return $this->hasMany($this->memberClass, [$this->getNoInitMember()->createdByAttribute => $this->guidAttribute])->inverseOf('organization');
+        return $this->hasMany($this->memberClass, [
+            $this->getNoInitMember()->createdByAttribute => $this->guidAttribute
+        ])->inverseOf('organization');
     }
 
     /**
@@ -265,7 +269,9 @@ class Organization extends User
         $noInit = $this->getNoInitMember();
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
-        return $this->hasMany($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('members')->inverseOf('atOrganizations');
+        return $this->hasMany($class, [
+            $noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute
+        ])->via('members')->inverseOf('atOrganizations');
     }
 
     /**
@@ -277,7 +283,9 @@ class Organization extends User
         if (empty($this->subordinateLimitClass)) {
             return null;
         }
-        return $this->hasOne($this->subordinateLimitClass, [$this->getNoInitSubordinateLimit()->createdByAttribute => $this->guidAttribute]);
+        return $this->hasOne($this->subordinateLimitClass, [
+            $this->getNoInitSubordinateLimit()->createdByAttribute => $this->guidAttribute
+        ]);
     }
 
     /**
@@ -289,7 +297,9 @@ class Organization extends User
         if (empty($this->memberLimitClass)) {
             return null;
         }
-        return $this->hasOne($this->memberLimitClass, [$this->getNoInitMemberLimit()->createdByAttribute => $this->guidAttribute]);
+        return $this->hasOne($this->memberLimitClass, [
+            $this->getNoInitMemberLimit()->createdByAttribute => $this->guidAttribute
+        ]);
     }
 
     /**
@@ -318,18 +328,45 @@ class Organization extends User
         if ($this->hasReachedMemberLimit()) {
             return false;
         }
+        $user = null;
+        if ($member instanceof Member) {
+            if ($member->getIsNewRecord()) {
+                return false;
+            }
+            $user = $member->memberUser;
+        }
+        if ($member instanceof User) {
+            $user = $member;
+        }
+        if (is_string($member) || is_int($member)) {
+            $class = Yii::$app->user->identityClass;
+            $user = $class::find()->guidOrId($member);
+        }
+        if ($this->hasMember($user)) {
+            return false;
+        }
+        $orgs = $user->getAtOrganizations()->all();
+        /* @var $orgs Organization[] */
+        foreach ($orgs as $org) {
+            if ($org->topOrganization->isDisallowMemberJoinInOther && !$org->topOrganization->equals($this->topOrganization)) {
+                return false;
+            }
+            if ($this->topOrganization->isExcludeOtherMembers && !$org->topOrganization->equals($this->topOrganization)) {
+                return false;
+            }
+        }
+        if ($this->isDepartment() && $this->isOnlyAcceptCurrentOrgMember && !$this->topOrganization->hasMember($user)) {
+            return false;
+        }
+        if ($this->isDepartment() && $this->isOnlyAcceptSuperiorOrgMember && !$this->parent->hasMember($user)) {
+            return false;
+        }
+
         $this->trigger(self::EVENT_BEFORE_ADD_MEMBER);
         $model = null;
         if ($member instanceof Member) {
-            if (!$member->getIsNewRecord()) {
-                return false;
-            }
             $model = $this->createMemberModel($member);
-        }
-        if (($member instanceof User) || is_string($member) || is_int($member)) {
-            if ($this->hasMember($member)) {
-                return false;
-            }
+        } elseif (($member instanceof User) || is_string($member) || is_int($member)) {
             $model = $this->createMemberModelWithUser($member);
         }
         $member = $model;
@@ -456,7 +493,7 @@ class Organization extends User
         /* @var $sender static */
         $member = $sender->getMemberCreators()->one();
         /* @var $member Member */
-        $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator)->name : (new DepartmentCreator)->name;
+        $role = $this->isOrganization() ? (new OrganizationCreator)->name : (new DepartmentCreator)->name;
         return $member->revokeRole($role);
     }
 
@@ -542,7 +579,9 @@ class Organization extends User
         $noInit = $this->getNoInitMember();
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
-        return $this->hasOne($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('memberCreators')->inverseOf('creatorsAtOrganizations');
+        return $this->hasOne($class, [
+            $noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute
+        ])->via('memberCreators')->inverseOf('creatorsAtOrganizations');
     }
 
     /**
@@ -554,7 +593,9 @@ class Organization extends User
         $noInit = $this->getNoInitMember();
         $class = $noInit->memberUserClass;
         $noInitUser = $class::buildNoInitModel();
-        return $this->hasMany($class, [$noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute])->via('memberAdministrators')->inverseOf('administratorsAtOrganizations');
+        return $this->hasMany($class, [
+            $noInitUser->guidAttribute => $this->getNoInitMember()->memberAttribute
+        ])->via('memberAdministrators')->inverseOf('administratorsAtOrganizations');
     }
 
     /**
@@ -575,7 +616,7 @@ class Organization extends User
             if (!$this->addMember($member)) {
                 throw new IntegrityException('Failed to add member.');
             }
-            $role = $this->type == static::TYPE_ORGANIZATION ? (new OrganizationCreator)->name : (new DepartmentCreator)->name;
+            $role = $this->isOrganization() ? (new OrganizationCreator)->name : (new DepartmentCreator)->name;
             $member->assignRole($role);
             if (!$member->save()) {
                 throw new IntegrityException('Failed to assign creator.');
@@ -705,7 +746,8 @@ class Organization extends User
         if ($this->isOrganization()) {
             return $this;
         }
-        return static::findOne(end($this->getAncestorChain()));
+        $chain = $this->getAncestorChain();
+        return static::findOne(end($chain));
     }
 
     /**

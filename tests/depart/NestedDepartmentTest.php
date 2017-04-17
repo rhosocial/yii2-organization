@@ -156,4 +156,20 @@ class NestedDepartmentTest extends TestCase
         $this->assertTrue($this->users[1]->deregister());
         $this->assertNull(Organization::find()->guid($orgs[0]->getGUID())->one());
     }
+
+    /**
+     * @group organization
+     * @group department
+     */
+    public function testTopOrganization()
+    {
+        $this->assertEquals($this->organizations[0]->getGUID(), $this->organizations[0]->topOrganization->getGUID());
+
+        for ($i = 1; $i < $this->userCount; $i++) {
+            $this->assertTrue($this->organizations[$i - 1]->addAdministrator($this->users[$i]));
+            $this->assertTrue($this->users[$i]->setUpDepartment($this->faker->name, $this->organizations[$i - 1]));
+            $this->organizations[$i] = $this->users[$i]->lastSetUpOrganization;
+            $this->assertEquals($this->organizations[0]->getGUID(), $this->organizations[$i]->topOrganization->getGUID());
+        }
+    }
 }

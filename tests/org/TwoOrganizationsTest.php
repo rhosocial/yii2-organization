@@ -91,6 +91,7 @@ class TwoOrganizationsTest extends TestCase
      */
     public function testSetUp()
     {
+        unset($this->user->atOrganizations);
         $organizations = $this->user->atOrganizations;
         $this->assertCount(2, $organizations);
         foreach ($organizations as $org)

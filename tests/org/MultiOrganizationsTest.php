@@ -62,6 +62,7 @@ class MultiOrganizationsTest extends TestCase
      */
     public function testNew()
     {
+        unset($this->user->atOrganizations);
         $organizations = $this->user->atOrganizations;
         $this->assertCount($this->organizationCount, $organizations);
     }
