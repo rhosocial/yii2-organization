@@ -158,7 +158,7 @@ class OrganizationMemberRestrictTest extends TestCase
 
     /**
      * @group organization
-     * @group member1
+     * @group member
      */
     public function testDisallowJoinInOther()
     {

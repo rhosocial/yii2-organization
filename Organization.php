@@ -340,7 +340,7 @@ class Organization extends User
         }
         if (is_string($member) || is_int($member)) {
             $class = Yii::$app->user->identityClass;
-            $user = $class::find()->guidOrId($member);
+            $user = $class::find()->guidOrId($member)->one();
         }
         if ($this->hasMember($user)) {
             return false;
@@ -549,7 +549,7 @@ class Organization extends User
      */
     public function hasMember($user)
     {
-        return !is_null($this->getMember($user));
+        return !empty($this->getMember($user));
     }
 
     /**
