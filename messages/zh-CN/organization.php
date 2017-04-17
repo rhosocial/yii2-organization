@@ -105,7 +105,7 @@ return [
     'Update Profile' => '更新简介',
     'Update Member' => '更新成员',
     'Please fill out the following fields to update member:' => '请填写以下字段后更新成员：',
-    'The user is already a creator.' => '该用户是创建人了。',
+    'The user is already a creator.' => '该用户已经是创建人了。',
     'The user is already an administrator.' => '该用户已经是管理员了。',
     'The user is not administrator yet.' => '该用户还不是管理员。',
     'Give the current user an administrator role:' => '为当前用户赋予管理员角色：',
@@ -120,4 +120,5 @@ return [
     'The organization does not allow users who have joined other organizations to join.' => '本组织不允许已经加入其他组织的用户加入。',
     'This department is only accepted by members of the organization.' => '此部门只接受所在组织成员加入。',
     'This department only accepts members of the parent organization or department.' => '此部门只接受上级组织或部门成员加入。',
+    'No organizations / departments found.' => '没有找到组织/部门。',
 ];

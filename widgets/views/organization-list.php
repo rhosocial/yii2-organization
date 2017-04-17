@@ -154,6 +154,7 @@ echo GridView::widget([
     'dataProvider' => $dataProvider,
     'layout' => "{summary}\n<div class=\"table-responsive\">{items}</div>\n{pager}",
     'columns' => $columns,
+    'emptyText' => Yii::t('organization', 'No organizations / departments found.'),
     'tableOptions' => [
         'class' => 'table table-striped'
     ],
