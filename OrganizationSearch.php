@@ -138,6 +138,13 @@ class OrganizationSearch extends Model
                 $this->organizationAlias . '.status',
                 $this->organizationAlias . '.type',
             ]);
+        //In MySQL 5.7 and earlier versions, it is necessary to specify the table name.
+        if (!empty($profileClass)) {
+            $query = $query->addSelect([
+                $this->profileAlias . '.name',
+                $this->profileAlias . '.nickname',
+            ]);
+        }
         return $query;
     }
 
