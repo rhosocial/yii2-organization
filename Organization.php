@@ -672,21 +672,21 @@ class Organization extends User
     {
         $this->eom = ($value) ? 1 : 0;
     }
-    public function getIsDisallowMemberJoinOther()
+    public function getIsDisallowMemberJoinInOther()
     {
         return $this->djo > 0;
     }
-    public function setIsDisallowMemberJoinOther($value = true)
+    public function setIsDisallowMemberJoinInOther($value = true)
     {
         $this->djo = ($value) ? 1 : 0;
     }
-    public function getIsOnlyAcceptOrgMember()
+    public function getIsOnlyAcceptCurrentOrgMember()
     {
-        return $this->oaom > 0;
+        return $this->oacm > 0;
     }
-    public function setIsOnlyAcceptOrgMember($value = true)
+    public function setIsOnlyAcceptCurrentOrgMember($value = true)
     {
-        $this->oaom = ($value) ? 1 : 0;
+        $this->oacm = ($value) ? 1 : 0;
     }
     public function getIsOnlyAcceptSuperiorOrgMember()
     {
