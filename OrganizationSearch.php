@@ -67,6 +67,9 @@ class OrganizationSearch extends Model
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getTypesWithEmpty()
     {
         return [
@@ -148,6 +151,10 @@ class OrganizationSearch extends Model
         return $query;
     }
 
+    /**
+     * @param $params
+     * @return ActiveDataProvider
+     */
     public function search($params)
     {
         $query = $this->query;

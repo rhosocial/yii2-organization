@@ -73,6 +73,9 @@ class MemberSearch extends Model
     const ROLE_ADMIN = 'admin';
     const ROLE_CREATOR = 'creator';
 
+    /**
+     * @return array
+     */
     public static function getRolesWithEmpty()
     {
         return [
@@ -160,6 +163,10 @@ class MemberSearch extends Model
         return $query;
     }
 
+    /**
+     * @param $params
+     * @return ActiveDataProvider
+     */
     public function search($params)
     {
         $query = $this->query;

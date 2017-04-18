@@ -19,22 +19,40 @@ use rhosocial\organization\exceptions\DisallowMemberJoinOtherException;
 use rhosocial\organization\exceptions\ExcludeOtherMembersException;
 use rhosocial\organization\exceptions\OnlyAcceptCurrentOrgMemberException;
 use rhosocial\organization\exceptions\OnlyAcceptSuperiorOrgMemberException;
-use rhosocial\user\User;
 use rhosocial\organization\rbac\roles\DepartmentAdmin;
 use rhosocial\organization\rbac\roles\DepartmentCreator;
 use rhosocial\organization\rbac\roles\OrganizationAdmin;
 use rhosocial\organization\rbac\roles\OrganizationCreator;
 use rhosocial\organization\queries\MemberQuery;
 use rhosocial\organization\queries\OrganizationQuery;
+use rhosocial\user\User;
 use Yii;
 use yii\base\Event;
 use yii\base\InvalidParamException;
 use yii\db\IntegrityException;
 
 /**
- * Base Organization.
- * This class is an abstract class that can not be instantiated directly.
- * You can use [[Organization]] or [[Department]] instead.
+ * Organization.
+ * This class is used to describe an organization or department, depending on the type property.
+ * Organization or department should be created by the user, it is best not to directly implement their own such.
+ *
+ * In general, the organization needs to have `setUpOrganization` permission, and the user does not have this permission
+ * by default. You need to give this permission to the user who created the organization in advance.
+ * Department, affiliated with the organization or other department, also need the appropriate permission to set up.
+ *
+ * While this can work independently, we still strongly recommend that you declare the Organization class yourself and
+ * inherit this.
+ * Then you need to specify the Profile and Member class yourself, like following:
+```php
+class Organization extends \rhosocial\organization\Organization
+{
+    public $profileClass = Profile::class;
+    public $memberClass = Member::class;
+}
+```
+ * If you need to limit the number of subordinates, the number of members, you need to specify the appropriate class
+ * name.
+ * If there is no limit, you need to set it to false manually.
  *
  * @method Member createMember(array $config) Create member who is subordinate to this.
  * @property int $type Whether indicate this instance is an organization or a department.
@@ -101,30 +119,66 @@ class Organization extends User
     public $accessTokenAttribute = false;
 
     /**
-     *
      * @var boolean Organization does not need login log.
      */
     public $loginLogClass = false;
 
+    /**
+     * @var string The Organization Profile Class
+     */
     public $profileClass = Profile::class;
 
+    /**
+     * @var string The Member Class.
+     */
     public $memberClass = Member::class;
+
+    /**
+     * @var string The Subordinate Limit Class
+     */
     public $subordinateLimitClass = SubordinateLimit::class;
+
+    /**
+     * @var string The Member Limit Class
+     */
     public $memberLimitClass = MemberLimit::class;
+
+    /**
+     * @var string The Organization Search Class
+     */
     public $searchClass = OrganizationSearch::class;
+
     /**
      * @var Member
      */
     private $noInitMember;
+
     /**
      * @var SubordinateLimit
      */
     private $noInitSubordinateLimit;
+
     /**
      * @var MemberLimit
      */
     private $noInitMemberLimit;
+
+    /**
+     * @var User the creator of current Organization or Department.
+     * This property is only available after registration.
+     * Please do not access it at other times.
+     * If you want to get creator model except registration, please
+     * access [[$creator]] magic-property instead.
+     */
     public $creatorModel;
+
+    /**
+     * @var array The configuration array of Organization Profile.
+     * This property is only available after registration.
+     * Please do not access it at other times.
+     * If you want to get profile model except registration, please
+     * access [[$profile]] magic-property instead.
+     */
     public $profileConfig;
 
     const EVENT_BEFORE_ADD_MEMBER = 'eventBeforeAddMember';
@@ -713,34 +767,65 @@ class Organization extends User
         return $count >= $limit;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsExcludeOtherMembers()
     {
         return $this->eom > 0;
     }
+
+    /**
+     * @param bool $value
+     */
     public function setIsExcludeOtherMembers($value = true)
     {
         $this->eom = ($value) ? 1 : 0;
     }
-    public function getisDisallowMemberJoinOther()
+
+    /**
+     * @return bool
+     */
+    public function getIsDisallowMemberJoinOther()
     {
         return $this->djo > 0;
     }
-    public function setisDisallowMemberJoinOther($value = true)
+
+    /**
+     * @param bool $value
+     */
+    public function setIsDisallowMemberJoinOther($value = true)
     {
         $this->djo = ($value) ? 1 : 0;
     }
+
+    /**
+     * @return bool
+     */
     public function getIsOnlyAcceptCurrentOrgMember()
     {
         return $this->oacm > 0;
     }
+
+    /**
+     * @param bool $value
+     */
     public function setIsOnlyAcceptCurrentOrgMember($value = true)
     {
         $this->oacm = ($value) ? 1 : 0;
     }
+
+    /**
+     * @return bool
+     */
     public function getIsOnlyAcceptSuperiorOrgMember()
     {
         return $this->oasm > 0;
     }
+
+    /**
+     * @param bool $value
+     */
     public function setIsOnlyAcceptSuperiorOrgMember($value = true)
     {
         $this->oasm = ($value) ? 1 : 0;

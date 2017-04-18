@@ -359,21 +359,33 @@ class Member extends BaseBlameableModel
         ];
     }
 
+    /**
+     * @return bool
+     */
     public function isDepartmentAdministrator()
     {
         return $this->role == (new DepartmentAdmin)->name;
     }
-    
+
+    /**
+     * @return bool
+     */
     public function isDepartmentCreator()
     {
         return $this->role == (new DepartmentCreator)->name;
     }
 
+    /**
+     * @return bool
+     */
     public function isOrganizationAdministrator()
     {
         return $this->role == (new OrganizationAdmin)->name;
     }
-    
+
+    /**
+     * @return bool
+     */
     public function isOrganizationCreator()
     {
         return $this->role == (new OrganizationCreator)->name;

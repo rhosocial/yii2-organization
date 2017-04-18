@@ -62,6 +62,10 @@ he can not directly manipulate the subordinate department.
 If a user wants to view other organizations, they should be
 given their `viewOrganization` permission.
 
+All permissions and the corresponding rules, as well as each
+assignments, are kept in the database. So, this extension
+relies on [[\rhosocial\user\rbac\DbManager]].
+
 ## Limitation
 
 The number of organizations or departments set up by the user

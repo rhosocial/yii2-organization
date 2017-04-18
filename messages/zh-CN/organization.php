@@ -96,7 +96,7 @@ return [
     'Update' => '更新',
     'Remove' => '移除',
     'If you can not see the "Add" button, it means that the user is already a member of the current organization / department.' => '如果您看不到“添加”按钮，则表示此用户已经是当前组织/部门的成员了。',
-    'If you can not see the "Set Up New Department" button, it means that the current login user does not have permission to set up a new department, or the number of departments has reached the maximum.' => '如果您看不到“开设新组织”按钮，则表示当前登录用户没有权限开设新部门，或部门数量已达上限。',
+    'If you can not see the "Set Up New Department" button, it means that the current login user does not have permission to set up a new department, or the number of departments has reached the maximum.' => '如果您看不到“开设新部门”按钮，则表示当前登录用户没有权限开设新部门，或部门数量已达上限。',
     "The number of members has reached the maximum." => '成员数量已经达到最大。',
     "The number of departments has reached the maximum." => '部门数量已经达到最大。',
     "The number of organizations has reached the maximum." => '组织数量已经达到最大。',
