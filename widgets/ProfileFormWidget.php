@@ -14,6 +14,7 @@ namespace rhosocial\organization\widgets;
 
 use rhosocial\organization\Organization;
 use rhosocial\organization\Profile;
+use yii\base\InvalidConfigException;
 use yii\base\Widget;
 
 /**
@@ -35,7 +36,7 @@ class ProfileFormWidget extends Widget
     {
         if (is_null($this->model) || !($this->model instanceof Profile)) {
             if (!$this->organization) {
-                throw new \yii\base\InvalidConfigException("Organization or Profile should either be valid.");
+                throw new InvalidConfigException("Organization or Profile should either be valid.");
             }
             $this->model = $this->organization->createProfile(['scenario' => Profile::SCENARIO_UPDATE]);
         }
@@ -43,6 +44,6 @@ class ProfileFormWidget extends Widget
 
     public function run()
     {
-        return $this->render('profile-form-widget', ['model' => $this->model]);
+        return $this->render('profile-form', ['model' => $this->model]);
     }
 }

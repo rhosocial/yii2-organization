@@ -15,6 +15,7 @@ namespace rhosocial\organization\forms;
 use rhosocial\user\User;
 use rhosocial\organization\Organization;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 
 /**
@@ -27,7 +28,7 @@ class SetUpForm extends Model
     public $nickname = '';
     public $gravatar_type = 0;
     public $gravatar = '';
-    public $timezone = 'UTC';
+    public $timezone;
     public $description = '';
     /**
      * @var Organization 
@@ -42,18 +43,20 @@ class SetUpForm extends Model
      * Finds user.
      *
      * @return User|null
+     * @throws InvalidConfigException
      */
     public function getUser()
     {
         if ($this->_user instanceof Yii::$app->user->identityClass) {
             return $this->_user;
         }
-        throw new \yii\base\InvalidConfigException('User Class Invalid.');
+        throw new InvalidConfigException('User Class Invalid.');
     }
 
     /**
      * Set user.
      * @param User $user
+     * @return boolean
      */
     public function setUser($user)
     {
@@ -121,7 +124,7 @@ class SetUpForm extends Model
             ['name', 'required'],
             [['nickname', 'gravatar', 'description'], 'default', 'value' => ''],
             ['gravatar_type', 'default', 'value' => 0],
-            ['timezone', 'default', 'value' => 'UTC'],
+            ['timezone', 'default', 'value' => Yii::$app->timeZone],
             [['name', 'nickname', 'gravatar', 'timezone'], 'string', 'max' => 255],
             ['description', 'string', 'max' => 65535],
             ['gravatar_type', 'integer'],
@@ -148,5 +151,15 @@ class SetUpForm extends Model
     public function setUpDepartment()
     {
         return $this->getUser()->setUpDepartment($this->name, $this->getParent(), $this->nickname, $this->gravatar_type, $this->gravatar, $this->timezone, $this->description);
+    }
+
+    /**
+     *
+     */
+    public function init()
+    {
+        if(!isset($this->timezone)) {
+            $this->timezone = Yii::$app->timeZone;
+        }
     }
 }

@@ -10,6 +10,7 @@
  * @license https://vistart.me/license/
  */
 
+use rhosocial\base\helpers\Timezone;
 use rhosocial\organization\Profile;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -34,7 +35,7 @@ use yii\helpers\Html;
 
         <?= $form->field($model, 'gravatar')->textInput() ?>
 
-        <?= $form->field($model, 'timezone')->textInput() ?>
+        <?= $form->field($model, 'timezone')->dropDownList(Timezone::generateList()) ?>
 
         <?= $form->field($model, 'description')->textarea() ?>
 

@@ -10,6 +10,7 @@
  * @license https://vistart.me/license/
  */
 
+use rhosocial\base\helpers\Timezone;
 use rhosocial\organization\forms\SetUpForm;
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -32,7 +33,9 @@ use yii\bootstrap\ActiveForm;
 
         <?= $form->field($model, 'nickname')->textInput() ?>
 
-        <?= $form->field($model, 'description')->textInput() ?>
+        <?= $form->field($model, 'timezone')->dropDownList(Timezone::generateList()) ?>
+
+        <?= $form->field($model, 'description')->textarea() ?>
 
         <div class="form-group">
             <div class="col-lg-offset-1 col-lg-11">

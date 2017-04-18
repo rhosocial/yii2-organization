@@ -39,6 +39,6 @@ class SetUpFormWidget extends Widget
      */
     public function run()
     {
-        return $this->render('set-up-form-widget', ['model' => $this->model]);
+        return $this->render('set-up-form', ['model' => $this->model]);
     }
 }

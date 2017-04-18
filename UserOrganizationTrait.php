@@ -216,7 +216,7 @@ trait UserOrganizationTrait
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $models = $this->createOrganization($name, null, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            $models = $this->createOrganization($name, null, $nickname, $gravatar_type, $gravatar, $timezone, $description);
             $this->setUpBaseOrganization($models);
             $transaction->commit();
         } catch (\Exception $ex) {
@@ -252,7 +252,7 @@ trait UserOrganizationTrait
         }
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $models = $this->createDepartment($name, $parent, $nickname = '', $gravatar_type = 0, $gravatar = '', $timezone = 'UTC', $description = '');
+            $models = $this->createDepartment($name, $parent, $nickname, $gravatar_type, $gravatar, $timezone, $description);
             $this->setUpBaseOrganization($models);
             $transaction->commit();
         } catch (\Exception $ex) {
