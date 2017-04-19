@@ -167,7 +167,6 @@ echo GridView::widget([
         <li><?= Yii::t('organization', 'If no search criteria are specified, all organizations and departments are displayed.') ?></li>
         <li><?= Yii::t('organization', 'When the creator column is green, it indicates that the user is the current logged-in user.') ?></li>
         <li><?= Yii::t('user', 'If the creation time is the same as the last update time, there is no change.') ?></li>
-        <li><?= Yii::t('organization', 'If you can not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.') ?></li>
         <li><?= Yii::t('organization', 'If you can not see the "Set Up New Department" button, it means that the current login user does not have permission to set up a new department, or the number of departments has reached the maximum.') ?></li>
         <?php if (is_array($tips)): ?>
             <?php foreach ($tips as $tip): ?>

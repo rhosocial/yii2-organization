@@ -14,9 +14,8 @@ use rhosocial\user\User;
 use rhosocial\organization\OrganizationSearch;
 use rhosocial\organization\widgets\OrganizationListWidget;
 use rhosocial\organization\widgets\OrganizationSearchWidget;
-use rhosocial\organization\rbac\permissions\SetUpOrganization;
+use rhosocial\organization\widgets\SetUpButtonWidget;
 use yii\data\ActiveDataProvider;
-use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Pjax;
 
@@ -43,9 +42,7 @@ echo OrganizationListWidget::widget([
 Pjax::end();
 ?>
 <div class="row">
-    <div class="col-md-12">
-        <?php if (Yii::$app->authManager->checkAccess($user, (new SetUpOrganization)->name)) :?>
-        <?= Html::a(Yii::t('organization', 'Set Up New Organization'), ['set-up-organization'], ['class' => 'btn btn-primary']) ?>
-        <?php endif; ?>
+    <div class="col-md-3 col-sm-6">
+        <?= SetUpButtonWidget::widget(['operator' => $user]) ?>
     </div>
 </div>

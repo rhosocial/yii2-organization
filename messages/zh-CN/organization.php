@@ -70,7 +70,6 @@ return [
     'You do not have access to set up new department.' => '您没有权限开设新部门。',
     'If no search criteria are specified, all organizations and departments are displayed.' => '如果没有指定搜索条件，则显示全部组织。',
     'When the creator column is green, it indicates that the user is the current logged-in user.' => '创建人一栏为绿色时，表示此用户为当前登录用户。',
-    'If you can not see the "Set Up Organization" button, it means that the current login user does not have permission to set up a new organization, or the number of organizations has reached the maximum.' => '如果您看不到“开设新组织”按钮，则表示当前登录用户没有权限开设新组织，或组织数量已达上限。',
     'You are not a member of the organization.' => '您不是该组织的成员。',
     'You are not creator.' => '您不是创建人。',
     'Here are all members of the {organization}:' => '以下为 {organization} 的所有成员：',
@@ -121,4 +120,7 @@ return [
     'This department is only accepted by members of the organization.' => '此部门只接受所在组织成员加入。',
     'This department only accepts members of the parent organization or department.' => '此部门只接受上级组织或部门成员加入。',
     'No organizations / departments found.' => '没有找到组织/部门。',
+    'There {remaining,plural,=0{is no places} =1{is only one place} other{are # places}} left.' => '{remaining,plural,=0{没有剩余名额了} =1{仅剩一个名额} other{还剩 # 个名额}}。',
+    'You can not set up new organization.' => '您不能开设新组织。',
+    'You can open up to {limit,plural,=1{only one organization} other{# organizations}}.' => '您可以开设最多{limit,plural,=1{仅一个组织} other{ # 个组织}}。',
 ];

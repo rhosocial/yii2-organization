@@ -469,6 +469,19 @@ trait UserOrganizationTrait
      */
     public function hasReachedOrganizationLimit()
     {
+        $remaining = $this->getRemainingOrganizationPlaces();
+        if ($remaining === false) {
+            return false;
+        }
+        return $remaining <= 0;
+    }
+
+    /**
+     * Get the remaining places of organizations.
+     * @return bool|int False if no limit.
+     */
+    public function getRemainingOrganizationPlaces()
+    {
         $class = $this->organizationLimitClass;
         if (empty($class)) {
             return false;
@@ -478,6 +491,6 @@ trait UserOrganizationTrait
             return false;
         }
         $count = (int)$this->getCreatorsAtOrganizationsOnly()->count();
-        return $count >= $limit;
+        return $limit - $count;
     }
 }
