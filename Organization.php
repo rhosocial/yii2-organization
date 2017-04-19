@@ -738,6 +738,19 @@ class Organization extends User
      */
     public function hasReachedSubordinateLimit()
     {
+        $remaining = $this->getRemainingSubordinatePlaces();
+        if ($remaining === false) {
+            return false;
+        }
+        return $remaining <= 0;
+    }
+
+    /**
+     * Get the remaining places of subordinates.
+     * @return bool|int False if no limit
+     */
+    public function getRemainingSubordinatePlaces()
+    {
         $class = $this->subordinateLimitClass;
         if (empty($class)) {
             return false;
@@ -747,7 +760,7 @@ class Organization extends User
             return false;
         }
         $count = (int)$this->getChildren()->count();
-        return $count >= $limit;
+        return $limit - $count;
     }
 
     /**
@@ -755,6 +768,19 @@ class Organization extends User
      * @return boolean
      */
     public function hasReachedMemberLimit()
+    {
+        $remaining = $this->getRemainingMemberPlaces();
+        if ($remaining === false) {
+            return false;
+        }
+        return $remaining <= 0;
+    }
+
+    /**
+     * Get the remaining places of members.
+     * @return bool|int False if no limit.
+     */
+    public function getRemainingMemberPlaces()
     {
         $class = $this->memberLimitClass;
         if (empty($class)) {
@@ -765,7 +791,7 @@ class Organization extends User
             return false;
         }
         $count = (int)$this->getMembers()->count();
-        return $count >= $limit;
+        return $limit - $count;
     }
 
     /**
