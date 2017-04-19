@@ -10,8 +10,9 @@
  * @license https://vistart.me/license/
  */
 
-use rhosocial\organization\grid\OrganizationListActionColumn;
+use rhosocial\organization\widgets\OrganizationProfileModalWidget;
 use rhosocial\organization\Organization;
+use yii\bootstrap\Modal;
 use yii\data\ActiveDataProvider;
 use yii\grid\DataColumn;
 use yii\grid\GridView;
@@ -79,7 +80,7 @@ $columns = [
                 return null;
             }
             $parent = $model->parent;
-            return $parent ? $parent->getID() : null;
+            return $parent ? OrganizationProfileModalWidget::widget(['organization' => $parent]) : null;
         },
     ],
     'children' => [
