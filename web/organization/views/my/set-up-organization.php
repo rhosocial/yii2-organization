@@ -15,13 +15,19 @@ use rhosocial\organization\widgets\SetUpFormWidget;
 use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model SetUpForm */
-$this->title = Yii::t('organization', ($model->getParent()) ? 'Set Up New Department' : 'Set Up New Organization');
+$parent = $model->getParent();
+$this->title = Yii::t('organization', ($parent) ? 'Set Up New Department' : 'Set Up New Organization');
 $this->params['breadcrumbs'][] = $this->title;
+if ($parent) {
+    echo "<p>" . Yii::t('organization', 'To set up a new department under "{name}":', ['name' => $parent->profile->name]) . "</p>";
+} else {
+    echo "<p>" . Yii::t('organization', 'Set up a new organization:') . "</p>";
+}
 echo SetUpFormWidget::widget(['model' => $model]);
 ?>
 <div class="row">
     <div class="col-md-3">
-        <?= Html::a(Yii::t('organization', 'Back to List'), [
+        <?= Html::a(Yii::t('organization', 'Back to Organization List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>
     </div>

@@ -123,4 +123,7 @@ return [
     'There {remaining,plural,=0{is no places} =1{is only one place} other{are # places}} left.' => '{remaining,plural,=0{没有剩余名额了} =1{仅剩一个名额} other{还剩 # 个名额}}。',
     'You can not set up new organization.' => '您不能开设新组织。',
     'You can open up to {limit,plural,=1{only one organization} other{# organizations}}.' => '您可以开设最多{limit,plural,=1{仅一个组织} other{ # 个组织}}。',
+    'Back to Organization List' => '返回组织列表',
+    'To set up a new department under "{name}":' => '在 “{name}” 下开设新部门：',
+    'Set up a new organization:' => '开设一个新组织：',
 ];

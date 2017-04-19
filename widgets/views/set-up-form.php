@@ -16,10 +16,15 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model SetUpForm */
+$css = <<<EOT
+div.required label.control-label:after {
+    content: " *";
+    color: red;
+}
+EOT;
+$this->registerCss($css);
 ?>
 <div class="site-login">
-    <p><?= Yii::t('organization', 'Please fill out the following fields to set up ' . ($model->getParent() ? 'department' : 'organization') . ':') ?></p>
-
     <?php $form = ActiveForm::begin([
         'id' => 'set-up-form',
         'layout' => 'horizontal',

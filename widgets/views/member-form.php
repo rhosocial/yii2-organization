@@ -17,6 +17,13 @@ use yii\web\View;
 
 /* @var $this View */
 /* @var $model Member */
+$css = <<<EOT
+div.required label.control-label:after {
+    content: " *";
+    color: red;
+}
+EOT;
+$this->registerCss($css);
 ?>
 <div class="site-login">
     <p><?= Yii::t('organization', 'Please fill out the following fields to update member:') ?></p>

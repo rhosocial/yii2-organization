@@ -77,6 +77,7 @@ class Organization extends \rhosocial\organization\Organization
  * @property-read SubordinateLimit subordinateLimit
  * @property-read MemberLimit memberLimit
  * @property-read static|null $topOrganization The top level organization of current organization or departments.
+ * @property-read Profile $profile Get profile model. Friendly to IDE.
  *
  * @version 1.0
  * @author vistart <i@vistart.me>

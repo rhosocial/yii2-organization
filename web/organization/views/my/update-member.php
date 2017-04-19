@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <hr>
 <div class="row">
     <div class="col-md-3">
-        <?= Html::a(Yii::t('user', 'Back to List'), [
+        <?= Html::a(Yii::t('organization', 'Back to Organization List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('organization', 'Member List'), ['member', 'org' => $model->organization->getID()], ['class' => 'btn btn-primary']) ?>

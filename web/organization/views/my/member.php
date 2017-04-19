@@ -45,7 +45,7 @@ Pjax::end();
 ?>
 <div class="row">
         <div class="col-md-12">
-            <?= Html::a(Yii::t('organization', 'Back to List'), ['index'], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a(Yii::t('organization', 'Back to Organization List'), ['index'], ['class' => 'btn btn-primary']) ?>
             <?php if (Yii::$app->authManager->checkAccess($user, (new ManageMember)->name, ['organization' => $organization]) && !$organization->hasReachedMemberLimit()) :?>
             <?= Html::a(Yii::t('organization', 'Add member'), ['add-member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
             <?php endif; ?>
