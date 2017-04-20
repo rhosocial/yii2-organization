@@ -187,6 +187,8 @@ class Organization extends User
     const EVENT_BEFORE_REMOVE_MEMBER = 'eventBeforeRemoveMember';
     const EVENT_AFTER_REMOVE_MEMBER = 'eventAfterRemoveMember';
 
+    public $cacheTagPrefix = 'tag_organization_';
+
     /**
      * @return Member
      */

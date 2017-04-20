@@ -31,6 +31,9 @@ $config = [
             'charset' => 'utf8',
         ],
     ],
+    'cache' => [
+        'class' => 'yii\caching\FileCache',
+    ],
 ];
 
 if (is_file(__DIR__ . '/config.local.php')) {

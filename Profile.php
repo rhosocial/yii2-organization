@@ -23,6 +23,7 @@ class Profile extends \rhosocial\user\Profile
     public $hostClass = Organization::class;
     public $contentAttribute = 'name';
     public $descriptionAttribute = 'description';
+    public $cacheTagPrefix = 'tag_organization_profile_';
 
     public function attributeLabels()
     {

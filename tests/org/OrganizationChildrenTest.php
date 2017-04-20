@@ -82,7 +82,7 @@ class OrganizationChildrenTest extends TestCase
         $this->organization1 = $this->user->lastSetUpOrganization;
         $this->assertInstanceOf(Organization::class, $this->organization1);
         $this->assertEquals($this->orgName1, $this->organization1->profile->name);
-        $this->assertTrue($this->user->setUpOrganization($this->orgName2, $this->user->lastSetUpOrganization));
+        $this->assertTrue($this->user->setUpDepartment($this->orgName2, $this->user->lastSetUpOrganization));
         $this->organization2 = $this->user->lastSetUpOrganization;
         $this->assertInstanceOf(Organization::class, $this->organization2);
         $this->assertEquals($this->orgName2, $this->organization2->profile->name);

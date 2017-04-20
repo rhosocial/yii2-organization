@@ -49,3 +49,4 @@ Temporary Items
 /tmp
 /nbproject/private/
 /vendor
+/tests/runtime
