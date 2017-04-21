@@ -126,4 +126,6 @@ return [
     'Back to Organization List' => '返回组织列表',
     'To set up a new department under "{name}":' => '在 “{name}” 下开设新部门：',
     'Set up a new organization:' => '开设一个新组织：',
+    'All subordinates of the current organization:' => '当前组织的所有下属部门：',
+    'All subordinates of the current department:' => '当前部门的所有下属部门：',
 ];

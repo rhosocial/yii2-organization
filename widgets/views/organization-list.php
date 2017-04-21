@@ -22,31 +22,43 @@ use yii\web\View;
 
 /* @var $dataProvider ActiveDataProvider */
 /* @var $this View */
+/* @var $gridCaption string|boolean */
 /* @var $showGUID boolean */
 /* @var $showType boolean */
 /* @var $additionalColumns array */
 /* @var $actionColumn array */
 /* @var $tips boolean|array */
+/* @var $showParent boolean */
+/* @var $showChildren boolean */
+/* @var $showCreator boolean */
+/* @var $showAdmin boolean */
+/* @var $showMember boolean */
+/* @var $showCreatedAt boolean */
 /* @var $showUpdatedAt boolean */
-$columns = [
-    ['class' => SerialColumn::class],
-    'guid' => [
+$columns = [];
+$columns[] = [
+    'class' => SerialColumn::class,
+];
+if ($showGUID) {
+    $columns['guid'] = [
         'class' => DataColumn::class,
         'label' => Yii::t('user', 'GUID'),
         'content' => function ($model, $key, $index, $column) {
             return $model->getReadableGUID();
         },
-        'visible' => $showGUID,
-    ],
-    'type' => [
+    ];
+}
+if ($showType) {
+    $columns['type'] = [
         'class' => DataColumn::class,
         'attribute' => 'type',
         'label' => Yii::t('user', 'Type'),
         'content' => function ($model, $key, $index, $column) {
             return Yii::t('organization', $model->isOrganization() ? 'Organization' : 'Department');
         },
-        'visible' => $showType,
-    ],
+    ];
+}
+$columns = array_merge($columns, [
     'id',
     'name' => [
         'class' => DataColumn::class,
@@ -70,7 +82,9 @@ $columns = [
             return $model->profile->nickname;
         },
     ],
-    'parent' => [
+]);
+if ($showParent) {
+    $columns['parent'] = [
         'class' => DataColumn::class,
         'attribute' => 'parent',
         'label' => Yii::t('organization', 'Parent ID'),
@@ -82,16 +96,21 @@ $columns = [
             $parent = $model->parent;
             return $parent ? OrganizationProfileModalWidget::widget(['organization' => $parent]) : null;
         },
-    ],
-    'children' => [
+    ];
+}
+if ($showChildren) {
+    $columns['children'] = [
         'class' => DataColumn::class,
         'label' => Yii::t('organization', 'Number of Children'),
         'content' => function ($model, $key, $index, $column) {
             /* @var $model Organization */
+            return \rhosocial\organization\widgets\OrganizationChildrenModalWidget::widget(['organization' => $model]);
             return $model->getChildren()->count();
         },
-    ],
-    'creator' => [
+    ];
+}
+if ($showCreator) {
+    $columns['creator'] = [
         'class' => DataColumn::class,
         'header' => Yii::t('organization', 'Creator'),
         'content' => function ($model, $key, $index, $column) {
@@ -107,32 +126,38 @@ $columns = [
             }
             return ['bgcolor' => '#00FF00'];
         },
-    ],
-    'administrator' => [
+    ];
+}
+if ($showAdmin) {
+    $columns['administrator'] = [
         'class' => DataColumn::class,
         'header' => Yii::t('organization', 'Number of Administrators'),
         'content' => function ($model, $key, $index, $column) {
             /* @var $model Organization */
             return $model->getAdministrators()->count();
         },
-    ],
-    'member' => [
+    ];
+}
+if ($showMember) {
+    $columns['member'] = [
         'class' => DataColumn::class,
         'header' => Yii::t('organization', 'Number of Members'),
         'content' => function ($model, $key, $index, $column) {
             /* $var $model Organization */
             return $model->getMemberUsers()->count();
         },
-    ],
-    'created_at' => [
+    ];
+}
+if ($showCreatedAt) {
+    $columns['created_at'] = [
         'class' => DataColumn::class,
         'attribute' => 'created_at',
         'content' => function ($model, $key, $index, $column) {
             /* @var $model Organization */
             return $column->grid->formatter->format($model->getCreatedAt(), 'datetime');
         },
-    ],
-];
+    ];
+}
 if ($showUpdatedAt) {
     $columns['updated_at'] = [
         'class' => DataColumn::class,
@@ -151,7 +176,7 @@ if (!empty($actionColumn)) {
 }
 
 echo GridView::widget([
-    'caption' => Yii::t('organization', "Here are all the organizations / departments you have joined:"),
+    'caption' => is_string($gridCaption) ? $gridCaption : null,
     'dataProvider' => $dataProvider,
     'layout' => "{summary}\n<div class=\"table-responsive\">{items}</div>\n{pager}",
     'columns' => $columns,

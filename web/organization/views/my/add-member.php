@@ -55,7 +55,7 @@ Pjax::end();
 <h3><?= Yii::t('user', 'Other operations') ?></h3>
 <div class="row">
     <div class="col-md-12">
-        <?= Html::a(Yii::t('organization', 'Back Organization to List'), ['index'], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('organization', 'Back to Organization List'), ['index'], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('organization', 'Member List'), ['member', 'org' => $organization->getID()], ['class' => 'btn btn-primary']) ?>
     </div>
 </div>

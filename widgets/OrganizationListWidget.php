@@ -49,6 +49,11 @@ class OrganizationListWidget extends Widget
 
     public $showGUID = false;
     public $showType = true;
+    public $showParent = true;
+    public $showChildren = true;
+    public $showCreator = true;
+    public $showAdmin = true;
+    public $showMember = true;
 
     /**
      * @var boolean|array Tips.
@@ -57,7 +62,12 @@ class OrganizationListWidget extends Widget
      * If you want to show tips including default ones and your owns, please set an array contains all tip text.
      */
     public $tips = true;
+    public $showCreatedAt = true;
     public $showUpdatedAt = false;
+    /**
+     * @var string|boolean
+     */
+    public $gridCaption = true;
 
     public function init()
     {
@@ -69,18 +79,28 @@ class OrganizationListWidget extends Widget
                 'class' => OrganizationListActionColumn::class,
             ];
         }
+        if ($this->gridCaption === true) {
+            $this->gridCaption = Yii::t('organization', "Here are all the organizations / departments you have joined:");
+        }
     }
 
     public function run()
     {
         return $this->render('organization-list', [
             'id' => 'organization-grid-view',
+            'gridCaption' => $this->gridCaption,
             'dataProvider' => $this->dataProvider,
             'showGUID' => $this->showGUID,
             'showType' => $this->showType,
+            'showParent' => $this->showParent,
+            'showChildren' => $this->showChildren,
+            'showCreator' => $this->showCreator,
+            'showAdmin' => $this->showAdmin,
+            'showMember' => $this->showMember,
             'additionalColumns' => $this->additionalColumns,
             'actionColumn' => $this->actionColumn,
             'tips' => $this->tips,
+            'showCreatedAt' => $this->showCreatedAt,
             'showUpdatedAt' => $this->showUpdatedAt,
         ]);
     }
