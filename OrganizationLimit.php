@@ -38,11 +38,17 @@ class OrganizationLimit extends BaseBlameableModel
     public $hostClass = User::class;
     public $defaultLimit = 10;
 
+    /**
+     * @return string
+     */
     public static function tableName()
     {
         return '{{%organization_limit}}';
     }
 
+    /**
+     * @return array
+     */
     protected function getLimitRules()
     {
         return [
@@ -50,11 +56,17 @@ class OrganizationLimit extends BaseBlameableModel
         ];
     }
 
+    /**
+     * @return array
+     */
     public function rules()
     {
         return array_merge(parent::rules(), $this->getLimitRules());
     }
 
+    /**
+     * @return array
+     */
     public function attributeLabels()
     {
         return [
@@ -84,12 +96,35 @@ class OrganizationLimit extends BaseBlameableModel
         if (empty($user->organizationLimitClass)) {
             return false;
         }
-        $limit = static::find()->createdBy($user)->one();
+        $limit = $user->getOrganizationLimit()->one();
         /* @var $limit static */
         if (!$limit) {
             $limit = $user->create(static::class);
             $limit->save();
         }
         return $limit->limit;
+    }
+
+    /**
+     * Set the upper limit of organizations the user could set up.
+     * @param User|integer|string $user
+     * @param int $limit
+     * @return boolean
+     */
+    public static function setLimit($user, $limit = 1)
+    {
+        if (!($user instanceof User) || ($user->getIsNewRecord() && $user = $user->getGUID())) {
+            $noInit = static::buildNoInitModel();
+            $class = $noInit->hostClass;
+            $user = $class::find()->guidOrId($user)->one();
+        }
+        $model = $user->getOrganizationLimit()->one();
+        /* @var $model static */
+        if (!$model) {
+            $model = $user->create(static::class);
+        }
+        $limit = is_numeric($limit) ? (int)$limit : 1;
+        $model->setContent($limit);
+        return $model->save();
     }
 }

@@ -18,6 +18,7 @@ use rhosocial\organization\rbac\permissions\SetUpOrganization;
 use Yii;
 use yii\console\Controller;
 use yii\console\Exception;
+use yii\db\IntegrityException;
 
 /**
  * Organization commands.
@@ -106,23 +107,56 @@ class OrganizationController extends Controller
     }
 
     /**
-     * Assign SetUpOrganization permission.
+     * Assign SetUpOrganization permission and set upper limit.
+     * If the permission has been assigned, it will only change the limit.
      * @param User|string|integer $user
+     * @param string|integer $limit
      * @return boolean
      */
-    public function actionAssignSetUpOrganization($user)
+    public function actionAssignSetUpOrganization($user, $limit = 1)
     {
         $user = $this->getUser($user);
         $permission = new SetUpOrganization();
+        $limit = is_numeric($limit) ? (int) $limit : 1;
+        if ($limit <= 0) {
+            $limit = 1;
+        }
+        $new = false;
+        $transaction = Yii::$app->db->beginTransaction();
         try {
-            $assignment = Yii::$app->authManager->assign($permission->name, $user);
-        } catch (\yii\db\IntegrityException $ex) {
+            $assignment = Yii::$app->authManager->getAssignment($permission->name, $user->getGUID());
+            if (!$assignment) {
+                $assignment = Yii::$app->authManager->assign($permission->name, $user->getGUID());
+                $new = true;
+            } else {
+                echo "{$permission->name} has been assigned.\n";
+            }
+            $orgLimitClass = $user->organizationLimitClass;
+            $orgLimitClass::setLimit($user, $limit);
+            $transaction->commit();
+        } catch (IntegrityException $ex) {
+            $transaction->rollBack();
             echo "Failed to assign `" . $permission->name . "`.\n";
             echo "Maybe the permission has been assigned.\n";
             return static::EXIT_CODE_ERROR;
         }
         if ($assignment) {
-            echo "`$permission->name`" . " assigned to User (" . $user->getID() . ") successfully.\n";
+            if ($new) {
+                echo "`$permission->name`" . " assigned to User (" . $user->getID() . ") successfully.\n";
+                $remaining = $user->getRemainingOrganizationPlaces();
+                if ($remaining === false) {
+                    echo "No upper limit.\n";
+                } else {
+                    echo "The upper limit is " . ($remaining + (int)$user->getCreatorsAtOrganizationsOnly()->count()). "\n";
+                }
+            } else {
+                $remaining = $user->getRemainingOrganizationPlaces();
+                if ($remaining === false) {
+                    echo "No upper limit.\n";
+                } else {
+                    echo "The new upper limit is " . ($remaining + (int)$user->getCreatorsAtOrganizationsOnly()->count()) . "\n";
+                }
+            }
         } else {
             echo "Failed to assign `" . $permission->name . "`.\n";
         }
@@ -138,7 +172,17 @@ class OrganizationController extends Controller
     {
         $user = $this->getUser($user);
         $permission = new SetUpOrganization();
-        $assignment = Yii::$app->authManager->revoke($permission->name, $user);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $assignment = Yii::$app->authManager->revoke($permission->name, $user);
+            $limitModel = $user->getOrganizationLimit()->one();
+            if ($limitModel && !$limitModel->getIsNewRecord()) {
+                $limitModel->delete();
+            }
+            $transaction->commit();
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+        }
         if ($assignment) {
             echo "`$permission->name`" . " revoked from User (" . $user->getID() . ").\n";
         } else {
@@ -210,6 +254,7 @@ class OrganizationController extends Controller
      * Revoke organization.
      * @param Organization|string|integer $organization
      * @throws Exception
+     * @return integer
      */
     public function actionRevokeOrganization($organization)
     {

@@ -193,7 +193,7 @@ trait UserOrganizationTrait
         if (empty($this->organizationLimitClass)) {
             return null;
         }
-        return $this->hasOne($this->organizationLimitClass, [$this->guidAttribute => $this->getNoInitOrganizationLimit()->createdByAttribute]);
+        return $this->hasOne($this->organizationLimitClass, [$this->getNoInitOrganizationLimit()->createdByAttribute => $this->guidAttribute]);
     }
 
     /**
