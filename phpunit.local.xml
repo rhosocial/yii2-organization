@@ -25,6 +25,8 @@
             <file>UserOrganizationTrait.php</file>
             <file>Organization.php</file>
             <file>OrganizationLimit.php</file>
+            <file>OrganizationSearch.php</file>
+            <file>OrganizationSetting.php</file>
             <file>Profile.php</file>
             <file>Member.php</file>
             <file>MemberLimit.php</file>

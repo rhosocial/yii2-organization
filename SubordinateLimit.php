@@ -12,7 +12,6 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\models\BaseBlameableModel;
-use rhosocial\organization\Organization;
 use Yii;
 
 /**
@@ -55,6 +54,9 @@ class SubordinateLimit extends BaseBlameableModel
         return array_merge(parent::rules(), $this->getLimitRules());
     }
 
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [

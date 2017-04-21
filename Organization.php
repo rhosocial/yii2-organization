@@ -29,6 +29,7 @@ use rhosocial\user\User;
 use Yii;
 use yii\base\Event;
 use yii\base\InvalidParamException;
+use yii\db\Exception;
 use yii\db\IntegrityException;
 
 /**
@@ -56,10 +57,6 @@ class Organization extends \rhosocial\organization\Organization
  *
  * @method Member createMember(array $config) Create member who is subordinate to this.
  * @property int $type Whether indicate this instance is an organization or a department.
- * @property int $eom Fit for [[$isExcludeOtherMembers]]. Do not modify it directly.
- * @property int $djo Fit for [[$isDisallowMemberJoinOther]]. Do not modify it directly.
- * @property int $oacm Fit for [[$isOnlyAcceptCurrentOrgMember]]. Do not modify it directly.
- * @property int $oasm Fit for [[$isOnlyAcceptSuperiorOrgMember]]. Do not modify it directly.
  *
  * @property bool $isExcludeOtherMembers Determine whether the other organization and its subordinate departments
  * members could join in the current organization and its subordinate departments. (Only fit for Organization)
@@ -78,6 +75,7 @@ class Organization extends \rhosocial\organization\Organization
  * @property-read MemberLimit memberLimit
  * @property-read static|null $topOrganization The top level organization of current organization or departments.
  * @property-read Profile $profile Get profile model. Friendly to IDE.
+ * @property-read OrganizationSetting[] $settings Get all settings.
  *
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -150,6 +148,11 @@ class Organization extends User
     public $searchClass = OrganizationSearch::class;
 
     /**
+     * @var string The Organization Setting Class
+     */
+    public $organizationSettingClass = OrganizationSetting::class;
+
+    /**
      * @var Member
      */
     private $noInitMember;
@@ -163,6 +166,11 @@ class Organization extends User
      * @var MemberLimit
      */
     private $noInitMemberLimit;
+
+    /**
+     * @var OrganizationSetting
+     */
+    private $noInitOrganizationSetting;
 
     /**
      * @var User the creator of current Organization or Department.
@@ -226,6 +234,21 @@ class Organization extends User
     }
 
     /**
+     * @return null|OrganizationSetting
+     */
+    public function getNoInitOrganizationSetting()
+    {
+        if (!$this->noInitOrganizationSetting) {
+            $class = $this->organizationSettingClass;
+            if (empty($class)) {
+                return null;
+            }
+            $this->noInitOrganizationSetting = $class::buildNoInitModel();
+        }
+        return $this->noInitOrganizationSetting;
+    }
+
+    /**
      * @return null|OrganizationSearch
      */
     public function getSearchModel()
@@ -237,6 +260,9 @@ class Organization extends User
         return new $class;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         $this->parentAttribute = 'parent_guid';
@@ -261,14 +287,14 @@ class Organization extends User
     public function attributeLabels()
     {
         return [
-            'guid' => Yii::t('user', 'GUID'),
-            'id' => Yii::t('user', 'ID'),
-            'ip' => Yii::t('user', 'IP Address'),
-            'ip_type' => Yii::t('user', 'IP Address Type'),
-            'parent' => Yii::t('organization', 'Parent'),
-            'created_at' => Yii::t('user', 'Creation Time'),
-            'updated_at' => Yii::t('user', 'Last Updated Time'),
-            'status' => Yii::t('user', 'Status'),
+            $this->guidAttribute => Yii::t('user', 'GUID'),
+            $this->idAttribute => Yii::t('user', 'ID'),
+            $this->ipAttribute => Yii::t('user', 'IP Address'),
+            $this->ipTypeAttribute => Yii::t('user', 'IP Address Type'),
+            $this->parentAttribute => Yii::t('organization', 'Parent'),
+            $this->createdAtAttribute => Yii::t('user', 'Creation Time'),
+            $this->updatedAtAttribute => Yii::t('user', 'Last Updated Time'),
+            $this->statusAttribute => Yii::t('user', 'Status'),
             'type' => Yii::t('user', 'Type'),
             'isExcludeOtherMembers' => Yii::t('organization', 'Exclude Other Members'),
             'isDisallowMemberJoinOther' => Yii::t('organization', 'Disallow Member to Join in Other Organizations'),
@@ -301,7 +327,6 @@ class Organization extends User
             ['type', 'default', 'value' => static::TYPE_ORGANIZATION],
             ['type', 'required'],
             ['type', 'in', 'range' => [static::TYPE_ORGANIZATION, static::TYPE_DEPARTMENT]],
-            [['eom', 'djo', 'oacm', 'oasm'], 'default', 'value' => 0],
         ];
     }
 
@@ -361,6 +386,43 @@ class Organization extends User
         return $this->hasOne($this->memberLimitClass, [
             $this->getNoInitMemberLimit()->createdByAttribute => $this->guidAttribute
         ]);
+    }
+
+    /**
+     * @param string|null $item If you want to get all settings, please set it null.
+     * @return null
+     */
+    public function getSettings($item = null)
+    {
+        if (empty($this->organizationSettingClass) || !is_string($this->organizationSettingClass)) {
+            return null;
+        }
+        $query = $this->hasMany($this->organizationSettingClass, [$this->getNoInitOrganizationSetting()->createdByAttribute => $this->guidAttribute]);
+        if (!empty($item)) {
+            $query = $query->andWhere([$this->getNoInitOrganizationSetting()->idAttribute => $item]);
+        }
+        return $query;
+    }
+
+    /**
+     * @param $item
+     * @param $value
+     * @return bool|null Null if organization setting not enabled.
+     */
+    public function setSetting($item, $value)
+    {
+        if (empty($this->organizationSettingClass) || !is_string($this->organizationSettingClass)) {
+            return null;
+        }
+        $setting = $this->getSettings($item)->one();
+        /* @var $setting OrganizationSetting */
+        if (!$setting) {
+            $setting = $this->create($this->organizationSettingClass, [
+                $this->getNoInitOrganizationSetting()->idAttribute => $item,
+            ]);
+        }
+        $setting->value = $value;
+        return $setting->save();
     }
 
     /**
@@ -796,68 +858,100 @@ class Organization extends User
         return $limit - $count;
     }
 
+    const SETTING_ITEM_EXCLUDE_OTHER_MEMBERS = 'exclude_other_members';
+
     /**
      * @return bool
      */
     public function getIsExcludeOtherMembers()
     {
-        return $this->eom > 0;
+        $setting = $this->getSettings(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS, '0');
+            $setting = $this->getSettings(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS)->one();
+        }
+        return $setting->value == '1';
     }
 
     /**
      * @param bool $value
+     * @return bool
      */
     public function setIsExcludeOtherMembers($value = true)
     {
-        $this->eom = ($value) ? 1 : 0;
+        return $this->setSetting(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS, $value ? '1' : '0');
     }
+
+    const SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER = 'disallow_member_join_other';
 
     /**
      * @return bool
      */
     public function getIsDisallowMemberJoinOther()
     {
-        return $this->djo > 0;
+        $setting = $this->getSettings(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER, '0');
+            $setting = $this->getSettings(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER)->one();
+        }
+        return $setting->value == '1';
     }
 
     /**
      * @param bool $value
+     * @return bool
      */
     public function setIsDisallowMemberJoinOther($value = true)
     {
-        $this->djo = ($value) ? 1 : 0;
+        return $this->setSetting(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER, $value ? '1' : '0');
     }
+
+    const SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER = 'only_accept_current_org_member';
 
     /**
      * @return bool
      */
     public function getIsOnlyAcceptCurrentOrgMember()
     {
-        return $this->oacm > 0;
+        $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER, '0');
+            $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER)->one();
+        }
+        return $setting->value == '1';
     }
 
     /**
      * @param bool $value
+     * @return bool
      */
     public function setIsOnlyAcceptCurrentOrgMember($value = true)
     {
-        $this->oacm = ($value) ? 1 : 0;
+        return $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER, $value ? '1' : '0');
     }
+
+    const SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER = 'only_accept_superior_org_member';
 
     /**
      * @return bool
      */
     public function getIsOnlyAcceptSuperiorOrgMember()
     {
-        return $this->oasm > 0;
+        $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER, '0');
+            $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER)->one();
+        }
+        return $setting->value == '1';
     }
 
     /**
      * @param bool $value
+     * @return bool
      */
     public function setIsOnlyAcceptSuperiorOrgMember($value = true)
     {
-        $this->oasm = ($value) ? 1 : 0;
+        return $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER, $value ? '1' : '0');
     }
 
     /**

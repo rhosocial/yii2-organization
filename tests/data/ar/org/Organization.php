@@ -27,6 +27,7 @@ class Organization extends \rhosocial\organization\Organization
     public $organizationLimitClass = OrganizationLimit::class;
     public $subordinateLimitClass = SubordinateLimit::class;
     public $memberLimitClass = MemberLimit::class;
+    public $organizationSettingClass = OrganizationSetting::class;
     public function init()
     {
         if (!is_string($this->queryClass)) {

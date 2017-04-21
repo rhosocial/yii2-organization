@@ -96,6 +96,7 @@ class OrganizationMemberRestrictTest extends TestCase
      * @group organization
      * @group department
      * @group member
+     * @group restrict
      */
     public function testNormal()
     {
@@ -115,6 +116,7 @@ class OrganizationMemberRestrictTest extends TestCase
      * @group organization
      * @group department
      * @group member
+     * @group restrict
      */
     public function testModify()
     {
@@ -139,6 +141,7 @@ class OrganizationMemberRestrictTest extends TestCase
      * @group organization
      * @group department
      * @group member
+     * @group restrict
      */
     public function testExcludeOtherMember()
     {
@@ -175,6 +178,7 @@ class OrganizationMemberRestrictTest extends TestCase
      * @group organization
      * @group department
      * @group member
+     * @group restrict
      */
     public function testDisallowJoinInOther()
     {
@@ -225,6 +229,7 @@ class OrganizationMemberRestrictTest extends TestCase
      * @group organization
      * @group department
      * @group member
+     * @group restrict
      */
     public function testOnlyAcceptCurrentOrgMember()
     {
@@ -262,6 +267,7 @@ class OrganizationMemberRestrictTest extends TestCase
      * @group organization
      * @group department
      * @group member
+     * @group restrict
      */
     public function testOnlyAcceptSuperiorOrgMember()
     {

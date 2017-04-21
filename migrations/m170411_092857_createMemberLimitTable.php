@@ -23,7 +23,7 @@ use rhosocial\user\migrations\Migration;
 ```SQL
 CREATE TABLE `organization_member_limit` (
 `guid` varbinary(16) NOT NULL COMMENT 'GUID',
-`organization_guid` varbinary(16) NOT NULL COMMENT 'User GUID',
+`organization_guid` varbinary(16) NOT NULL COMMENT 'Organization GUID',
 `limit` int(11) unsigned NOT NULL DEFAULT '100' COMMENT 'Limit',
 `ip` varbinary(16) NOT NULL DEFAULT '0' COMMENT 'IP Address',
 `ip_type` tinyint(3) NOT NULL DEFAULT '4' COMMENT 'IP Address Type',
@@ -47,7 +47,7 @@ class m170411_092857_createMemberLimitTable extends Migration
             $tableOptions = "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Member Limit'";
             $this->createTable(MemberLimit::tableName(), [
                 'guid' => $this->varbinary(16)->notNull()->comment('GUID'),
-                'organization_guid' => $this->varbinary(16)->notNull()->comment('User GUID'),
+                'organization_guid' => $this->varbinary(16)->notNull()->comment('Organization GUID'),
                 'limit' => $this->integer(11)->unsigned()->defaultValue(100)->notNull()->comment('Limit'),
                 'ip' => $this->varbinary(16)->notNull()->defaultValue(0)->comment('IP Address'),
                 'ip_type' => $this->tinyInteger(3)->unsigned()->notNull()->defaultValue(4)->comment('IP Address Type'),
