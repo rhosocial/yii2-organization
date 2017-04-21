@@ -19,6 +19,7 @@ use rhosocial\organization\web\organization\Module;
 use rhosocial\user\User;
 use Yii;
 use yii\base\Action;
+use yii\web\Response;
 
 /**
  * Class RemoveMemberAction
@@ -31,6 +32,9 @@ class RemoveMemberAction extends Action
     public $removeMemberSuccessMessage;
     public $removeMemberFailedMessage;
 
+    /**
+     * Initialize messages.
+     */
     protected function initMessages()
     {
         if (!is_string($this->removeMemberSuccessMessage)) {
@@ -41,6 +45,9 @@ class RemoveMemberAction extends Action
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         $this->initMessages();
@@ -54,6 +61,7 @@ class RemoveMemberAction extends Action
      * @param User $user
      * @return boolean
      * @throws NotMemberOfOrganizationException
+     * @throws RemovePreventedException
      */
     public static function checkAccess($org, &$id, $user)
     {
@@ -71,9 +79,10 @@ class RemoveMemberAction extends Action
     }
 
     /**
+     * Run action.
      * @param $org
      * @param $user
-     * @return \yii\web\Response
+     * @return Response
      */
     public function run($org, $user)
     {

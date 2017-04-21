@@ -61,6 +61,9 @@ class MyController extends Controller
             'assign-admin' => [
                 'class' => 'rhosocial\organization\web\organization\controllers\my\AssignAdminAction',
             ],
+            'settings' => [
+                'class' => 'rhosocial\organization\web\organization\controllers\my\SettingsAction',
+            ]
         ];
     }
 

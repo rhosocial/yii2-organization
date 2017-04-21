@@ -13,9 +13,11 @@
 namespace rhosocial\organization\web\organization\controllers\my;
 
 use rhosocial\organization\exceptions\UnauthorizedManageProfileException;
+use rhosocial\organization\Organization;
 use rhosocial\organization\Profile;
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\web\organization\Module;
+use rhosocial\user\User;
 use Yii;
 use yii\base\Action;
 
@@ -30,6 +32,9 @@ class UpdateAction extends Action
     public $updateSuccessMessage;
     public $updateFailedMessage;
 
+    /**
+     * Initialize messages.
+     */
     protected function initMessages()
     {
         if (!is_string($this->updateSuccessMessage)) {
@@ -40,6 +45,9 @@ class UpdateAction extends Action
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         $this->initMessages();
@@ -48,8 +56,8 @@ class UpdateAction extends Action
 
     /**
      * Check access.
-     * @param $org
-     * @param $user
+     * @param Organization $org
+     * @param User $user
      * @return bool
      * @throws UnauthorizedManageProfileException
      */
@@ -63,7 +71,8 @@ class UpdateAction extends Action
     }
 
     /**
-     * @param $id
+     * Run action
+     * @param string|integer $id
      * @return string
      */
     public function run($id)

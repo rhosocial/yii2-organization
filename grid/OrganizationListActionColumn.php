@@ -30,13 +30,16 @@ use yii\helpers\Url;
  */
 class OrganizationListActionColumn extends ActionColumn
 {
-    public $template = '{view} {member} {add} {update} {delete}';
+    public $template = '{view} {member} {add} {update} {settings} {delete}';
 
     /**
      * @var User
      */
     public $operator;
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         if (!isset($this->operator)) {
@@ -50,6 +53,9 @@ class OrganizationListActionColumn extends ActionColumn
         $this->initVisibleButtons();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function initUrlCreator()
     {
         if (isset($this->urlCreator)) {
@@ -65,6 +71,8 @@ class OrganizationListActionColumn extends ActionColumn
                 return Url::to(['view', 'id' => $model->getID()]);
             } elseif ($action == 'update') {
                 return Url::to(['update', 'id' => $model->getID()]);
+            } elseif ($action =='settings') {
+                return Url::to(['settings', 'id' => $model->getID()]);
             } elseif ($action == 'delete') {
                 return Url::to(['revoke', 'id' => $model->getID()]);
             }
@@ -72,6 +80,9 @@ class OrganizationListActionColumn extends ActionColumn
         };
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function initVisibleButtons()
     {
         if (!empty($this->visibleButtons)) {
@@ -84,6 +95,9 @@ class OrganizationListActionColumn extends ActionColumn
                 return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new SetUpDepartment)->name, ['organization' => $model]);
             },
             'update' => function ($model, $key, $index) {
+                return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new ManageProfile)->name, ['organization' => $model]);
+            },
+            'settings' => function ($model, $key, $index) {
                 return Yii::$app->authManager->checkAccess($this->operator->getGUID(), (new ManageProfile)->name, ['organization' => $model]);
             },
             'delete' => function ($model, $key, $index) {
@@ -108,6 +122,10 @@ class OrganizationListActionColumn extends ActionColumn
             'aria-label' => Yii::t('organization', 'Set Up New Department'),
         ]);
         $this->initDefaultButton('update', false);
+        $this->initDefaultButton('settings', false, [
+            'title' => Yii::t('organization', 'Settings'),
+            'aria-label' => Yii::t('organization', 'Settings'),
+        ]);
         $this->initDefaultButton('delete', false, [
             'data-confirm' => Yii::t('organization', 'Are you sure you want to revoke this organization / department?'),
             'data-method' => 'post',

@@ -128,4 +128,5 @@ return [
     'Set up a new organization:' => '开设一个新组织：',
     'All subordinates of the current organization:' => '当前组织的所有下属部门：',
     'All subordinates of the current department:' => '当前部门的所有下属部门：',
+    'Settings' => '设置',
 ];
