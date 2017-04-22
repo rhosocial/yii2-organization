@@ -144,9 +144,9 @@ class SettingsForm extends Model
             'disallow_member_join_other' => Yii::t('organization', 'Disallow members to join other'),
             'only_accept_current_org_member' => Yii::t('organization', 'Only accept organization members'),
             'only_accept_superior_org_member' => Yii::t('organization', 'Only accept superior members'),
-            'join_password' => Yii::t('organization', 'Join password'),
-            'join_ip_address' => Yii::t('organization', 'Join IP address'),
-            'join_entrance_url' => Yii::t('organization', 'Join Entrance URL'),
+            'join_password' => Yii::t('organization', 'Password'),
+            'join_ip_address' => Yii::t('organization', 'IP Address'),
+            'join_entrance_url' => Yii::t('organization', 'Entrance URL'),
         ];
     }
 
@@ -162,7 +162,9 @@ class SettingsForm extends Model
             'disallow_member_join_other' => Yii::t('organization', 'This organization does not allow the organization and its subordinates\' members to join other organizations or their subordinates.') . "\n" . Yii::t('organization', 'All members of this organization (including subordinate departments) who have joined other organizations (including their subordinates) are not affected.') . "\n" . Yii::t('organization', 'If this option is enabled, all members of the organization (including subordinate departments) who have the "Set Up Organization" permission will not be able to set up a new organization.'),
             'only_accept_current_org_member' => Yii::t('organization', 'This department is only accepted by members of the organization.') . "\n" . Yii::t('organization', 'That is to say, only the members of {name} are accepted.', ['name' => $topName]),
             'only_accept_superior_org_member' => Yii::t('organization', 'This department only accepts members of the parent organization or department.') . "\n" . Yii::t('organization', 'That is to say, only the members of {name} are accepted.', ['name' => $parentName]),
-            'join_ip_address' => Yii::t('organization', 'Join IP Address'),
+            'join_entrance_url' => Yii::t('organization', 'Only the users through the above entrance URL can join this organization / department proactively.'),
+            'join_password' => Yii::t('organization', 'Only the users by entering the above password can join this organization / department proactively.'),
+            'join_ip_address' => Yii::t('organization', 'Only the users from the above IP address (segment) can join the organization / department proactively.'),
         ];
     }
 

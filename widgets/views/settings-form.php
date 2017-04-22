@@ -71,6 +71,7 @@ $horizontalCheckboxTemplate = "<div class=\"col-lg-2 col-md-4\"></div>\n" .
 
 <h3><?= Yii::t('organization', 'Join') ?></h3>
 <hr>
+<p><?= Yii::t('organization', 'The following conditions need to be fully met, if not limit a condition, please leave it blank.') ?></p>
 <?= $form->field($model, 'join_entrance_url')->textInput() ?>
 <?= $form->field($model, 'join_password')->textInput() ?>
 <?= $form->field($model, 'join_ip_address')->textInput() ?>

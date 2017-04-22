@@ -946,7 +946,7 @@ class Organization extends User
      */
     public function getIsOnlyAcceptSuperiorOrgMember()
     {
-        if ($this->parent->equals($this->topOrganization)) {
+        if ($this->parent && $this->parent->equals($this->topOrganization)) {
             return $this->getIsOnlyAcceptCurrentOrgMember();
         }
         $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER)->one();
@@ -963,7 +963,7 @@ class Organization extends User
      */
     public function setIsOnlyAcceptSuperiorOrgMember($value = true)
     {
-        if ($this->parent->equals($this->topOrganization)) {
+        if ($this->parent && $this->parent->equals($this->topOrganization)) {
             return $this->setIsOnlyAcceptCurrentOrgMember($value);
         }
         return $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER, $value ? '1' : '0');
