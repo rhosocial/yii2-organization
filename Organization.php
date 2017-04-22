@@ -29,7 +29,6 @@ use rhosocial\user\User;
 use Yii;
 use yii\base\Event;
 use yii\base\InvalidParamException;
-use yii\db\Exception;
 use yii\db\IntegrityException;
 
 /**

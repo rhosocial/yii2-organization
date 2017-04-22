@@ -29,7 +29,7 @@ $this->registerCss($css);
     <p><?= Yii::t('organization', 'Please fill out the following fields to update member:') ?></p>
 
     <?php $form = ActiveForm::begin([
-        'id' => '-form',
+        'id' => 'member-form',
         'layout' => 'horizontal',
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-md-6\">{input}</div>\n<div class=\"col-md-4\">{error}</div>",

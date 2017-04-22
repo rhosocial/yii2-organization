@@ -13,6 +13,7 @@
 namespace rhosocial\organization\web\organization\controllers\my;
 
 use rhosocial\organization\exceptions\UnauthorizedManageProfileException;
+use rhosocial\organization\forms\SettingsForm;
 use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\web\organization\Module;
 use Yii;
@@ -50,6 +51,17 @@ class SettingsAction extends Action
         $organization = Module::getOrganization($id);
         $user = Yii::$app->user->identity;
         static::checkAccess($organization, $user);
-        return $this->controller->render('settings', ['organization' => $organization]);
+        $model = new SettingsForm([
+            'organization' => $organization,
+        ]);
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
+            if ($model->validate() && $model->submit()) {
+                return $this->controller->redirect('settings', ['id' => $id]);
+            }
+        }
+        return $this->controller->render('settings', [
+            'organization' => $organization,
+            'model' => $model
+        ]);
     }
 }
