@@ -65,6 +65,9 @@ class Organization extends \rhosocial\organization\Organization
  * the top level organization. (Only fit for Department)
  * @property bool $isOnlyAcceptSuperiorOrgMember Determine whether the current department only accept the member of
  * the superior organization or department. (Only fit for Department)
+ * @property string $joinPassword
+ * @property string $joinIpAddress
+ * @property string $joinEntranceUrl
  *
  * @property-read Member[] $members Get all member models of this organization/department.
  * @property-read User[] $memberUsers Get all members of this organization/department.
@@ -320,6 +323,10 @@ class Organization extends User
         return parent::find();
     }
 
+    /**
+     * Get rules associated with type attribute.
+     * @return array
+     */
     protected function getTypeRules()
     {
         return [
@@ -329,6 +336,9 @@ class Organization extends User
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return array_merge(parent::rules(), $this->getTypeRules(), $this->getSelfBlameableRules());
@@ -484,7 +494,7 @@ class Organization extends User
         if ($this->isDepartment() && $this->isOnlyAcceptCurrentOrgMember && !$this->topOrganization->hasMember($user)) {
             throw new OnlyAcceptCurrentOrgMemberException(Yii::t('organization' ,'This department is only accepted by members of the organization.'));
         }
-        if ($this->isDepartment() && $this->isOnlyAcceptSuperiorOrgMember && !$this->parent->hasMember($user)) {
+        if ($this->isDepartment() && !$this->parent->equals($this->topOrganization) && $this->isOnlyAcceptSuperiorOrgMember && !$this->parent->hasMember($user)) {
             throw new OnlyAcceptSuperiorOrgMemberException(Yii::t('organization', 'This department only accepts members of the parent organization or department.'));
         }
 
@@ -936,6 +946,9 @@ class Organization extends User
      */
     public function getIsOnlyAcceptSuperiorOrgMember()
     {
+        if ($this->parent->equals($this->topOrganization)) {
+            return $this->getIsOnlyAcceptCurrentOrgMember();
+        }
         $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER)->one();
         if (!$setting) {
             $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER, '0');
@@ -950,7 +963,88 @@ class Organization extends User
      */
     public function setIsOnlyAcceptSuperiorOrgMember($value = true)
     {
+        if ($this->parent->equals($this->topOrganization)) {
+            return $this->setIsOnlyAcceptCurrentOrgMember($value);
+        }
         return $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER, $value ? '1' : '0');
+    }
+
+    const SETTING_ITEM_JOIN_PASSWORD = 'join_password';
+
+    /**
+     * Get join password.
+     * @return mixed
+     */
+    public function getJoinPassword()
+    {
+        $setting = $this->getSettings(static::SETTING_ITEM_JOIN_PASSWORD)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_JOIN_PASSWORD, '');
+            $setting = $this->getSettings(static::SETTING_ITEM_JOIN_PASSWORD)->one();
+        }
+        return $setting->value;
+    }
+
+    /**
+     * Set join password.
+     * @param string $value
+     * @return bool|null
+     */
+    public function setJoinPassword($value = '')
+    {
+        return $this->setSetting(static::SETTING_ITEM_JOIN_PASSWORD, $value);
+    }
+
+    const SETTING_ITEM_JOIN_IP_ADDRESS = 'join_ip_address';
+
+    /**
+     * Get Join IP address
+     * @return mixed
+     */
+    public function getJoinIpAddress()
+    {
+        $setting = $this->getSettings(static::SETTING_ITEM_JOIN_IP_ADDRESS)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_JOIN_IP_ADDRESS, '');
+            $setting = $this->getSettings(static::SETTING_ITEM_JOIN_IP_ADDRESS)->one();
+        }
+        return $setting->value;
+    }
+
+    /**
+     * Set join IP address.
+     * @param $value
+     * @return bool|null
+     */
+    public function setJoinIpAddress($value = '')
+    {
+        return $this->setSetting(static::SETTING_ITEM_JOIN_IP_ADDRESS, $value);
+    }
+
+    const SETTING_ITEM_JOIN_ENTRANCE_URL = 'join_entrance_url';
+
+    /**
+     * Get join entrance URL.
+     * @return string
+     */
+    public function getJoinEntranceUrl()
+    {
+        $setting = $this->getSettings(static::SETTING_ITEM_JOIN_ENTRANCE_URL)->one();
+        if (!$setting) {
+            $this->setSetting(static::SETTING_ITEM_JOIN_ENTRANCE_URL, '');
+            $setting = $this->getSettings(static::SETTING_ITEM_JOIN_ENTRANCE_URL)->one();
+        }
+        return $setting->value;
+    }
+
+    /**
+     * Set join entrance URL.
+     * @param string $value
+     * @return bool|null
+     */
+    public function setJoinEntranceUrl($value = '')
+    {
+        return $this->setSetting(static::SETTING_ITEM_JOIN_ENTRANCE_URL, $value);
     }
 
     /**

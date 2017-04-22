@@ -27,35 +27,58 @@ if ($profile) {
     $name = Yii::t('yii', 'not set');
 }
 ?>
-<p><?= $name ?></p>
+<h2><?= $name ?></h2>
 <?php $form = ActiveForm::begin([
     'id' => 'organization-settings-form',
     'layout' => 'horizontal',
     'fieldConfig' => [
-        'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{endWrapper}",
+        'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
         'horizontalCssClasses' => [
-            'label' => 'col-lg-6',
+            'label' => 'col-md-4 col-lg-2',
             'offset' => '',
-            'input' => 'col-lg-6',
-            'wrapper' => 'col-sm-8',
-            'error' => '',
-            'hint' => 'col-lg-12',
+            'input' => 'col-md-6',
+            'wrapper' => 'col-md-6 col-lg-8',
+            'error' => 'col-md-12',
+            'hint' => 'col-md-12',
         ],
     ],
 ]) ?>
-<div class="thumbnail">
-    <?php if ($model->scenario == SettingsForm::SCENARIO_ORGANIZATION): ?>
-        <p><?= $form->field($model, 'exclude_other_members')->checkbox() ?></p>
-        <p><?= $form->field($model, 'disallow_member_join_other')->checkbox() ?></p>
-    <?php elseif ($model->scenario == SettingsForm::SCENARIO_DEPARTMENT): ?>
-        <p><?= $form->field($model, 'only_accept_current_org_member')->checkbox() ?></p>
-        <p><?= $form->field($model, 'only_accept_superior_org_member')->checkbox() ?></p>
+<?php
+$horizontalCheckboxTemplate = "<div class=\"col-lg-2 col-md-4\"></div>\n" .
+    "{beginWrapper}\n{input}\n{label}\n" .
+    "{hint}\n{error}\n" .
+    "{endWrapper}"
+?>
+<h3><?= Yii::t('organization', 'General') ?></h3>
+<hr>
+<?php if ($model->scenario == SettingsForm::SCENARIO_ORGANIZATION): ?>
+    <?= $form->field($model, 'exclude_other_members', [
+            'horizontalCheckboxTemplate' => $horizontalCheckboxTemplate,
+    ])->checkbox() ?>
+    <?= $form->field($model, 'disallow_member_join_other', [
+        'horizontalCheckboxTemplate' => $horizontalCheckboxTemplate,
+    ])->checkbox() ?>
+<?php elseif ($model->scenario == SettingsForm::SCENARIO_DEPARTMENT): ?>
+    <?= $form->field($model, 'only_accept_current_org_member', [
+        'horizontalCheckboxTemplate' => $horizontalCheckboxTemplate,
+    ])->checkbox() ?>
+    <?php if (!$model->organization->parent->equals($model->organization->topOrganization)) : ?>
+        <?= $form->field($model, 'only_accept_superior_org_member', [
+            'horizontalCheckboxTemplate' => $horizontalCheckboxTemplate,
+        ])->checkbox() ?>
     <?php endif; ?>
-</div>
+<?php endif; ?>
+
+<h3><?= Yii::t('organization', 'Join') ?></h3>
+<hr>
+<?= $form->field($model, 'join_entrance_url')->textInput() ?>
+<?= $form->field($model, 'join_password')->textInput() ?>
+<?= $form->field($model, 'join_ip_address')->textInput() ?>
 
 <div class="form-group">
-    <div class="col-lg-12">
+    <div class="col-md-offset-4 col-md-8 col-lg-offset-2 col-lg-10">
         <?= Html::submitButton(Yii::t('organization', 'Submit'), ['class' => 'btn btn-primary', 'name' => 'submit-button']) ?>
+        <?= Html::resetButton(Yii::t('user', 'Reset'), ['class' => 'btn btn-default']) ?>
     </div>
 </div>
 

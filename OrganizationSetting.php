@@ -123,6 +123,16 @@ class OrganizationSetting extends BaseBlameableModel
     /**
      * @inheritdoc
      */
+    public function getContentRules()
+    {
+        return [
+            array_merge([$this->contentAttribute], $this->contentAttributeRule),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
