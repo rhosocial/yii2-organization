@@ -16,6 +16,7 @@ use rhosocial\organization\Organization;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\Model;
+use yii\web\ServerErrorHttpException;
 
 /**
  * Class SettingsForm
@@ -84,21 +85,26 @@ class SettingsForm extends Model
      */
     public function submit()
     {
-        if ($this->organization->isOrganization()) {
-            if ($this->exclude_other_members != ($this->organization->isExcludeOtherMembers ? '1' : '0')) {
-                $this->organization->isExcludeOtherMembers = ($this->exclude_other_members == '1');
+        try {
+            if ($this->organization->isOrganization()) {
+                if ($this->exclude_other_members != ($this->organization->isExcludeOtherMembers ? '1' : '0')) {
+                    $this->organization->isExcludeOtherMembers = ($this->exclude_other_members == '1');
+                }
+                if ($this->disallow_member_join_other != ($this->organization->isDisallowMemberJoinOther ? '1' : '0')) {
+                    $this->organization->isDisallowMemberJoinOther = ($this->disallow_member_join_other == '1');
+                }
+            } elseif ($this->organization->isDepartment()) {
+                if ($this->only_accept_current_org_member != ($this->organization->isOnlyAcceptCurrentOrgMember ? '1' : '0')) {
+                    $this->organization->isOnlyAcceptCurrentOrgMember = ($this->only_accept_current_org_member == '1');
+                }
+                if ($this->only_accept_superior_org_member != ($this->organization->isOnlyAcceptSuperiorOrgMember ? '1' : '0')) {
+                    $this->organization->isOnlyAcceptSuperiorOrgMember = ($this->only_accept_superior_org_member == '1');
+                }
             }
-            if ($this->disallow_member_join_other != ($this->organization->isDisallowMemberJoinOther ? '1' : '0')) {
-                $this->organization->isDisallowMemberJoinOther = ($this->disallow_member_join_other == '1');
-            }
-        } elseif ($this->organization->isDepartment()) {
-            if ($this->only_accept_current_org_member != ($this->organization->isOnlyAcceptCurrentOrgMember ? '1' : '0')) {
-                $this->organization->isOnlyAcceptCurrentOrgMember = ($this->only_accept_current_org_member == '1');
-            }
-            if ($this->only_accept_superior_org_member != ($this->organization->isOnlyAcceptSuperiorOrgMember ? '1' : '0')) {
-                $this->organization->isOnlyAcceptSuperiorOrgMember = ($this->only_accept_superior_org_member == '1');
-            }
+        } catch (\Exception $ex) {
+            throw new ServerErrorHttpException($ex->getMessage());
         }
+        return true;
     }
 
     /**

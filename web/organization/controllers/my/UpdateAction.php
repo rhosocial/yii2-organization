@@ -89,11 +89,11 @@ class UpdateAction extends Action
         if ($profile->load(Yii::$app->request->post())) {
             if ($profile->save()) {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '(' . $org->getID() . ') ' . $this->updateSuccessMessage);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '(' . $org->profile->name . ' ' . $org->getID() . ') ' . $this->updateSuccessMessage);
                 return $this->controller->redirect(['update', 'id' => $org->getID()]);
             }
             Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '(' . $org->getID() . ') ' . $this->updateFailedMessage);
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '(' . $org->profile->name . ' ' . $org->getID() . ') ' . $this->updateFailedMessage);
         }
         return $this->controller->render('update', ['organization' => $org, 'model' => $profile]);
     }

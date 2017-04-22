@@ -27,6 +27,28 @@ use yii\base\Action;
  */
 class SettingsAction extends Action
 {
+    public $updateSuccessMessage;
+    public $updateFailedMessage;
+
+    /**
+     * Initialize messages.
+     */
+    protected function initMessages()
+    {
+        if (!is_string($this->updateSuccessMessage)) {
+            $this->updateSuccessMessage = Yii::t('user' ,'Updated.');
+        }
+        if (!is_string($this->updateFailedMessage)) {
+            $this->updateFailedMessage = Yii::t('user', 'Failed to Update.');
+        }
+    }
+
+    public function init()
+    {
+        $this->initMessages();
+        parent::init();
+    }
+
     /**
      * Check access.
      * @param $org
@@ -56,8 +78,12 @@ class SettingsAction extends Action
         ]);
         if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             if ($model->validate() && $model->submit()) {
-                return $this->controller->redirect('settings', ['id' => $id]);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '(' . $organization->profile->name . ' ' . $organization->getID() . ') ' . $this->updateSuccessMessage);
+                return $this->controller->redirect(['settings', 'id' => $organization->getID()]);
             }
+            Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '(' . $organization->profile->name . ' ' . $organization->getID() . ') ' . $this->updateFailedMessage);
         }
         return $this->controller->render('settings', [
             'organization' => $organization,
