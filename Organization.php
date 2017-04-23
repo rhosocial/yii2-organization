@@ -414,11 +414,14 @@ class Organization extends User
     }
 
     /**
-     * @param $item
-     * @param $value
+     * Set organization setting.
+     * @param string $item
+     * @param string $value
+     * @param bool $unique
      * @return bool|null Null if organization setting not enabled.
+     * @throws IntegrityException throw if "item-value" unique broke.
      */
-    public function setSetting($item, $value)
+    public function setSetting($item, $value, $unique = false)
     {
         if (empty($this->organizationSettingClass) || !is_string($this->organizationSettingClass)) {
             return null;
@@ -431,6 +434,15 @@ class Organization extends User
             ]);
         }
         $setting->value = $value;
+        if ($unique) {
+            $class = $this->organizationSettingClass;
+            if ($class::find()->andWhere([
+                $this->getNoInitOrganizationSetting()->idAttribute => $item,
+                $this->getNoInitOrganizationSetting()->contentAttribute => $value
+            ])->exists()) {
+                throw new IntegrityException("`$item` : `$value` existed.");
+            }
+        }
         return $setting->save();
     }
 
@@ -1025,6 +1037,7 @@ class Organization extends User
 
     /**
      * Get join entrance URL.
+     * This setting should be confirmed unique.
      * @return string
      */
     public function getJoinEntranceUrl()
@@ -1044,7 +1057,7 @@ class Organization extends User
      */
     public function setJoinEntranceUrl($value = '')
     {
-        return $this->setSetting(static::SETTING_ITEM_JOIN_ENTRANCE_URL, $value);
+        return $this->setSetting(static::SETTING_ITEM_JOIN_ENTRANCE_URL, $value, !empty($value));
     }
 
     /**
