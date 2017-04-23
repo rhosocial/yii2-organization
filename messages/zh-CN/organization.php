@@ -158,4 +158,5 @@ return [
     'If you check "Only accept organization members", let the user try to join the organization where this department affiliated to first before joining this department.' => '如果您勾选“只接受组织成员”，则在加入本部门之前，先让用户尝试加入本部门所属组织。',
     'If you check "Only accept superior members", let the user try to join the superior department where this department affiliated to first before joining this department.' => '如果您勾选“只接受上级成员”，则在加入本部门之前，先让用户尝试加入本部门所属上级组织。',
     'This condition needs to be unique and can not be the same as the entrance URL for other organizations / departments.' => '该条件必须是唯一的，不能与其它组织/部门的入口 URL 相同。',
+    '{value} already exists.' => '{value} 已存在。',
 ];

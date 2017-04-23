@@ -173,11 +173,40 @@ class SettingsForm extends Model
      */
     public function rules()
     {
+        $orgClass = get_class($this->organization);
         return [
             [['exclude_other_members', 'disallow_member_join_other', 'only_accept_current_org_member', 'only_accept_superior_org_member'], 'boolean', 'trueValue' => '1', 'falseValue' => '0'],
             [['join_password', 'join_entrance_url'], 'string', 'max' => 255],
             ['join_ip_address', 'ip', 'subnet' => null, 'normalize' => true],
+            ['join_entrance_url', 'setting_unique', 'skipOnError' => false, 'params' => ['item' => $orgClass::SETTING_ITEM_JOIN_ENTRANCE_URL]],
         ];
+    }
+
+    /**
+     * Check whether the setting is unique.
+     * @param string $attribute the attribute currently being validated
+     * @param mixed $params the value of the "params" given in the rule
+     * @param \yii\validators\InlineValidator related InlineValidator instance.
+     */
+    public function setting_unique($attribute, $params, $validator)
+    {
+        $value = (string)$this->$attribute;
+        if (empty($value)) {
+            return;
+        }
+
+        $class = $this->organization->organizationSettingClass;
+        if (empty($class) || !is_string($class)) {
+            return;
+        }
+
+        $result = $class::find()->andWhere([
+            $this->organization->getNoInitOrganizationSetting()->idAttribute => $params['item'],
+            $this->organization->getNoInitOrganizationSetting()->contentAttribute => $value,
+        ])->exists();
+        if ($result) {
+            $this->addError($attribute, Yii::t('organization', "{value} already exists.", ['value' => $value]));
+        }
     }
 
     /**

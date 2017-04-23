@@ -888,7 +888,7 @@ class Organization extends User
     {
         $setting = $this->getSettings(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS, '0');
+            $this->setIsExcludeOtherMembers(false);
             $setting = $this->getSettings(static::SETTING_ITEM_EXCLUDE_OTHER_MEMBERS)->one();
         }
         return $setting->value == '1';
@@ -912,7 +912,7 @@ class Organization extends User
     {
         $setting = $this->getSettings(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER, '0');
+            $this->setIsDisallowMemberJoinOther(false);
             $setting = $this->getSettings(static::SETTING_ITEM_DISALLOW_MEMBER_JOIN_OTHER)->one();
         }
         return $setting->value == '1';
@@ -936,7 +936,7 @@ class Organization extends User
     {
         $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER, '0');
+            $this->setIsOnlyAcceptCurrentOrgMember(false);
             $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_CURRENT_ORG_MEMBER)->one();
         }
         return $setting->value == '1';
@@ -963,7 +963,7 @@ class Organization extends User
         }
         $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER, '0');
+            $this->setIsOnlyAcceptSuperiorOrgMember(false);
             $setting = $this->getSettings(static::SETTING_ITEM_ONLY_ACCEPT_SUPERIOR_ORG_MEMBER)->one();
         }
         return $setting->value == '1';
@@ -991,7 +991,7 @@ class Organization extends User
     {
         $setting = $this->getSettings(static::SETTING_ITEM_JOIN_PASSWORD)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_JOIN_PASSWORD, '');
+            $this->setJoinPassword();
             $setting = $this->getSettings(static::SETTING_ITEM_JOIN_PASSWORD)->one();
         }
         return $setting->value;
@@ -1017,7 +1017,7 @@ class Organization extends User
     {
         $setting = $this->getSettings(static::SETTING_ITEM_JOIN_IP_ADDRESS)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_JOIN_IP_ADDRESS, '');
+            $this->setJoinIpAddress();
             $setting = $this->getSettings(static::SETTING_ITEM_JOIN_IP_ADDRESS)->one();
         }
         return $setting->value;
@@ -1044,7 +1044,7 @@ class Organization extends User
     {
         $setting = $this->getSettings(static::SETTING_ITEM_JOIN_ENTRANCE_URL)->one();
         if (!$setting) {
-            $this->setSetting(static::SETTING_ITEM_JOIN_ENTRANCE_URL, '');
+            $this->setJoinEntranceUrl();
             $setting = $this->getSettings(static::SETTING_ITEM_JOIN_ENTRANCE_URL)->one();
         }
         return $setting->value;

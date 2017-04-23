@@ -18,6 +18,8 @@ use rhosocial\organization\rbac\permissions\ManageProfile;
 use rhosocial\organization\web\organization\Module;
 use Yii;
 use yii\base\Action;
+use yii\bootstrap\ActiveForm;
+use yii\web\Response;
 
 /**
  * Class SettingsAction
@@ -76,6 +78,13 @@ class SettingsAction extends Action
         $model = new SettingsForm([
             'organization' => $organization,
         ]);
+        if (Yii::$app->request->isAjax) {
+            if ($model->load(Yii::$app->request->post())) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($model);
+            }
+            return;
+        }
         if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             if ($model->validate() && $model->submit()) {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
