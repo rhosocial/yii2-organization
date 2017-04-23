@@ -13,12 +13,12 @@
 
 namespace rhosocial\organization\web\organization\controllers;
 
+use rhosocial\organization\exceptions\OrganizationNotFoundException;
 use rhosocial\organization\web\organization\Module;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 /**
@@ -34,7 +34,7 @@ class JoinController extends Controller
     /**
      * @param $entrance
      * @throws BadRequestHttpException
-     * @throws NotFoundHttpException
+     * @throws OrganizationNotFoundException
      * @return Response|string
      */
     public function actionIndex($entrance)
@@ -42,7 +42,7 @@ class JoinController extends Controller
         try {
             $organization = Module::getOrganizationByEntrance($entrance);
             if (!$organization) {
-                throw new NotFoundHttpException(Yii::t('organization', 'Organization Not Found.'));
+                throw new OrganizationNotFoundException();
             }
         } catch (InvalidParamException $ex) {
             throw new BadRequestHttpException($ex->getMessage());
@@ -53,7 +53,7 @@ class JoinController extends Controller
     /**
      * @param $entrance
      * @throws BadRequestHttpException
-     * @throws NotFoundHttpException
+     * @throws OrganizationNotFoundException
      * @return Response|string
      */
     public function actionJoin($entrance)
@@ -61,7 +61,7 @@ class JoinController extends Controller
         try {
             $organization = Module::getOrganizationByEntrance($entrance);
             if (!$organization) {
-                throw new NotFoundHttpException(Yii::t('organization', 'Organization Not Found.'));
+                throw new OrganizationNotFoundException();
             }
         } catch (InvalidParamException $ex) {
             throw new BadRequestHttpException($ex->getMessage());
