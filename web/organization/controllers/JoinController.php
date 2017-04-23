@@ -13,7 +13,11 @@
 
 namespace rhosocial\organization\web\organization\controllers;
 
+use rhosocial\organization\web\organization\Module;
+use yii\base\InvalidParamException;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\Response;
 
 /**
  * Class JoinController
@@ -23,19 +27,34 @@ use yii\web\Controller;
  */
 class JoinController extends Controller
 {
+    public $layout = 'main';
+
     /**
      * @param $entrance
+     * @throws BadRequestHttpException
+     * @return Response|string
      */
-    public function actionOrganization($entrance)
+    public function actionIndex($entrance)
     {
-
+        try {
+            $organization = Module::getOrganizationByEntrance($entrance);
+        } catch (InvalidParamException $ex) {
+            throw new BadRequestHttpException($ex->getMessage());
+        }
+        return $this->render('index', ['organization' => $organization]);
     }
 
     /**
      * @param $entrance
+     * @throws BadRequestHttpException
+     * @return Response|string
      */
     public function actionJoin($entrance)
     {
-
+        try {
+            $organization = Module::getOrganizationByEntrance($entrance);
+        } catch (InvalidParamException $ex) {
+            throw new BadRequestHttpException($ex->getMessage());
+        }
     }
 }

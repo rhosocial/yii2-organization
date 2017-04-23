@@ -14,6 +14,8 @@ namespace rhosocial\organization\web\organization;
 
 use rhosocial\organization\Organization;
 use Yii;
+use yii\base\InvalidParamException;
+
 /**
  * @version 1.0
  * @author vistart <i@vistart.me>
@@ -40,5 +42,29 @@ class Module extends \yii\base\Module
             $organization = $organization->getID();
         }
         return $class::find()->guidOrId($organization)->one();
+    }
+
+    /**
+     * @param string $entrance
+     * @return Organization
+     */
+    public static function getOrganizationByEntrance($entrance)
+    {
+        $entrance = (string)$entrance;
+        if ($entrance === '') {
+            throw new InvalidParamException(Yii::t('organization', "Entrance should not be empty."));
+        }
+        $class = Yii::$app->user->identity->organizationClass;
+        $noInit = $class::buildNoInitModel();
+        /* @var $noInit Organization */
+        $settingClass = $noInit->organizationSettingClass;
+        $setting = $settingClass::find()->andWhere([
+            $noInit->getNoInitOrganizationSetting()->idAttribute => $class::SETTING_ITEM_JOIN_ENTRANCE_URL,
+            $noInit->getNoInitOrganizationSetting()->contentAttribute => $entrance,
+        ])->one();
+        if (!$setting) {
+            return null;
+        }
+        return $setting->host;
     }
 }
