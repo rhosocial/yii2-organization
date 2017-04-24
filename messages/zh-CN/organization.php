@@ -186,4 +186,6 @@ return [
     'Failed to join.' => '未能加入。',
     'Exited.' => '已退出。',
     'Failed to exit.' => '未能退出。',
+    'If you allow the member to withdraw proactively, the password is also needed to provide when withdrawing.' => '如果您允许成员主动退出，则退出时依然需要提供此密码。',
+    'You need to provide password.' => '您需要提供密码。',
 ];

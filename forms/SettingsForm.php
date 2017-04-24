@@ -195,6 +195,7 @@ class SettingsForm extends Model
                 ])),
             'join_password' =>
                 Yii::t('organization', 'If you specify a password, the user needs to provide the password to join.') . "<br>" .
+                Yii::t('organization', 'If you allow the member to withdraw proactively, the password is also needed to provide when withdrawing.') . "<br>" .
                 Yii::t('organization', 'If you do not need a user to enter a password, leave it blank.'),
             'join_ip_address' =>
                 Yii::t('organization', 'Only the users from the above IP address (segment) can join the organization / department proactively.'),
@@ -249,8 +250,22 @@ class SettingsForm extends Model
     public function scenarios()
     {
         return [
-            static::SCENARIO_ORGANIZATION => ['exclude_other_members', 'disallow_member_join_other', 'join_password', 'join_entrance_url', 'join_ip_address', 'exit_allow_withdraw_actively'],
-            static::SCENARIO_DEPARTMENT => ['only_accept_current_org_member', 'only_accept_superior_org_member', 'join_password', 'join_entrance_url', 'join_ip_address', 'exit_allow_withdraw_actively'],
+            static::SCENARIO_ORGANIZATION => [
+                'exclude_other_members',
+                'disallow_member_join_other',
+                'join_password',
+                'join_entrance_url',
+                'join_ip_address',
+                'exit_allow_withdraw_actively'
+            ],
+            static::SCENARIO_DEPARTMENT => [
+                'only_accept_current_org_member',
+                'only_accept_superior_org_member',
+                'join_password',
+                'join_entrance_url',
+                'join_ip_address',
+                'exit_allow_withdraw_actively'
+            ],
         ];
     }
 }

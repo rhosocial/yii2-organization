@@ -29,9 +29,9 @@ class ExitAction extends Action
     public $exitFailedMessage;
 
     /**
-     * @inheritdoc
+     * Initialize messages.
      */
-    public function init()
+    protected function initMessages()
     {
         if (!is_string($this->exitSuccessMessage) || empty($this->exitSuccessMessage)) {
             $this->exitSuccessMessage = Yii::t('organization', 'Exited.');
@@ -39,6 +39,15 @@ class ExitAction extends Action
         if (!is_string($this->exitFailedMessage) || empty($this->exitFailedMessage)) {
             $this->exitFailedMessage = Yii::t('organization', 'Failed to exit.');
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        $this->initMessages();
+        parent::init();
     }
     /**
      * Run action

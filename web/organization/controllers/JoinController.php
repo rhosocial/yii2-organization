@@ -42,9 +42,9 @@ class JoinController extends Controller
     public $exitFailedMessage;
 
     /**
-     * @inheritdoc
+     * Initialize messages.
      */
-    public function init()
+    protected function initMessages()
     {
         if (!is_string($this->joinSuccessMessage) || empty($this->joinSuccessMessage)) {
             $this->joinSuccessMessage = Yii::t('organization', 'Joined.');
@@ -58,6 +58,15 @@ class JoinController extends Controller
         if (!is_string($this->exitFailedMessage) || empty($this->exitFailedMessage)) {
             $this->exitFailedMessage = Yii::t('organization', 'Failed to exit.');
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        $this->initMessages();
+        parent::init();
     }
 
     /**

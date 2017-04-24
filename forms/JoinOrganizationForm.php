@@ -59,6 +59,16 @@ class JoinOrganizationForm extends Model
     /**
      * @inheritdoc
      */
+    public function attributeHints()
+    {
+        return [
+            'password' => Yii::t('organization', 'You need to provide password.'),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
