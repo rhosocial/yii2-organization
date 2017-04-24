@@ -93,7 +93,7 @@ class MyController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                    ]
+                    ],
                 ],
             ],
             'verbs' => [
