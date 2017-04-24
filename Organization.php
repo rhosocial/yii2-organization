@@ -68,6 +68,7 @@ class Organization extends \rhosocial\organization\Organization
  * @property string $joinPassword
  * @property string $joinIpAddress
  * @property string $joinEntranceUrl
+ * @property bool $exitAllowWithdrawActively
  *
  * @property-read Member[] $members Get all member models of this organization/department.
  * @property-read User[] $memberUsers Get all members of this organization/department.
@@ -1058,6 +1059,30 @@ class Organization extends User
     public function setJoinEntranceUrl($value = '')
     {
         return $this->setSetting(static::SETTING_ITEM_JOIN_ENTRANCE_URL, $value, !empty($value));
+    }
+
+    const SETTING_ITEM_EXIT_ALLOW_WITHDRAW_ACTIVELY = 'exit_allow_withdraw_actively';
+
+    /**
+     * @return bool
+     */
+    public function getExitAllowWithdrawActively()
+    {
+        $setting = $this->getSettings(static::SETTING_ITEM_EXIT_ALLOW_WITHDRAW_ACTIVELY)->one();
+        if (!$setting) {
+            $this->setExitAllowWithdrawActively();
+            $setting = $this->getSettings(static::SETTING_ITEM_EXIT_ALLOW_WITHDRAW_ACTIVELY)->one();
+        }
+        return $setting->value == '1';
+    }
+
+    /**
+     * @param bool $value
+     * @return bool|null
+     */
+    public function setExitAllowWithdrawActively($value = false)
+    {
+        return $this->setSetting(static::SETTING_ITEM_EXIT_ALLOW_WITHDRAW_ACTIVELY, $value ? '1' : '0');
     }
 
     /**

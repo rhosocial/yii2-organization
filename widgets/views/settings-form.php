@@ -69,11 +69,11 @@ $horizontalCheckboxTemplate = "<div class=\"col-lg-2 col-md-3\"></div>\n" .
     <?php endif; ?>
 <?php endif; ?>
 
-<h3><?= Yii::t('organization', 'Join') ?></h3>
+<h3><?= Yii::t('organization', 'Join & Exit') ?></h3>
 <hr>
 <div class="row">
     <div class="col-lg-offset-2 col-lg-8 col-md-offset-3 col-md-9">
-        <p><?= Yii::t('organization', 'To make it easier for users to join this organization / department, you can add the following conditions') ?></p>
+        <p><?= Yii::t('organization', 'In order to facilitate the user to join the organization / department, you can add the following conditions') ?></p>
     </div>
 </div>
 <?= $form->field($model, 'join_entrance_url', [
@@ -81,9 +81,11 @@ $horizontalCheckboxTemplate = "<div class=\"col-lg-2 col-md-3\"></div>\n" .
 ])->textInput() ?>
 <?= $form->field($model, 'join_password')->textInput() ?>
 <?= $form->field($model, 'join_ip_address')->textInput() ?>
+<?= $form->field($model, 'exit_allow_withdraw_actively', [
+    'horizontalCheckboxTemplate' => $horizontalCheckboxTemplate,
+])->checkbox() ?>
 <div class="row">
     <div class="col-lg-offset-2 col-lg-8 col-md-offset-3 col-md-9">
-        <p><?= Yii::t('organization', 'The above conditions need to be fully met, if not limit a condition, please leave it blank.') ?></p>
         <p><?= Yii::t('organization', 'Note:') ?></p>
         <ol>
             <?php if ($model->organization->isOrganization()): ?>
