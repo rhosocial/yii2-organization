@@ -28,6 +28,9 @@ class MyController extends Controller
 {
     public $layout = 'main';
 
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         return [
@@ -63,10 +66,16 @@ class MyController extends Controller
             ],
             'settings' => [
                 'class' => 'rhosocial\organization\web\organization\controllers\my\SettingsAction',
-            ]
+            ],
+            'exit' => [
+                'class' => 'rhosocial\organization\web\organization\controllers\my\ExitAction',
+            ],
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -102,6 +111,7 @@ class MyController extends Controller
                     'revoke' => ['post'],
                     'remove-member' => ['post'],
                     'assign-admin' => ['post'],
+                    'exit' => ['post'],
                 ]
             ],
         ];

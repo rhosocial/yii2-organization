@@ -30,7 +30,7 @@ use yii\helpers\Url;
  */
 class OrganizationListActionColumn extends ActionColumn
 {
-    public $template = '{view} {member} {add} {update} {settings} {delete}';
+    public $template = '{view} {member} {add} {update} {settings} {delete} {exit}';
 
     /**
      * @var User
@@ -75,6 +75,8 @@ class OrganizationListActionColumn extends ActionColumn
                 return Url::to(['settings', 'id' => $model->getID()]);
             } elseif ($action == 'delete') {
                 return Url::to(['revoke', 'id' => $model->getID()]);
+            } elseif ($action == 'exit') {
+                return Url::to(['exit', 'id' => $model->getID()]);
             }
             return '#';
         };
@@ -104,6 +106,14 @@ class OrganizationListActionColumn extends ActionColumn
                 $permission = ($model->isOrganization()) ? (new RevokeOrganization)->name : (new RevokeDepartment)->name;
                 return Yii::$app->authManager->checkAccess($this->operator->getGUID(), $permission, ['organization' => $model]);
             },
+            'exit' => function ($model, $key, $index) {
+                /* @var $model Organization */
+                $member = $model->getMember($this->operator);
+                if (!$member || $member->isCreator()) {
+                    return false;
+                }
+                return true;
+            },
         ];
     }
 
@@ -131,6 +141,12 @@ class OrganizationListActionColumn extends ActionColumn
             'data-method' => 'post',
             'title' => Yii::t('organization', 'Remove'),
             'aria-label' => Yii::t('organization', 'Remove'),
+        ]);
+        $this->initDefaultButton('exit', false, [
+            'data-confirm' => Yii::t('organization', 'Are you sure you want to withdraw from this organization / department?'),
+            'data-method' => 'post',
+            'title' => Yii::t('organization', 'Exit'),
+            'aria-label' => Yii::t('organization', 'Exit'),
         ]);
     }
 }

@@ -181,4 +181,5 @@ return [
     'Would you like to join the department?' => '您是否想要加入该部门？',
     'According to the organization\'s setting, you cannot withdraw from this organization proactively.' => '根据组织的设置，您不能主动退出本组织。',
     'According to the department\'s setting, you cannot withdraw from this department proactively.' => '根据部门的设置，您不能主动退出本部门。',
+    'Are you sure you want to withdraw from this organization / department?' => '您确实想要退出该组织/部门吗？',
 ];

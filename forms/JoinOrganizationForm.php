@@ -33,7 +33,7 @@ class JoinOrganizationForm extends Model
     /**
      * @var string
      */
-    public $password;
+    public $password = '';
 
     /**
      * @inheritdoc
@@ -62,7 +62,14 @@ class JoinOrganizationForm extends Model
     public function rules()
     {
         return [
-            ['password', 'string', 'max' => 255],
+            ['password', 'safe', 'when' => function ($model) {
+                /* @var $model static */
+                return empty($model->organization->joinPassword);
+            }],
+            ['password', 'string', 'max' => 255, 'when' => function ($model) {
+                /* @var $model static */
+                return !empty($model->organization->joinPassword);
+            }],
             ['password', 'required', 'when' => function ($model) {
                 /* @var $model static */
                 return !empty($model->organization->joinPassword);

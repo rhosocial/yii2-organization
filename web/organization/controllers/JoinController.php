@@ -110,18 +110,21 @@ class JoinController extends Controller
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         $model = new JoinOrganizationForm(['organization' => $organization]);
-        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post()) && $model->validate()) {
-            try {
-                if ($organization->addMember($user)) {
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
-                } else {
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
-                }
-            } catch (\Exception $ex) {
-                throw new UnauthorizedHttpException($ex->getMessage());
+        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate())) {
+            Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+            return $this->redirect(['index', 'entrance' => $entrance]);
+        }
+        try {
+            if ($organization->addMember($user)) {
+                Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+            } else {
+                Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
             }
+        } catch (\Exception $ex) {
+            throw new UnauthorizedHttpException($ex->getMessage());
         }
         return $this->redirect(['index', 'entrance' => $entrance]);
     }
@@ -139,18 +142,21 @@ class JoinController extends Controller
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         $model = new JoinOrganizationForm(['organization' => $organization]);
-        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post()) && $model->validate()) {
-            try {
-                if ($organization->removeMember($user)) {
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
-                } else {
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-                    Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
-                }
-            } catch (\Exception $ex) {
-                throw new UnauthorizedHttpException($ex->getMessage());
+        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate())) {
+            Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+            return $this->redirect(['index', 'entrance' => $entrance]);
+        }
+        try {
+            if ($organization->removeMember($user)) {
+                Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+            } else {
+                Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
             }
+        } catch (\Exception $ex) {
+            throw new UnauthorizedHttpException($ex->getMessage());
         }
         return $this->redirect(['index', 'entrance' => $entrance]);
     }
