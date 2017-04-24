@@ -13,6 +13,7 @@
 namespace rhosocial\organization\web\organization;
 
 use rhosocial\organization\Organization;
+use rhosocial\user\User;
 use Yii;
 use yii\base\InvalidParamException;
 
@@ -37,7 +38,10 @@ class Module extends \yii\base\Module
         if (!$organization) {
             return null;
         }
-        $class = Yii::$app->user->identity->organizationClass;
+        $identityClass = Yii::$app->user->identityClass;
+        $noInitIdentity = $identityClass::buildNoInitModel();
+        /* @var $noInitIdentity User */
+        $class = $noInitIdentity->organizationClass;
         if ($organization instanceof $class) {
             $organization = $organization->getID();
         }
@@ -54,7 +58,10 @@ class Module extends \yii\base\Module
         if ($entrance === '') {
             throw new InvalidParamException(Yii::t('organization', "Entrance should not be empty."));
         }
-        $class = Yii::$app->user->identity->organizationClass;
+        $identityClass = Yii::$app->user->identityClass;
+        $noInitIdentity = $identityClass::buildNoInitModel();
+        /* @var $noInitIdentity User */
+        $class = $noInitIdentity->organizationClass;
         $noInit = $class::buildNoInitModel();
         /* @var $noInit Organization */
         $settingClass = $noInit->organizationSettingClass;
