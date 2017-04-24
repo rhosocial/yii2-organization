@@ -516,12 +516,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/rhosocial/yii2-user.git",
-                "reference": "1e5a7e54eb9caf7276e11062923279b55936a400"
+                "reference": "5d203a624d9737486ffa234f3c61aa4068d1f39f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rhosocial/yii2-user/zipball/1e5a7e54eb9caf7276e11062923279b55936a400",
-                "reference": "1e5a7e54eb9caf7276e11062923279b55936a400",
+                "url": "https://api.github.com/repos/rhosocial/yii2-user/zipball/5d203a624d9737486ffa234f3c61aa4068d1f39f",
+                "reference": "5d203a624d9737486ffa234f3c61aa4068d1f39f",
                 "shasum": ""
             },
             "require": {
@@ -560,7 +560,7 @@
                 "user",
                 "yii2"
             ],
-            "time": "2017-04-21 16:36:37"
+            "time": "2017-04-24 06:52:48"
         },
         {
             "name": "yiisoft/yii2",

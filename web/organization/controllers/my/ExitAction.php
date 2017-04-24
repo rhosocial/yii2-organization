@@ -25,6 +25,21 @@ use yii\web\UnauthorizedHttpException;
  */
 class ExitAction extends Action
 {
+    public $exitSuccessMessage;
+    public $exitFailedMessage;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        if (!is_string($this->exitSuccessMessage) || empty($this->exitSuccessMessage)) {
+            $this->exitSuccessMessage = Yii::t('organization', 'Exited.');
+        }
+        if (!is_string($this->exitFailedMessage) || empty($this->exitFailedMessage)) {
+            $this->exitFailedMessage = Yii::t('organization', 'Failed to exit.');
+        }
+    }
     /**
      * Run action
      * @param $id
@@ -37,11 +52,11 @@ class ExitAction extends Action
         try {
             if ($organization->removeMember(Yii::$app->user->identity)) {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->exitSuccessMessage);
                 return $this->controller->redirect(['index']);
             } else {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->exitFailedMessage);
             }
         } catch (\Exception $ex) {
             throw new UnauthorizedHttpException($ex->getMessage());

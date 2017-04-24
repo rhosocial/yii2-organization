@@ -36,6 +36,30 @@ class JoinController extends Controller
 {
     public $layout = 'main';
 
+    public $joinSuccessMessage;
+    public $joinFailedMessage;
+    public $exitSuccessMessage;
+    public $exitFailedMessage;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        if (!is_string($this->joinSuccessMessage) || empty($this->joinSuccessMessage)) {
+            $this->joinSuccessMessage = Yii::t('organization', 'Joined.');
+        }
+        if (!is_string($this->joinFailedMessage) || empty($this->joinFailedMessage)) {
+            $this->joinFailedMessage = Yii::t('organization', 'Failed to join.');
+        }
+        if (!is_string($this->exitSuccessMessage) || empty($this->exitSuccessMessage)) {
+            $this->exitSuccessMessage = Yii::t('organization', 'Exited.');
+        }
+        if (!is_string($this->exitFailedMessage) || empty($this->exitFailedMessage)) {
+            $this->exitFailedMessage = Yii::t('organization', 'Failed to exit.');
+        }
+    }
+
     /**
      * @inheritdoc
      */
@@ -110,18 +134,18 @@ class JoinController extends Controller
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         $model = new JoinOrganizationForm(['organization' => $organization]);
-        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate())) {
+        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate('password'))) {
             Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->joinFailedMessage . ($model->hasErrors('password') ? ' ' . $model->getFirstError('password') : ''));
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         try {
             if ($organization->addMember($user)) {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->joinSuccessMessage);
             } else {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->joinFailedMessage);
             }
         } catch (\Exception $ex) {
             throw new UnauthorizedHttpException($ex->getMessage());
@@ -142,18 +166,18 @@ class JoinController extends Controller
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         $model = new JoinOrganizationForm(['organization' => $organization]);
-        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate())) {
+        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate('password'))) {
             Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->exitFailedMessage . ($model->hasErrors('password') ? ' ' . $model->getFirstError('password') : ''));
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         try {
             if ($organization->removeMember($user)) {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->exitSuccessMessage);
             } else {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, '');
+                Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->exitFailedMessage);
             }
         } catch (\Exception $ex) {
             throw new UnauthorizedHttpException($ex->getMessage());
