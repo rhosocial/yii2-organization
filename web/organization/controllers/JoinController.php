@@ -142,6 +142,11 @@ class JoinController extends Controller
         if ($organization->creator->equals($user)) {
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
+        if (!Module::validateIPRanges($organization, Yii::$app->request->userIP, $errors)) {
+            Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
+            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->joinFailedMessage . ' ' . Yii::t('organization', 'Your current IP address is not allowed.'));
+            return $this->redirect(['index', 'entrance' => $entrance]);
+        }
         $model = new JoinOrganizationForm(['organization' => $organization]);
         if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate('password'))) {
             Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
