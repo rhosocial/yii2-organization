@@ -16,6 +16,7 @@ use rhosocial\organization\Organization;
 use rhosocial\user\User;
 use Yii;
 use yii\base\InvalidParamException;
+use yii\validators\IpValidator;
 
 /**
  * @version 1.0
@@ -73,5 +74,25 @@ class Module extends \yii\base\Module
             return null;
         }
         return $setting->host;
+    }
+
+    /**
+     * Validate IP Ranges.
+     * @param Organization $organization
+     * @param string $ip
+     * @param array $errors
+     * @return bool
+     */
+    public static function validateIPRanges($organization, $ip = null, &$errors = null)
+    {
+        if ($ip === null) {
+            $ip = Yii::$app->request->userIP;
+        }
+        $range = $organization->joinIpAddress;
+        if (empty($range) || !is_string($range)) {
+            $range = '0.0.0.0/0';
+        }
+        $validator = new IpValidator(['ranges' => [$range]]);
+        return $validator->validate($ip, $errors);
     }
 }
