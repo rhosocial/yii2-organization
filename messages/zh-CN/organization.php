@@ -189,4 +189,5 @@ return [
     'If you allow the member to withdraw proactively, the password is also needed to provide when withdrawing.' => '如果您允许成员主动退出，则退出时依然需要提供此密码。',
     'You need to provide password.' => '您需要提供密码。',
     'Your current IP address is not allowed.' => '您目前的 IP 地址不在允许范围。',
+    'This is the {name} page. You may modify the following file to customize its content:' => '这是“{name}”页面。你可能需要修改以下文件以修改其内容。',
 ];

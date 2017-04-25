@@ -116,4 +116,13 @@ class MyController extends Controller
             ],
         ];
     }
+
+    /**
+     * @param $id
+     * @return string
+     */
+    public function actionView($id)
+    {
+        return $this->render('view');
+    }
 }
