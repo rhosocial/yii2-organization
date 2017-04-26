@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <p>
     <?= $organization->profile->description ?>
 </p>
-
+<hr>
 <?php if (Yii::$app->user->isGuest): ?>
     <p><?= Yii::t('organization', 'You are not logged in yet.') ?></p>
 <?php else: ?>
