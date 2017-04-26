@@ -354,7 +354,7 @@ class Member extends BaseBlameableModel
             $this->descriptionAttribute => Yii::t('organization', 'Description'),
             $this->ipAttribute => Yii::t('user', 'IP Address'),
             $this->ipTypeAttribute => Yii::t('user', 'IP Address Type'),
-            $this->createdAtAttribute => Yii::t('organization', 'Joining Time'),
+            $this->createdAtAttribute => Yii::t('organization', 'Join Time'),
             $this->updatedAtAttribute => Yii::t('user', 'Last Updated Time'),
         ];
     }

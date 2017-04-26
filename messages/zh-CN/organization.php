@@ -103,7 +103,6 @@ return [
     "The number of departments has reached the maximum." => '部门数量已经达到最大。',
     "The number of organizations has reached the maximum." => '组织数量已经达到最大。',
     'The organizations / departments I have joined in' => '我加入的组织/部门',
-    'Joining Time' => '加入时间',
     'Update Profile' => '更新简介',
     'Update Member' => '更新成员',
     'Please fill out the following fields to update member:' => '请填写以下字段后更新成员：',
@@ -190,4 +189,6 @@ return [
     'You need to provide password.' => '您需要提供密码。',
     'Your current IP address is not allowed.' => '您目前的 IP 地址不在允许范围。',
     'This is the {name} page. You may modify the following file to customize its content:' => '这是“{name}”页面。你可能需要修改以下文件以修改其内容。',
+    'No members found.' => '没有找到成员。',
+    'If the join time is the same as the last update time, there is no change.' => '如果加入时间与上次更新时间相同，则表示没有改动。',
 ];

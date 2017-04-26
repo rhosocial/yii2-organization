@@ -19,14 +19,14 @@ use yii\web\View;
 /* @var $this View */
 /* @var $organization Organization */
 /* @var $model Profile */
-$this->title = Yii::t('organization', 'Update Profile') . ' (' . $organization->getID() . ')';
+$this->title = Yii::t('organization', 'Update Profile') . " {$model->name} (" . $organization->getID() . ')';
 $this->params['breadcrumbs'][] = Yii::t('organization', 'Update Profile');
 echo ProfileFormWidget::widget(['model' => $model]);
 ?>
 <h3><?= Yii::t('user', 'Other operations') ?></h3>
 <hr>
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-12">
         <?= Html::a(Yii::t('organization', 'Back to Organization List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>

@@ -14,14 +14,17 @@ use rhosocial\organization\Member;
 use rhosocial\organization\widgets\MemberFormWidget;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\DetailView;
 
 /* @var $this View */
 /* @var $model Member */
-$this->title = Yii::t('organization', 'Update Member');
+$name = ($model->organization->profile) ? $model->organization->profile->name : null;
+$this->title = empty($name) ? '' : "$name ({$model->organization->getID()}) " . Yii::t('organization', 'Update Member');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="row">
     <div class="col-lg-6">
+        <?= $this->render('_member_profile', ['member' => $model]) ?>
         <?= MemberFormWidget::widget(['member' => $model]); ?>
     </div>
     <div class="col-lg-6">
@@ -81,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <h3><?= Yii::t('user', 'Other operations') ?></h3>
 <hr>
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-12">
         <?= Html::a(Yii::t('organization', 'Back to Organization List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>

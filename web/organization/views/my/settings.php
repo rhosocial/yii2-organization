@@ -25,7 +25,7 @@ if ($profile) {
 } else {
     $name = Yii::t('yii', 'not set');
 }
-$this->title = '(' . $name . ') ' . Yii::t('organization', 'Settings');
+$this->title = "$name ({$organization->getID()}) " . Yii::t('organization', 'Settings');
 $this->params['breadcrumbs'][] = Yii::t('organization', 'Settings');
 ?>
 <?= SettingsFormWidget::widget([
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = Yii::t('organization', 'Settings');
 <h3><?= Yii::t('user', 'Other operations') ?></h3>
 <hr>
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-12">
         <?= Html::a(Yii::t('organization', 'Back to Organization List'), [
             'index',
         ], ['class' => 'btn btn-primary']) ?>

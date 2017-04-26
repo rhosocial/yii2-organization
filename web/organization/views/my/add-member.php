@@ -23,7 +23,8 @@ use yii\widgets\Pjax;
 /* @var $searchModel UserProfileView */
 /* @var $dataProvider ActiveDataProvider */
 /* @var $organization Organization */
-$this->title = Yii::t('organization', 'Add member');
+$name = ($organization->profile) ? $organization->profile->name : null;
+$this->title = empty($name) ? '' : "$name ({$organization->getID()}) " . Yii::t('organization', 'Add member');
 $this->params['breadcrumbs'][] = $this->title;
 $formId = 'user-search-form';
 echo UserProfileSearchWidget::widget([
@@ -53,6 +54,7 @@ echo UserListWidget::widget([
 Pjax::end();
 ?>
 <h3><?= Yii::t('user', 'Other operations') ?></h3>
+<hr>
 <div class="row">
     <div class="col-md-12">
         <?= Html::a(Yii::t('organization', 'Back to Organization List'), ['index'], ['class' => 'btn btn-primary']) ?>
