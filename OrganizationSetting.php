@@ -33,6 +33,7 @@ use yii\behaviors\BlameableBehavior;
  */
 class OrganizationSetting extends BaseBlameableModel
 {
+    use OperatorTrait;
     /**
      * @var string Host class.
      * You must assign with your own [[Organization]] class.
@@ -48,28 +49,7 @@ class OrganizationSetting extends BaseBlameableModel
     /**
      * @var string
      */
-    public $operatorAttribute = 'operator_guid';
-
-    /**
-     * @var string
-     */
     public $contentAttribute = 'value';
-
-    /**
-     * Get operator query.
-     * If you want to get operator, please access [[$operator]] magic-property.
-     * @return BaseUserQuery
-     */
-    public function getOperator()
-    {
-        if (empty($this->operatorAttribute) || !is_string($this->operatorAttribute)) {
-            return null;
-        }
-        $userClass = Yii::$app->user->identityClass;
-        $noInit = $userClass::buildNoInitModel();
-        /* @var $noInit User */
-        return $this->hasOne($userClass, [$noInit->guidAttribute => $this->operatorAttribute]);
-    }
 
     /**
      * @inheritdoc
@@ -80,32 +60,12 @@ class OrganizationSetting extends BaseBlameableModel
     }
 
     /**
-     * @param Event $event
-     * @return null|string
-     */
-    public function onAssignOperator($event)
-    {
-        $identity = Yii::$app->user->identity;
-        if (empty($identity)) {
-            return null;
-        }
-        return $identity->getGUID();
-    }
-
-    /**
      * @inheritdoc
      */
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        if (!empty($this->operatorAttribute) && is_string($this->operatorAttribute)) {
-            $behaviors[] = [
-                'class' => BlameableBehavior::class,
-                'createdByAttribute' => false,
-                'updatedByAttribute' => $this->operatorAttribute,
-                'value' => [$this, 'onAssignOperator'],
-            ];
-        }
+        $behaviors = array_merge($behaviors, $this->getOperatorBehaviors());
         return $behaviors;
     }
 
@@ -114,10 +74,11 @@ class OrganizationSetting extends BaseBlameableModel
      */
     public function rules()
     {
-        return array_merge(parent::rules(), [
+        $rules = array_merge(parent::rules(), [
             [$this->idAttribute, 'string', 'max' => 255],
-            [$this->operatorAttribute, 'safe'],
         ]);
+        $rules = array_merge($rules, $this->getOperatorRules());
+        return $rules;
     }
 
     /**
@@ -135,14 +96,13 @@ class OrganizationSetting extends BaseBlameableModel
      */
     public function attributeLabels()
     {
-        return [
+        return  array_merge([
             $this->guidAttribute => Yii::t('user','GUID'),
             $this->createdByAttribute => Yii::t('organization', 'Organization GUID'),
             $this->idAttribute => 'Item',
             $this->contentAttribute => 'Value',
-            $this->operatorAttribute => Yii::t('organization', 'Operator'),
             $this->createdAtAttribute => Yii::t('user', 'Creation Time'),
             $this->updatedAtAttribute => Yii::t('user', 'Last Updated Time'),
-        ];
+        ], $this->getOperatorLabels());
     }
 }
