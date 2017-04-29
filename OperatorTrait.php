@@ -13,12 +13,15 @@
 namespace rhosocial\organization;
 
 use rhosocial\base\models\queries\BaseUserQuery;
+use rhosocial\user\User;
 use Yii;
 use yii\base\Event;
 use yii\behaviors\BlameableBehavior;
 
 /**
  * OperatorTrait
+ *
+ * @property-read User $operator
  * @version 1.0
  * @author vistart <i@vistart.me>
  */
