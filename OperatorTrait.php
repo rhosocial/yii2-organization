@@ -32,6 +32,7 @@ Trait OperatorTrait
     /**
      * Get operator query.
      * If you want to get operator, please access [[$operator]] magic-property.
+     * Note: It may return null value! Please check whether the return value is available before accessing.
      * @return BaseUserQuery
      */
     public function getOperator()
