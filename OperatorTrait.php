@@ -91,7 +91,8 @@ Trait OperatorTrait
     public function getOperatorLabels()
     {
         return [
-            $this->operatorAttribute => Yii::t('organization', 'Operator'),
+            $this->operatorAttribute => Yii::t('organization', 'Operator GUID'),
+            'operator' => Yii::t('organization', 'Operator'),
         ];
     }
 }
