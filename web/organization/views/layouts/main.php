@@ -14,7 +14,7 @@ use yii\bootstrap\Alert;
 /* @var $this yii\web\View */
 $this->params['breadcrumbs'][] = [
     'label' => Yii::t('organization', 'Organization'),
-    'url' => ['index'],
+    'url' => ['/organization/my/index'],
 ];
 $this->params['breadcrumbs'] = array_reverse($this->params['breadcrumbs']);
 $this->beginContent('@app/views/layouts/main.php');
