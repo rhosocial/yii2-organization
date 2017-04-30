@@ -20,7 +20,7 @@ use yii\web\View;
 /* @var bool $join */
 /* @var $formConfig array */
 $form = ActiveForm::begin($formConfig);
-if (!empty($model->organization->getJoinPassword())) {
+if (!empty($model->organization->getJoinPassword()) && $join) {
     echo $form->field($model, 'password')->textInput();
 }
 echo Html::submitButton(Yii::t('organization', $join ? 'Join' : 'Exit'), [

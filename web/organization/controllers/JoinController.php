@@ -180,11 +180,6 @@ class JoinController extends Controller
             return $this->redirect(['index', 'entrance' => $entrance]);
         }
         $model = new JoinOrganizationForm(['organization' => $organization]);
-        if (!empty($organization->joinPassword) && (!$model->load(Yii::$app->request->post()) || !$model->validate('password'))) {
-            Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_FAILED);
-            Yii::$app->session->setFlash(Module::SESSION_KEY_MESSAGE, $this->exitFailedMessage . ($model->hasErrors('password') ? ' ' . $model->getFirstError('password') : ''));
-            return $this->redirect(['index', 'entrance' => $entrance]);
-        }
         try {
             if ($organization->removeMember($user)) {
                 Yii::$app->session->setFlash(Module::SESSION_KEY_RESULT, Module::RESULT_SUCCESS);
