@@ -191,4 +191,7 @@ return [
     'This is the {name} page. You may modify the following file to customize its content:' => '这是“{name}”页面。你可能需要修改以下文件以修改其内容。',
     'No members found.' => '没有找到成员。',
     'If the join time is the same as the last update time, there is no change.' => '如果加入时间与上次更新时间相同，则表示没有改动。',
+    'For example, the local address segment is {ip}.' => '例如，本地地址段是 {ip}。',
+    'If you do not restrict the IP address (segment), leave it blank.' => '如果不限制 IP 地址（段），请留空。',
+    'If you only limit an address, such as {ip}, you can only enter the IP address itself, we will automatically fill "/32" at the end.' => '',
 ];

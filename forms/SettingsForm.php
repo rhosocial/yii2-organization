@@ -197,7 +197,9 @@ class SettingsForm extends Model
                 Yii::t('organization', 'If you specify a password, the user needs to provide the password to join.') . "<br>" .
                 Yii::t('organization', 'If you do not need a user to enter a password, leave it blank.'),
             'join_ip_address' =>
-                Yii::t('organization', 'Only the users from the above IP address (segment) can join the organization / department proactively.'),
+                Yii::t('organization', 'Only the users from the above IP address (segment) can join the organization / department proactively.') . "<br>" .
+                Yii::t('organization', 'For example, the local address segment is {ip}.', ['ip' => '127.0.0.0/8']) . "<br>" .
+                Yii::t('organization', 'If you do not restrict the IP address (segment), leave it blank.'),
         ];
     }
 
