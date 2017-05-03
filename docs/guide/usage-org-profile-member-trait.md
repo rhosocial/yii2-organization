@@ -2,7 +2,7 @@
 
 ## Preparation
 
-We strongly recommend that you declare your own Models, use trait in your `User`:
+We strongly recommend that you declare your own Models, and use trait in your `User`:
 
 Organization:
 ```php

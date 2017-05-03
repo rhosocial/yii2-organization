@@ -1,4 +1,4 @@
-# Common Organization & Department Models for Yii 2
+# Common Organization & Member Models for Yii 2
 
 This extension provides several common models:
 - Organization

@@ -80,3 +80,16 @@ departments, and have up to 100 members, including the creator
 and the administrators.
 
 The above limitation can be individually modified.
+
+## Secondary Development
+
+You should follow the following principles if you want to develop it:
+
+- Inherit the class we provided, instead of using it directly.
+- Complicated database operations should be wrapped into transaction, in order
+to make data consistency.
+- Prepare more complicated authentication steps for dangerous operations, such
+as "revoke organization", "add or remove member", "change option", "assign or revoke
+Administrator", etc.
+- If you want to modify the default database schemas, please
+use migrations.

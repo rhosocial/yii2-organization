@@ -193,5 +193,5 @@ return [
     'If the join time is the same as the last update time, there is no change.' => '如果加入时间与上次更新时间相同，则表示没有改动。',
     'For example, the local address segment is {ip}.' => '例如，本地地址段是 {ip}。',
     'If you do not restrict the IP address (segment), leave it blank.' => '如果不限制 IP 地址（段），请留空。',
-    'If you only limit an address, such as {ip}, you can only enter the IP address itself, we will automatically fill "/32" at the end.' => '',
+    'If you only limit an address, such as {ip}, you can only enter the IP address itself, we will automatically fill "/32" at the end.' => '如果只限定某个地址，如 {ip}，则只输入 IP 地址即可，我们会在提交后自动在结尾补齐“/32”。',
 ];
